@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/calculate_salaries_list_item_date_text_view"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:text="21/07"
+        android:textSize="@dimen/title"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/calculate_salaries_list_item_employee_name_speciality_layout"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@id/right_layout"
+        android:layout_toRightOf="@id/calculate_salaries_list_item_date_text_view"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/calculate_salaries_list_item_event_title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textSize="@dimen/info_list_item"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/calculate_salaries_list_item_event_location_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textSize="@dimen/info_list_item" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true">
+
+        <EditText
+            android:id="@+id/calculate_salaries_list_item_salary_edit_text"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="@dimen/content" />
+
+        <CheckBox
+            android:id="@+id/calculate_salaries_list_item_paid_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center" />
+    </LinearLayout>
+</RelativeLayout>

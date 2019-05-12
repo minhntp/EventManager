@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Quản lí sự kiện</string>
+    <string name="add_event_activity_label">Thêm sự kiện</string>
+    <string name="edit_salary_activity_label">Sửa lương</string>
+    <string name="edit_event_activity_label">Chỉnh sửa sự kiện</string>
+    <string name="manage_event_fragment_label">Quản lí sự kiện</string>
+    <string name="manage_user_fragment_label">Quản lí nhân viên</string>
+    <string name="calculate_salary_fragment_label">Tính lương</string>
+    <string name="greeting">Tính lương</string>
+    <string name="user_name">Nguyễn Quang Minh</string>
+
+    <string name="navigation_drawer_open">Quản lí sự kiện</string>
+    <string name="navigation_drawer_close">Quản lí sự kiện</string>
+
+</resources>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/add_event_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_event_toolbar">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên sự kiện"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/title_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nextFocusLeft="@id/title_edit_text"
+                android:nextFocusUp="@id/title_edit_text"
+                android:textSize="@dimen/content" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Bắt đầu"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    android:id="@+id/start_dow_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/normal_text" />
+
+                <EditText
+                    android:id="@+id/start_date_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Ngày bắt đầu"
+                    android:textSize="@dimen/content" />
+
+                <EditText
+                    android:id="@+id/start_time_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Giờ bắt đầu"
+                    android:textSize="@dimen/content" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kết thúc"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="6">
+
+                <TextView
+                    android:id="@+id/end_dow_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/normal_text" />
+
+                <EditText
+                    android:id="@+id/end_date_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Ngày kết thúc"
+                    android:textSize="@dimen/content" />
+
+                <EditText
+                    android:id="@+id/end_time_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Giờ kết thúc"
+                    android:textSize="@dimen/content" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Địa điểm"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/location_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/content" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Nhân sự"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/employees_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/add_employee_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:textSize="20dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Ghi chú"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/note_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:textSize="@dimen/note" />
+
+            <Button
+                android:id="@+id/add_event_schedule_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:text="Lịch trình"
+                android:textAllCaps="false"
+                android:textSize="20dp" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

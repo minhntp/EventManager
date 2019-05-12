@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "84142397473",
+    "firebase_url": "https://event-manager-8a67c.firebaseio.com",
+    "project_id": "event-manager-8a67c",
+    "storage_bucket": "event-manager-8a67c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84142397473:android:649af31c1f816253",
+        "android_client_info": {
+          "package_name": "com.nqm.event_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "84142397473-34jq3appd53rpf58e0iu399jeq5e2rnd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeKT4b6hei-Qj6jKdEzmCfpfJoeqMCiHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "84142397473-34jq3appd53rpf58e0iu399jeq5e2rnd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

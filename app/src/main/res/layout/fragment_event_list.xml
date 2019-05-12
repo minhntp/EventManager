@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.github.tibolte.agendacalendarview.AgendaCalendarView
+            android:id="@+id/agenda_calendar_view"
+            agendaCurrentDayTextColor="#fff"
+            calendarColor="#008577"
+            calendarCurrentDayTextColor="#FF5722"
+            calendarDayTextColor="@color/theme_text_icons"
+            calendarHeaderColor="#00574B"
+            calendarPastDayTextColor="#89EB8F"
+            fabColor="#D81B60"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

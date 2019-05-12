@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal"
+    android:weightSum="9">
+
+    <TextView
+        android:id="@+id/event_time_text_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:gravity="center_vertical"
+        android:text="07:00 AM - 09:00 AM"
+        android:textSize="@dimen/time_list_item"></TextView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_weight="5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/event_title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="Name"
+            android:textSize="@dimen/info_list_item"
+            android:textStyle="bold"></TextView>
+
+        <TextView
+            android:id="@+id/event_location_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="Location"
+            android:textSize="@dimen/info_list_item"></TextView>
+    </LinearLayout>
+</LinearLayout>
