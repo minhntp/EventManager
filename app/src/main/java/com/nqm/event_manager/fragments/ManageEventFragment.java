@@ -188,6 +188,8 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         }
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();

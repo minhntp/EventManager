@@ -30,10 +30,10 @@ public class EventListAdapter extends BaseAdapter {
         this.date = date;
         events = EventRepository.getInstance(null).getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
         eventIds = new ArrayList<>(events.keySet());
-        sortEvents(eventIds);
+        sortEvents();
     }
 
-    private ArrayList<String> sortEvents(ArrayList<String> eventIds) {
+    private void sortEvents() {
         //sort by start date
         Collections.sort(eventIds, new Comparator<String>() {
             @Override
@@ -55,7 +55,6 @@ public class EventListAdapter extends BaseAdapter {
                 return compareResult;
             }
         });
-        return eventIds;
     }
 
     public ArrayList<String> getEventIds() {
@@ -121,7 +120,7 @@ public class EventListAdapter extends BaseAdapter {
         this.date = date;
         events = EventRepository.getInstance(null).getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
         eventIds = new ArrayList<>(events.keySet());
-        sortEvents(eventIds);
+        sortEvents();
         super.notifyDataSetChanged();
     }
 }

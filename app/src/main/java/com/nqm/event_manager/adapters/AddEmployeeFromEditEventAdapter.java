@@ -1,8 +1,6 @@
 package com.nqm.event_manager.adapters;
 
-
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +10,23 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
+import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DeleteEmployeeFromAddEventAdapter extends BaseAdapter {
+public class AddEmployeeFromEditEventAdapter extends BaseAdapter {
     private final Activity context;
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, Employee> allEmployees;
+    private String eventId;
 
-    public DeleteEmployeeFromAddEventAdapter(Activity context, ArrayList<String> selectedEmployeesIds) {
+    public AddEmployeeFromEditEventAdapter(Activity context, String eventId,
+                                           ArrayList<String> selectedEmployeesIds) {
         this.context = context;
+        this.eventId = eventId;
         this.selectedEmployeesIds = selectedEmployeesIds;
         allEmployees = EmployeeRepository.getInstance(null).getAllEmployees();
     }
@@ -46,7 +49,7 @@ public class DeleteEmployeeFromAddEventAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_delete_employee_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.layout_add_employee_list_item, parent, false);
         }
 
         //Connect views
@@ -66,9 +69,16 @@ public class DeleteEmployeeFromAddEventAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        //if salary is paid -> disable deleteButton
 
-//        if(SalaryRepository.getInstance(null).getSalaryIdByEventIdAndEmployeeId())
+        //If salary is paid -> hide deleteButton
+        Salary salaryOfThisLine = SalaryRepository.getInstance(null).getAllSalaries()
+                .get(SalaryRepository.getInstance(null).getSalaryIdByEventIdAndEmployeeId(eventId,
+                        selectedEmployeesIds.get(position)));
+        if (salaryOfThisLine != null && salaryOfThisLine.isPaid()) {
+            deleteEmployeeButton.setVisibility(View.INVISIBLE);
+        } else {
+            deleteEmployeeButton.setVisibility(View.VISIBLE);
+        }
 
         return view;
     }
@@ -83,7 +93,6 @@ public class DeleteEmployeeFromAddEventAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        Log.d("debug", "deleteEmployeeAdapter: dataSetChanged: selected employees size = " + selectedEmployeesIds.size());
         super.notifyDataSetChanged();
     }
 }

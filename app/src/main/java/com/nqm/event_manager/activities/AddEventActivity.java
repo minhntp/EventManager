@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -24,11 +23,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.adapters.AddEmployeeFromAddEventAdapter;
 import com.nqm.event_manager.adapters.AddScheduleAdapter;
-import com.nqm.event_manager.adapters.DeleteEmployeeFromAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInAddEventAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomButtonClicked;
+import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
@@ -38,7 +37,7 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class AddEventActivity extends AppCompatActivity implements IOnCustomButtonClicked {
+public class AddEventActivity extends AppCompatActivity implements IOnCustomViewClicked {
     Toolbar toolbar;
 
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
@@ -54,9 +53,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
     ArrayList<String> selectedEmployeesIds;
     ArrayList<Schedule> schedules;
 
-    DeleteEmployeeFromAddEventAdapter deleteAdapter;
+    AddEmployeeFromAddEventAdapter deleteAdapter;
     SelectEmployeeInAddEventAdapter selectAdapter;
+
+    WindowManager.LayoutParams lWindowParams;
     AddScheduleAdapter addScheduleAdapter;
+    ListView addScheduleListView;
+    Button okButton;
+    Button addScheduleButton;
+    Dialog addScheduleDialog;
+    TextView titleTextView;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -66,20 +72,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
-        context = this;
 
         connectViews();
         init();
         addEvents();
-
-        selectedEmployeesIds = new ArrayList<>();
-        schedules = new ArrayList<>();
-
-        deleteAdapter = new DeleteEmployeeFromAddEventAdapter(this, selectedEmployeesIds);
-        selectAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds);
-        addScheduleAdapter = new AddScheduleAdapter(this, schedules);
-
-        deleteEmployeeListView.setAdapter(deleteAdapter);
     }
 
     @Override
@@ -97,12 +93,20 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
         return super.onOptionsItemSelected(item);
     }
 
-    //    public static void setSelectedEmployees(ArrayList<Employee> selectedEmployees) {
-//        AddEventActivity.selectedEmployees.clear();
-//        AddEventActivity.selectedEmployees.addAll(selectedEmployees);
-//    }
-
     private void init() {
+        context = this;
+
+        //initial data for main view
+        selectedEmployeesIds = new ArrayList<>();
+        schedules = new ArrayList<>();
+
+        deleteAdapter = new AddEmployeeFromAddEventAdapter(this, selectedEmployeesIds);
+        selectAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds);
+        addScheduleAdapter = new AddScheduleAdapter(this, schedules, this);
+
+        deleteEmployeeListView.setAdapter(deleteAdapter);
+
+        //Set start date, end date edit texts from selected date
         String selectedDate = getIntent().getStringExtra("selectedDate");
         startDateEditText.setText(selectedDate);
         endDateEditText.setText(selectedDate);
@@ -112,12 +116,50 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        initAddScheduleDialog();
+    }
+
+    private void initAddScheduleDialog() {
+        //initial dialog
+        addScheduleDialog = new Dialog(this);
+        addScheduleDialog.setContentView(R.layout.dialog_add_schedule);
+        lWindowParams = new WindowManager.LayoutParams();
+        lWindowParams.copyFrom(addScheduleDialog.getWindow().getAttributes());
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        //connect views
+        addScheduleListView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_list_view);
+        okButton = addScheduleDialog.findViewById(R.id.ok_button);
+        addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
+        titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
+
+        addScheduleListView.setAdapter(addScheduleAdapter);
+
+        addScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAllSchedulesFromListView(false);
+                schedules.add(new Schedule());
+                addScheduleAdapter.notifyDataSetChanged();
+                titleTextView.requestFocus();
+            }
+        });
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAllSchedulesFromListView(true);
+                addScheduleDialog.dismiss();
+            }
+        });
     }
 
     private void connectViews() {
         toolbar = findViewById(R.id.add_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Thêm sự kiện");
+//        getSupportActionBar().setTitle(R.string.add_event_activity_label);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -358,60 +400,12 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
         scheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openAddScheduleDialog();
+                showAddScheduleDialog();
             }
         });
     }
 
-    private void openAddScheduleDialog() {
-        final Dialog addScheduleDialog = new Dialog(this);
-        addScheduleDialog.setContentView(R.layout.dialog_add_schedule);
-
-        WindowManager.LayoutParams lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(addScheduleDialog.getWindow().getAttributes());
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT; // this is where the magic happens
-        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        //Connect views
-        final ListView addScheduleListView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_list_view);
-        Button okButton = addScheduleDialog.findViewById(R.id.ok_button);
-        Button addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
-
-        addScheduleListView.setAdapter(addScheduleAdapter);
-
-        //Add events
-        addScheduleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("debug", "add schedule list view item clicked");
-            }
-        });
-
-        addScheduleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                schedules.add(new Schedule());
-                addScheduleAdapter.notifyDataSetChanged();
-            }
-        });
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                schedules.clear();
-                for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
-                    EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
-                    EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
-                    String time = timeEditText.getText().toString();
-                    String content = contentEditText.getText().toString();
-                    if (!time.isEmpty() && !content.isEmpty()) {
-                        schedules.add(new Schedule("", "", time, content));
-                    }
-                }
-                addScheduleDialog.dismiss();
-            }
-        });
-
+    private void showAddScheduleDialog() {
         if (!isFinishing()) {
             addScheduleDialog.show();
             addScheduleDialog.getWindow().setAttributes(lWindowParams);
@@ -467,7 +461,34 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomButt
     }
 
     @Override
-    public void onDeleteButtonClickListener(int position) {
+    public void onDeleteButtonClicked(int position) {
+        //Save all data from add schedule adapter -> remove item[position] in adapter -> notifyDataSetChanged
+        getAllSchedulesFromListView(false);
+        schedules.remove(position);
+        addScheduleAdapter.notifyDataSetChanged();
+        titleTextView.requestFocus();
+    }
 
+    @Override
+    public void onTimeEditTextSet(int position, String timeText) {
+        getAllSchedulesFromListView(false);
+        schedules.get(position).setTime(timeText);
+        addScheduleAdapter.notifyDataSetChanged();
+        titleTextView.requestFocus();
+    }
+
+    private void getAllSchedulesFromListView(boolean removeEmptySchedules) {
+        schedules.clear();
+        for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
+            EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
+            EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
+            String time = timeEditText.getText().toString();
+            String content = contentEditText.getText().toString();
+            if (removeEmptySchedules && time.isEmpty() && content.isEmpty()) {
+                continue;
+            } else {
+                schedules.add(new Schedule("", "", time, content));
+            }
+        }
     }
 }

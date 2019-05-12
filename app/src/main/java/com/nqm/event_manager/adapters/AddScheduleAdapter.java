@@ -3,7 +3,6 @@ package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,14 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnCustomButtonClicked;
+import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AddScheduleAdapter extends BaseAdapter {
 
@@ -30,11 +31,38 @@ public class AddScheduleAdapter extends BaseAdapter {
     EditText scheduleContentEditText;
     Button scheduleDeleteButton;
 
-    IOnCustomButtonClicked customButtonClickedListener;
+    IOnCustomViewClicked listener;
 
-    public AddScheduleAdapter(Activity context, ArrayList<Schedule> schedules) {
+    public AddScheduleAdapter(Activity context, ArrayList<Schedule> schedules, IOnCustomViewClicked listener) {
         this.context = context;
         this.schedules = schedules;
+        this.listener = listener;
+        sortSchedule();
+    }
+
+    private void sortSchedule() {
+        Collections.sort(schedules, new Comparator<Schedule>() {
+            @Override
+            public int compare(Schedule schedule1, Schedule schedule2) {
+                if(schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    return 0;
+                }
+                if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
+                    return -1;
+                }
+                if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    return 1;
+                }
+                int compareResult = 0;
+                try {
+                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
+                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
     }
 
     @Override
@@ -43,7 +71,7 @@ public class AddScheduleAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Schedule getItem(int i) {
         return schedules.get(i);
     }
 
@@ -62,10 +90,6 @@ public class AddScheduleAdapter extends BaseAdapter {
         scheduleContentEditText = view.findViewById(R.id.add_schedule_content_edit_text);
         scheduleDeleteButton = view.findViewById(R.id.add_schedule_delete_button);
 
-        //Save information
-        schedules.get(position).setTime(scheduleTimeEditText.getText().toString());
-        schedules.get(position).setContent(scheduleContentEditText.getText().toString());
-
         //Fill information
         scheduleTimeEditText.setText(schedules.get(position).getTime());
         scheduleContentEditText.setText(schedules.get(position).getContent());
@@ -74,9 +98,7 @@ public class AddScheduleAdapter extends BaseAdapter {
         scheduleDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (customButtonClickedListener != null) {
-                    customButtonClickedListener.onDeleteButtonClickListener(position);
-                }
+                listener.onDeleteButtonClicked(position);
 //                schedules.remove(position);
 //                notifyDataSetChanged();
             }
@@ -85,11 +107,10 @@ public class AddScheduleAdapter extends BaseAdapter {
         scheduleTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("debug", "position = " + position);
                 calendar = Calendar.getInstance();
-                if (!scheduleTimeEditText.getText().toString().isEmpty()) {
+                if (!getItem(position).getTime().isEmpty()) {
                     try {
-                        calendar.setTime(CalendarUtil.sdfTime.parse(scheduleTimeEditText.getText().toString()));
+                        calendar.setTime(CalendarUtil.sdfTime.parse(getItem(position).getTime()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -101,7 +122,7 @@ public class AddScheduleAdapter extends BaseAdapter {
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
                         calendar.set(Calendar.HOUR_OF_DAY, hour);
                         calendar.set(Calendar.MINUTE, minute);
-                        scheduleTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
+                        listener.onTimeEditTextSet(position, CalendarUtil.sdfTime.format(calendar.getTime()));
                     }
                 }, HH, mm, false).show();
             }
@@ -116,10 +137,8 @@ public class AddScheduleAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
+        sortSchedule();
         super.notifyDataSetChanged();
     }
 
-    public interface onDeleteButtonClickedCallback {
-        void onCallback(int position);
-    }
 }

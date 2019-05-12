@@ -21,13 +21,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.nqm.event_manager.R;
+import com.nqm.event_manager.adapters.AddEmployeeFromEditEventAdapter;
 import com.nqm.event_manager.adapters.AddScheduleAdapter;
-import com.nqm.event_manager.adapters.DeleteEmployeeFromEditEventAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInEditEventAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
+import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.R;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
@@ -36,7 +37,7 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EditEventActivity extends AppCompatActivity {
+public class EditEventActivity extends AppCompatActivity implements IOnCustomViewClicked {
     android.support.v7.widget.Toolbar toolbar;
 
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
@@ -54,8 +55,15 @@ public class EditEventActivity extends AppCompatActivity {
     ArrayList<String> selectedEmployeesIds;
     ArrayList<Schedule> schedules;
 
-    DeleteEmployeeFromEditEventAdapter deleteEmployeeAdapter;
+    AddEmployeeFromEditEventAdapter deleteEmployeeAdapter;
+
+    WindowManager.LayoutParams lWindowParams;
     AddScheduleAdapter addScheduleAdapter;
+    ListView addScheduleListView;
+    Button okButton;
+    Button addScheduleButton;
+    Dialog addScheduleDialog;
+    TextView titleTextView;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -65,22 +73,9 @@ public class EditEventActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
-        context = this;
 
         connectViews();
-
-        eventId = getIntent().getStringExtra("eventId");
-        event = EventRepository.getInstance(null).getAllEvents().get(eventId);
-
-        selectedEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
-        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
-        Log.d("debug", "got " + schedules.size() + " schedules for current event");
-
-        deleteEmployeeAdapter = new DeleteEmployeeFromEditEventAdapter(this, eventId,
-                selectedEmployeesIds);
-        addScheduleAdapter = new AddScheduleAdapter(this, schedules);
-
-        fillInformation();
+        init();
         addEvents();
     }
 
@@ -124,6 +119,61 @@ public class EditEventActivity extends AppCompatActivity {
         employeeListView = findViewById(R.id.event_edit_employee_list_view);
     }
 
+    private void init() {
+        context = this;
+
+        eventId = getIntent().getStringExtra("eventId");
+        event = EventRepository.getInstance(null).getAllEvents().get(eventId);
+
+        selectedEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
+        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+        Log.d("debug", "got " + schedules.size() + " schedules for current event");
+
+        deleteEmployeeAdapter = new AddEmployeeFromEditEventAdapter(this, eventId,
+                selectedEmployeesIds);
+        addScheduleAdapter = new AddScheduleAdapter(this, schedules, this);
+
+        fillInformation();
+
+        initAddScheduleDialog();
+    }
+
+    private void initAddScheduleDialog() {
+        //initial dialog
+        addScheduleDialog = new Dialog(this);
+        addScheduleDialog.setContentView(R.layout.dialog_add_schedule);
+        lWindowParams = new WindowManager.LayoutParams();
+        lWindowParams.copyFrom(addScheduleDialog.getWindow().getAttributes());
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        //connect views
+        addScheduleListView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_list_view);
+        okButton = addScheduleDialog.findViewById(R.id.ok_button);
+        addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
+        titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
+
+        addScheduleListView.setAdapter(addScheduleAdapter);
+
+        addScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAllSchedulesFromListView(false);
+                schedules.add(new Schedule());
+                addScheduleAdapter.notifyDataSetChanged();
+                titleTextView.requestFocus();
+            }
+        });
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAllSchedulesFromListView(true);
+                addScheduleDialog.dismiss();
+            }
+        });
+    }
+
     private void fillInformation() {
         titleEditText.setText(event.getTen());
         startDateEditText.setText(event.getNgayBatDau());
@@ -157,7 +207,7 @@ public class EditEventActivity extends AppCompatActivity {
         scheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openEditScheduleDialog();
+                showEditScheduleDialog();
             }
         });
 
@@ -317,19 +367,6 @@ public class EditEventActivity extends AppCompatActivity {
         } else {
             titleEditText.setError(null);
         }
-        if (startTimeEditText.getText().toString().isEmpty()) {
-            startTimeEditText.setError("");
-            return;
-        } else {
-            startTimeEditText.setError(null);
-        }
-        if (endTimeEditText.getText().toString().isEmpty()) {
-            endTimeEditText.setError("");
-            return;
-        } else {
-            endTimeEditText.setError(null);
-        }
-
 
         //Event
         Event changedEvent = new Event(eventId, titleEditText.getText().toString(),
@@ -371,115 +408,6 @@ public class EditEventActivity extends AppCompatActivity {
                     }
                 });
     }
-
-//    private void saveToDatabaseOld(Event editedEvent) {
-//        //Update event
-//        EventRepository.getInstance(null).updateEventToDatabase(editedEvent, new EventRepository.MyUpdateEventCallback() {
-//            @Override
-//            public void onCallback(boolean updateSucceed) {
-//                ScheduleRepository.getInstance(null).deleteSchedulesByEventId(eventId, new ScheduleRepository.MyDeleteSchedulesByEventIdCallback() {
-//                    @Override
-//                    public void onCallback(boolean deleteSucceed) {
-//                        //Delete schedules done -> Add new list of schedules
-//                        for (int i = 0; i < schedules.size(); i++) {
-//                            schedules.get(i).setEventId(eventId);
-//                            final int tempI = i;
-//                            ScheduleRepository.getInstance(null).addScheduleToDatabase(schedules.get(i), new ScheduleRepository.MyAddScheduleCallback() {
-//                                @Override
-//                                public void onCallback(String scheduleId) {
-//                                    if (tempI == schedules.size() - 1) {
-//                                        ArrayList<String> unchangedEmployeesIds = EmployeeRepository.getInstance(null)
-//                                                .getEmployeesIdsByEventId(eventId);
-//
-//                                        ArrayList<String> mergedEmployeesIds = new ArrayList<>();
-//                                        mergedEmployeesIds.addAll(unchangedEmployeesIds);
-//                                        for (String id : selectedEmployeesIds) {
-//                                            if (!mergedEmployeesIds.contains(id)) {
-//                                                mergedEmployeesIds.add(id);
-//                                            }
-//                                        }
-//
-//                                        Log.d("debug", "got unchanged employees Ids size = " + unchangedEmployeesIds.size());
-//                                        Log.d("debug", "merged employees Ids size = " + mergedEmployeesIds.size());
-//                                        addNewSalariesAndDeleteOldSalaries(unchangedEmployeesIds, mergedEmployeesIds);
-//                                    }
-//                                }
-//                            });
-//                        }
-//                    }
-//                });
-//            }
-//        });
-//    }
-
-//    private void addNewSalariesAndDeleteOldSalaries(final ArrayList<String> unchangedEmployeesIds, ArrayList<String> mergedEmployeesIds) {
-//        Log.d("debug", "selected employees size = " + selectedEmployeesIds.size());
-//        ArrayList<String> toBeRemovedEmployeesIds = new ArrayList<>();
-//        ArrayList<String> toBeAddedEmployeesIds = new ArrayList<>();
-//        for (String id : mergedEmployeesIds) {
-//            if (!selectedEmployeesIds.contains(id)) {
-//                toBeRemovedEmployeesIds.add(id);
-//            } else if (!unchangedEmployeesIds.contains(id)) {
-//                toBeAddedEmployeesIds.add(id);
-//            }
-//        }
-
-//        final ArrayList<String> tempToBeAddedEmployeesIds = new ArrayList<>();
-//        tempToBeAddedEmployeesIds.addAll(toBeAddedEmployeesIds);
-//        final ArrayList<String> tempToBeRemovedEmployeesIds = new ArrayList<>();
-//        tempToBeRemovedEmployeesIds.addAll(toBeRemovedEmployeesIds);
-//
-//        if (tempToBeAddedEmployeesIds.size() > 0) {
-//            for (final String addId : tempToBeAddedEmployeesIds) {
-//                //Add new salaries - contained in selected but not in unchanged
-//                SalaryRepository.getInstance(null).addSalaryToDatabase(
-//                        new Salary("", eventId, addId, 0, false),
-//                        new SalaryRepository.MyAddSalaryCallback() {
-//                            @Override
-//                            public void onCallback(String salaryId) {
-//                                Log.d("debug", "add new salaries");
-////                                if (tempI == selectedEmployeesIds.size() - 1) {
-////                                    deleteOldSalaries(unchangedEmployeesIds);
-////                                }
-//                                if (tempToBeAddedEmployeesIds.indexOf(addId) == (tempToBeAddedEmployeesIds.size() - 1)) {
-//                                    deleteOldSalaries(tempToBeRemovedEmployeesIds);
-//                                }
-//                            }
-//                        });
-//            }
-//        } else {
-//            deleteOldSalaries(tempToBeRemovedEmployeesIds);
-//        }
-//    }
-//
-//    private void deleteOldSalaries(final ArrayList<String> toBeRemovedEmployeesIds) {
-//        if (toBeRemovedEmployeesIds.size() > 0) {
-//            for (final String removeId : toBeRemovedEmployeesIds) {
-//                SalaryRepository.getInstance(null).deleteSalaryByEventIdAndEmployeeId(eventId,
-//                        removeId, new SalaryRepository.MyDeleteSalaryByEventIdAndEmployeeIdCallback() {
-//                            @Override
-//                            public void onCallback(boolean deleteSucceed) {
-//                                Log.d("debug", "delete old salaries");
-//                                if (toBeRemovedEmployeesIds.indexOf(removeId) == (toBeRemovedEmployeesIds.size() - 1)) {
-//                                    Intent intent = new Intent();
-//                                    intent.putExtra("edit event", true);
-//                                    intent.putExtra("edit event succeed", true);
-//                                    setResult(RESULT_OK, intent);
-//                                    Log.d("debug", "EditEventActivity: update event complete");
-//                                    ((Activity) context).finish();
-//                                }
-//                            }
-//                        });
-//            }
-//        } else {
-//            Intent intent = new Intent();
-//            intent.putExtra("edit event", true);
-//            intent.putExtra("edit event succeed", true);
-//            setResult(RESULT_OK, intent);
-//            Log.d("debug", "EditEventActivity: update event complete");
-//            ((Activity) context).finish();
-//        }
-//    }
 
     private void openAddEmployeeDialog() {
         final Dialog addEmployeeDialog = new Dialog(this);
@@ -523,58 +451,7 @@ public class EditEventActivity extends AppCompatActivity {
         }
     }
 
-    private void openEditScheduleDialog() {
-        final Dialog addScheduleDialog = new Dialog(this);
-        addScheduleDialog.setContentView(R.layout.dialog_add_schedule);
-
-        WindowManager.LayoutParams lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(addScheduleDialog.getWindow().getAttributes());
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT; // this is where the magic happens
-        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        //Connect views
-        final ListView addScheduleListView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_list_view);
-        Button okButton = addScheduleDialog.findViewById(R.id.ok_button);
-        Button addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
-
-        addScheduleListView.setAdapter(addScheduleAdapter);
-
-        //Add events
-        addScheduleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                schedules.clear();
-                for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
-                    EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
-                    EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
-                    String time = timeEditText.getText().toString();
-                    String content = contentEditText.getText().toString().trim();
-                    if (!time.isEmpty() || !content.isEmpty()) {
-                        schedules.add(new Schedule("", "", time, content));
-                    }
-                }
-                schedules.add(new Schedule());
-                addScheduleAdapter.notifyDataSetChanged();
-            }
-        });
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                schedules.clear();
-                for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
-                    EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
-                    EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
-                    String time = timeEditText.getText().toString();
-                    String content = contentEditText.getText().toString();
-                    if (!time.isEmpty() || !content.isEmpty()) {
-                        schedules.add(new Schedule("", "", time, content));
-                    }
-                }
-                addScheduleDialog.dismiss();
-            }
-        });
-
+    private void showEditScheduleDialog() {
         if (!isFinishing()) {
             addScheduleDialog.show();
             addScheduleDialog.getWindow().setAttributes(lWindowParams);
@@ -585,5 +462,36 @@ public class EditEventActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onDeleteButtonClicked(int position) {
+        getAllSchedulesFromListView(false);
+        schedules.remove(position);
+        addScheduleAdapter.notifyDataSetChanged();
+        titleTextView.requestFocus();
+    }
+
+    @Override
+    public void onTimeEditTextSet(int position, String timeText) {
+        getAllSchedulesFromListView(false);
+        schedules.get(position).setTime(timeText);
+        addScheduleAdapter.notifyDataSetChanged();
+        titleTextView.requestFocus();
+    }
+
+    private void getAllSchedulesFromListView(boolean removeEmptySchedules) {
+        schedules.clear();
+        for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
+            EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
+            EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
+            String time = timeEditText.getText().toString();
+            String content = contentEditText.getText().toString();
+            if (removeEmptySchedules && time.isEmpty() && content.isEmpty()) {
+                continue;
+            } else {
+                schedules.add(new Schedule("", "", time, content));
+            }
+        }
     }
 }

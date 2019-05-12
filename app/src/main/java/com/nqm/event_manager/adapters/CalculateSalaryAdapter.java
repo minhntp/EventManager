@@ -17,6 +17,8 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class CalculateSalaryAdapter extends BaseAdapter {
     private final Activity context;
@@ -26,6 +28,35 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     public CalculateSalaryAdapter(Activity context, ArrayList<String> resultSalariesIds) {
         this.context = context;
         this.resultSalariesIds = resultSalariesIds;
+        sortResultSalariesIds();
+    }
+
+    private void sortResultSalariesIds() {
+        Collections.sort(resultSalariesIds, new Comparator<String>() {
+            @Override
+            public int compare(String salaryId1, String salaryId2) {
+                int compareResult = 0;
+
+                Salary salary1 = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId1);
+                Salary salary2 = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId2);
+
+                Event e1 = EventRepository.getInstance(null).getAllEvents().get(salary1.getEventId());
+                Event e2 = EventRepository.getInstance(null).getAllEvents().get(salary2.getEventId());
+
+                try {
+                    if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
+                        compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
+                                CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
+                    } else {
+                        compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
+                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
     }
 
     public int getSum() {
@@ -105,6 +136,7 @@ public class CalculateSalaryAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(ArrayList<String> resultSalariesIds) {
         this.resultSalariesIds = resultSalariesIds;
+        sortResultSalariesIds();
         super.notifyDataSetChanged();
     }
 }

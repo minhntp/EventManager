@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class CalculateSalaryFragment extends Fragment {
     CustomListView resultListView;
     EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
     Spinner selectEmployeeSpinner;
-    TextView numberOfEventsTextView;
+    TextView numberOfEventsTextView, sumTextView;
 
     DatePickerDialog.OnDateSetListener dateSetListener;
     Calendar calendar = Calendar.getInstance();
@@ -111,6 +112,7 @@ public class CalculateSalaryFragment extends Fragment {
         endDateEditText = view.findViewById(R.id.calculate_salaries_end_date_edit_text);
 
         numberOfEventsTextView = view.findViewById(R.id.calculate_salaries_number_of_events_text_view);
+        sumTextView = view.findViewById(R.id.calculate_salary_sum_text_view);
     }
 
     private void addEvents() {
@@ -124,8 +126,16 @@ public class CalculateSalaryFragment extends Fragment {
 //                Update TextEdits & TextViews;
                 if (currentView == startDateEditText) {
                     startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                    startDateEditText.setError(null);
+                    if(endDateEditText.getText().toString().isEmpty()) {
+                        endDateEditText.setText(startDateEditText.getText().toString());
+                    }
                 } else {
                     endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                    endDateEditText.setError(null);
+                    if(startDateEditText.getText().toString().isEmpty()) {
+                        startDateEditText.setText(endDateEditText.getText().toString());
+                    }
                 }
                 startDate = startDateEditText.getText().toString();
                 endDate = endDateEditText.getText().toString();
@@ -201,7 +211,7 @@ public class CalculateSalaryFragment extends Fragment {
                     startDateEditText.setError(null);
                 }
                 if (endDateEditText.getText().toString().isEmpty()) {
-                    endDateEditText.setError("Xin mời nhập");
+                    endDateEditText.setError("");
                     return;
                 } else {
                     endDateEditText.setError(null);
@@ -237,7 +247,14 @@ public class CalculateSalaryFragment extends Fragment {
                                 saveChanges(false);
                             }
                         })
-                        .setNegativeButton("Không", null).show();
+                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                sumTextView.requestFocus();
+                                Log.d("debug", "no button clicked");
+                                calculateSalaryAdapter.notifyDataSetChanged();
+                            }
+                        }).show();
             }
         });
 
@@ -252,7 +269,15 @@ public class CalculateSalaryFragment extends Fragment {
                                 saveChanges(true);
                             }
                         })
-                        .setNegativeButton("Không", null).show();
+                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Undo changes by reloading data
+                                sumTextView.requestFocus();
+                                Log.d("debug", "no button clicked");
+                                calculateSalaryAdapter.notifyDataSetChanged();
+                            }
+                        }).show();
             }
         });
     }
@@ -382,6 +407,8 @@ public class CalculateSalaryFragment extends Fragment {
         sumEditText.setText("" + sum);
         paidEditText.setText("" + paid);
         unpaidEditText.setText("" + unpaid);
+
+        sumTextView.requestFocus();
 
         SalaryRepository.getInstance(null).updateSalaries(selectedSalariesIds,
                 changedSelectedSalariesAmount, changedSelectedSalariesPaidStatus,

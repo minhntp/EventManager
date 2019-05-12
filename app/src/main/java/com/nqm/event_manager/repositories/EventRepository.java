@@ -253,7 +253,7 @@ public class EventRepository {
         for (String deleteScheduleId : ScheduleRepository.getInstance(null)
                 .getSchedulesIdsByEventId(changedEvent.getId())) {
             DocumentReference deleteScheduleDocRef = DatabaseAccess.getInstance().getDatabase()
-                    .collection(Constants.SALARY_COLLECTION).document(deleteScheduleId);
+                    .collection(Constants.SCHEDULE_COLLECTION).document(deleteScheduleId);
             batch.delete(deleteScheduleDocRef);
         }
 
@@ -273,24 +273,6 @@ public class EventRepository {
                 callback.onCallback(true);
             }
         });
-
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.EVENT_COLLECTION)
-//                .document(changedEvent.getId())
-//                .update(eventData)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        callback.onCallback(true);
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        callback.onCallback(false);
-//                        Log.d("debug", "EventRepository: edit changedEvent failed");
-//                    }
-//                });
     }
 
     public HashMap<String, Event> getEventsByDate(String date) {

@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Schedule;
+import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ViewScheduleAdapter extends BaseAdapter {
 
@@ -20,6 +23,32 @@ public class ViewScheduleAdapter extends BaseAdapter {
     public ViewScheduleAdapter(Activity context, ArrayList<Schedule> schedules) {
         this.context = context;
         this.schedules = schedules;
+        sortSchedule();
+    }
+
+    private void sortSchedule() {
+        Collections.sort(schedules, new Comparator<Schedule>() {
+            @Override
+            public int compare(Schedule schedule1, Schedule schedule2) {
+                if(schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    return 0;
+                }
+                if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
+                    return -1;
+                }
+                if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    return 1;
+                }
+                int compareResult = 0;
+                try {
+                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
+                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
     }
 
     @Override
@@ -43,12 +72,12 @@ public class ViewScheduleAdapter extends BaseAdapter {
             view = LayoutInflater.from(context).inflate(R.layout.layout_view_schedule_list_item, viewGroup, false);
         }
 
-        final TextView scheduleTimeEditText = view.findViewById(R.id.view_schedule_time_text_view);
-        TextView scheduleContentEditText = view.findViewById(R.id.view_schedule_content_text_view);
+        final TextView scheduleTimeTextView = view.findViewById(R.id.view_schedule_time_text_view);
+        TextView scheduleContentTextView = view.findViewById(R.id.view_schedule_content_text_view);
 
         //Fill information
-        scheduleTimeEditText.setText(schedules.get(i).getTime());
-        scheduleContentEditText.setText(schedules.get(i).getContent());
+        scheduleTimeTextView.setText(schedules.get(i).getTime());
+        scheduleContentTextView.setText(schedules.get(i).getContent());
 
         return view;
     }
