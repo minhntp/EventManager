@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,20 +7,20 @@
     <RelativeLayout
         android:id="@+id/calendar_view_top_layout"
         android:layout_width="match_parent"
-            android:textColor="#222222"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
+        android:textColor="#222222">
 
         <ImageView
             android:id="@+id/calendar_view_prev_button"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_marginRight="30dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
             android:layout_toLeftOf="@id/calendar_view_month_year_text_view"
             android:foregroundGravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:src="@drawable/ic_arrow_left" />
 
         <TextView
@@ -39,11 +38,11 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
             android:layout_marginLeft="30dp"
             android:layout_toRightOf="@id/calendar_view_month_year_text_view"
             android:foregroundGravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:src="@drawable/ic_arrow_right" />
     </RelativeLayout>
 
@@ -55,67 +54,32 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T2"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T2" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T3"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T3" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T4"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T4" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T5"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T5" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T6"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T6" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="T7"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="T7" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="CN"
-            android:textColor="#888"
-            android:textSize="14dp"/>
+            style="@style/CustomCalendarViewHeader"
+            android:text="CN" />
 
     </LinearLayout>
 
@@ -123,7 +87,7 @@
         android:id="@+id/calendar_view_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
         android:numColumns="7"
-        android:stretchMode="columnWidth"
-        android:layout_marginBottom="0dp"/>
+        android:stretchMode="columnWidth" />
 </merge>

@@ -12,9 +12,11 @@ import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -81,6 +83,14 @@ public class EmployeeRepository {
                 });
     }
 
+    public ArrayList<String> getAllEmployeesIds() {
+        ArrayList<String> allEmployeesIds = new ArrayList<>();
+        for (Employee e : allEmployees.values()) {
+            allEmployeesIds.add(e.getId());
+        }
+        return allEmployeesIds;
+    }
+
     public ArrayList<String> getEmployeesIdsByEventId(String eventId) {
         ArrayList<String> employeesIds = new ArrayList<>();
         for (Salary s : SalaryRepository.getInstance(null).getSalariesByEventId(eventId).values()) {
@@ -99,6 +109,32 @@ public class EmployeeRepository {
         }
 
         return employeesIds;
+    }
+
+    public ArrayList<String> getEmployeesIdsBySearchString(String searchString) {
+        if (searchString.isEmpty()) {
+            return getAllEmployeesIds();
+        }
+
+        ArrayList<String> employeesIds = new ArrayList<>();
+        for (Employee e : allEmployees.values()) {
+            if (normalizeString(e.getHoTen()).contains(normalizeString(searchString)) ||
+                    normalizeString(e.getChuyenMon()).contains(normalizeString(searchString))) {
+                employeesIds.add(e.getId());
+            }
+        }
+        return employeesIds;
+    }
+
+    public String normalizeString(String s) {
+        try {
+            String tempS = Normalizer.normalize(s, Normalizer.Form.NFD);
+            Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+            return pattern.matcher(tempS).replaceAll("").toLowerCase().replaceAll("đ", "d");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     private interface MyEmployeeCallback {

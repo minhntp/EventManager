@@ -128,7 +128,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     }
 
     private void connectViews(View v) {
-        eventsListView = v.findViewById(R.id.events_listview);
+        eventsListView = v.findViewById(R.id.events_list_view);
 //        calendarView = v.findViewById(R.id.calendar_view);
         calendarView = v.findViewById(R.id.event_fragment_calendar_view);
         dayTitleTextView = v.findViewById(R.id.day_title_text_view);
@@ -180,7 +180,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     @Override
     public void notifyOnLoadComplete() {
         if (isFirstLoad) {
-//            String date = CalendarUtil.sdfDayMonthYear.format(calendarView.getDate());
             Date date = calendarView.getSelectedDate();
             mainViewEventAdapter.notifyDataSetChanged(date);
             calendarView.updateView();

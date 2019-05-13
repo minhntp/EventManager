@@ -44,6 +44,11 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,12 +68,6 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -93,7 +92,7 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initAgendarData(List<CalendarEvent> eventList) {
+    private void initCalendarData(List<CalendarEvent> eventList) {
         for (String e : EventRepository.getInstance(null).getAllEvents().keySet()) {
             try {
                 Event event = EventRepository.getInstance(null).getAllEvents().get(e);
@@ -122,7 +121,7 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         minDate.set(Calendar.DAY_OF_MONTH, 1);
         maxDate.add(Calendar.YEAR, 1);
         List<CalendarEvent> eventList = new ArrayList<>();
-        initAgendarData(eventList);
+        initCalendarData(eventList);
 
         agendaCalendarView.init(eventList, minDate, maxDate, Locale.getDefault(), new CalendarPickerController() {
             @Override

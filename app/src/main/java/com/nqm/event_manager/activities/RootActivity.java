@@ -16,6 +16,7 @@ import com.google.firebase.FirebaseApp;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.CalculateSalaryFragment;
 import com.nqm.event_manager.fragments.EventListFragment;
+import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.ManageUserFragment;
 
@@ -96,15 +97,15 @@ public class RootActivity extends AppCompatActivity
     public void openEventListFragment() {
 
         // Replace root view to default fragment
-        toolbar.setTitle("Sự kiện");
+        toolbar.setTitle(R.string.event_list_fragment_label);
         Fragment newFragment = new EventListFragment();
         ReplaceFragment(newFragment);
     }
 
-    private void openManageUserFragment() {
+    private void openManageEmployeeFragment() {
         // Replace root view to default fragment
-        toolbar.setTitle(R.string.manage_user_fragment_label);
-        Fragment newFragment = new ManageUserFragment();
+        toolbar.setTitle(R.string.manage_employee_fragment_label);
+        Fragment newFragment = new ManageEmployeeFragment();
         ReplaceFragment(newFragment);
     }
 
@@ -125,7 +126,7 @@ public class RootActivity extends AppCompatActivity
         if (id == R.id.nav_event) {
             openManageEventFragment();
         } else if (id == R.id.nav_employee) {
-            openManageUserFragment();
+            openManageEmployeeFragment();
         } else if (id == R.id.nav_calculate_salaries) {
             openCalculateSalaryFragment();
         } else if (id == R.id.nav_about) {

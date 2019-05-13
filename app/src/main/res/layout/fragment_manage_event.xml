@@ -20,7 +20,9 @@
             <com.nqm.event_manager.custom_views.CustomCalendarView
                 android:id="@+id/event_fragment_calendar_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
 
         </LinearLayout>
 
@@ -38,7 +40,7 @@
                 android:textStyle="bold" />
 
             <com.nqm.event_manager.custom_views.CustomListView
-                android:id="@+id/events_listview"
+                android:id="@+id/events_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
