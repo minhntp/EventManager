@@ -74,7 +74,7 @@
             android:id="@+id/view_employee_calculate_salary_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_money"
+            android:src="@drawable/ic_money_2"
             style="@style/ManageEmployeeButtonStyle"
             android:layout_marginRight="5dp"/>
     </LinearLayout>

@@ -94,6 +94,11 @@ public class CalculateSalaryFragment extends Fragment {
         calculateSalaryAdapter = new CalculateSalaryAdapter(getActivity(), selectedSalariesIds);
         resultListView.setAdapter(calculateSalaryAdapter);
 
+        startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
+        endDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
+        startDateEditText.setText(startDate);
+        endDateEditText.setText(endDate);
+
     }
 
     private void connectViews(View view) {
@@ -127,15 +132,9 @@ public class CalculateSalaryFragment extends Fragment {
                 if (currentView == startDateEditText) {
                     startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     startDateEditText.setError(null);
-                    if(endDateEditText.getText().toString().isEmpty()) {
-                        endDateEditText.setText(startDateEditText.getText().toString());
-                    }
                 } else {
                     endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     endDateEditText.setError(null);
-                    if(startDateEditText.getText().toString().isEmpty()) {
-                        startDateEditText.setText(endDateEditText.getText().toString());
-                    }
                 }
                 startDate = startDateEditText.getText().toString();
                 endDate = endDateEditText.getText().toString();
@@ -354,6 +353,14 @@ public class CalculateSalaryFragment extends Fragment {
         sumEditText.setText("" + sum);
         paidEditText.setText("" + paid);
         unpaidEditText.setText("" + unpaid);
+
+        if (unpaid == 0) {
+            saveButton.setEnabled(false);
+            payAllButton.setEnabled(false);
+        } else {
+            saveButton.setEnabled(true);
+            payAllButton.setEnabled(true);
+        }
     }
 
     private void saveChanges(boolean payAll) {

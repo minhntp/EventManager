@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.activities.CalculateSalaryForSingleEmployeeActivity;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
@@ -121,7 +122,9 @@ public class ViewEmployeeAdapter extends BaseAdapter {
     }
 
     private void calculateSalary(String employeeId) {
-
+        Intent intent = new Intent(context, CalculateSalaryForSingleEmployeeActivity.class);
+        intent.putExtra("employeeId", employeeId);
+        context.startActivity(intent);
     }
 
     public void notifyDataSetChanged(ArrayList<String> employeesIds) {

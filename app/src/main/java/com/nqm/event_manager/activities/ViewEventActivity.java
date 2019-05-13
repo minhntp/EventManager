@@ -102,7 +102,7 @@ public class ViewEventActivity extends AppCompatActivity {
 //                            Intent intent = new Intent();
 //                            intent.putExtra("deleted?",false);
 //                            setResult(RESULT_OK);
-                            finish();
+//                            finish();
                         }
                     })
                     .show();

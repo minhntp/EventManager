@@ -203,6 +203,29 @@ public class SalaryRepository {
         return salariesIds;
     }
 
+    public ArrayList<String> getSalariesIdsByStartDateAndEndDateAndEmployeeId(String startDate,
+                                                                              String endDate,
+                                                                              String employeeId) {
+        ArrayList<String> salariesIds = new ArrayList<>();
+        for (Salary s : allSalaries.values()) {
+            if(s.getEmployeeId().equals(employeeId)) {
+                try {
+                    Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
+                    Date currentStart = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getEventByEventId(s.getEventId()).getNgayBatDau());
+                    Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
+                    Date currentEnd = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getEventByEventId(s.getEventId()).getNgayKetThuc());
+                    if ((start.compareTo(currentStart) <= 0 && currentStart.compareTo(end) <= 0) ||
+                            start.compareTo(currentEnd) <= 0 && currentEnd.compareTo(end) <= 0) {
+                        salariesIds.add(s.getSalaryId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return salariesIds;
+    }
+
     private interface MySalaryCallback {
         void onCallback(HashMap<String, Salary> salaryList);
     }
