@@ -111,7 +111,7 @@ public class ViewEventActivity extends AppCompatActivity {
 
         //Chỉnh sửa lương
         if (id == R.id.view_event_action_edit_salaries) {
-            Intent intent = new Intent(this, EditSalaryFromEditEventActivity.class);
+            Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
             intent.putExtra("eventId", eventId);
             startActivityForResult(intent, RESULT_FROM_EDIT_SALARY_INTENT);
             return true;

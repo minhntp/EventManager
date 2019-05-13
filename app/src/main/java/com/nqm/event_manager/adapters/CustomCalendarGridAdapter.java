@@ -93,7 +93,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                 numberOfEventsTextView.setText("");
             }
             dayTextView.setTextColor(Color.BLACK);
-            numberOfEventsTextView.setTextColor(Color.BLACK);
+            numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
             cellLayout.setBackground(null);
 
             calendar.setTime(viewDate);
@@ -104,7 +104,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             if (currentDateText.equals(thisDateText)) {
                 dayTextView.setTextColor(context.getColor(R.color.colorAccent));
 //                dayTextView.setTextColor(Color.BLUE);
-                numberOfEventsTextView.setTextColor(context.getColor(R.color.colorAccent));
+                numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
             }
             //selected Date
             if (selectedDateText.equals(thisDateText)) {

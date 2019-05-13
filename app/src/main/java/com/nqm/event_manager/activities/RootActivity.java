@@ -18,7 +18,6 @@ import com.nqm.event_manager.fragments.CalculateSalaryFragment;
 import com.nqm.event_manager.fragments.EventListFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
-import com.nqm.event_manager.fragments.ManageUserFragment;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,7 +61,7 @@ public class RootActivity extends AppCompatActivity
 //        } else {
 //            super.onBackPressed();
 //        }
-        if(drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

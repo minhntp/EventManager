@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -51,6 +52,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
     String startDate, endDate;
     String selectedEmployeeId = "";
 
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +86,12 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
     }
 
     private void init() {
+        toolbar = findViewById(R.id.calculate_salary_single_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.calculate_salary_single_employee_label);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         selectedEmployeeId = getIntent().getStringExtra("employeeId");
         nameTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(selectedEmployeeId).getHoTen());
         specialityTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(selectedEmployeeId).getChuyenMon());
@@ -371,6 +380,12 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
                         // Completed updating salaries
                     }
                 });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 
 }

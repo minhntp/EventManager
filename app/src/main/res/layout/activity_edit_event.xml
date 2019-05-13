@@ -11,7 +11,8 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@color/textPrimaryColor"/>
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -167,10 +168,12 @@
                     android:layout_height="wrap_content"></com.nqm.event_manager.custom_views.CustomListView>
 
                 <Button
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:id="@+id/event_edit_add_employee_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thêm nhân sự" />
+                    android:text="Thêm nhân sự"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -189,13 +192,14 @@
             </LinearLayout>
 
             <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/edit_event_schedule_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
-                android:textAllCaps="false"
+                android:textStyle="bold"
                 android:textSize="20dp" />
         </LinearLayout>
     </ScrollView>

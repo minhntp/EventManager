@@ -33,11 +33,13 @@
             android:focusable="false" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/calculate_salaries_calculate_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Tính" />
+            android:text="Tính"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/calculate_salaries_number_of_events_text_view"
@@ -151,20 +153,24 @@
             android:weightSum="2">
 
             <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/calculate_salaries_save_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="Lưu thay đổi" />
+                android:text="Lưu thay đổi"
+                android:textStyle="bold" />
 
             <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/calculate_salaries_pay_all_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:text="Thanh toán tất cả" />
+                android:text="Thanh toán tất cả"
+                android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

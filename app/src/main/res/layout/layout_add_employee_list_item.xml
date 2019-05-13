@@ -41,7 +41,8 @@
     <ImageButton
         android:id="@+id/delete_employee_list_item_delete_button"
         android:layout_width="30dp"
-        android:layout_height="match_parent"
+        android:layout_height="60dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/ic_delete" />
+        android:src="@drawable/ic_delete"
+        style="@style/ManageEmployeeButtonStyle"/>
 </RelativeLayout>

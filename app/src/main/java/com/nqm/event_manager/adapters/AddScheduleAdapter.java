@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
@@ -29,7 +30,7 @@ public class AddScheduleAdapter extends BaseAdapter {
 
     EditText scheduleTimeEditText;
     EditText scheduleContentEditText;
-    Button scheduleDeleteButton;
+    ImageButton scheduleDeleteButton;
 
     IOnCustomViewClicked listener;
 

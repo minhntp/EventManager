@@ -34,17 +34,21 @@
         android:weightSum="2">
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/cancel_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hủy" />
+            android:text="Hủy"
+            android:textStyle="bold" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/ok_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="OK" />
+            android:text="OK"
+            android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

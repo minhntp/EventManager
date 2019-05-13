@@ -28,7 +28,7 @@
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.EditSalaryFromEditEventActivity"
+            android:name=".activities.EditSalaryFromViewEventActivity"
             android:label="@string/edit_salary_activity_label"
             android:noHistory="true"
             android:windowSoftInputMode="adjustResize" />

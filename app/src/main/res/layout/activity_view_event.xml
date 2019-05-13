@@ -11,7 +11,8 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:titleTextColor="@color/textPrimaryColor"/>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -117,21 +118,25 @@
                     android:layout_height="wrap_content"/>
 
                 <Button
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:id="@+id/view_event_add_reminder_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thêm nhắc nhở" />
+                    android:text="Thêm nhắc nhở"
+                    android:textStyle="bold"/>
             </LinearLayout>
 
             <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/view_event_schedule_button"
-                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
-                android:textAllCaps="false"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:textStyle="bold"/>
         </LinearLayout>
 
     </ScrollView>

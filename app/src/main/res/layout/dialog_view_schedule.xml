@@ -35,10 +35,12 @@
         android:weightSum="1">
 
         <Button
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/back_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Trở về" />
+            android:text="Trở về"
+            android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

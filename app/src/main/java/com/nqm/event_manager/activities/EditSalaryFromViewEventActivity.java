@@ -23,7 +23,7 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class EditSalaryFromEditEventActivity extends AppCompatActivity {
+public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     TextView titleEditText, timeEditText, locationEditText, noteEditText;
