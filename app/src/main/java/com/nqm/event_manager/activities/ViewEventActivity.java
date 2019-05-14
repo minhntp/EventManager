@@ -30,6 +30,7 @@ import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
+import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,30 +140,33 @@ public class ViewEventActivity extends AppCompatActivity {
 
     private void fillInformation() {
         titleEditText.setText(selectedEvent.getTen());
-        timeEditText.setText(selectedEvent.getGioBatDau() + " - " + selectedEvent.getNgayBatDau() + "\n"
-                + selectedEvent.getGioKetThuc() + " - " + selectedEvent.getNgayKetThuc());
+        String time = CalendarUtil.dayOfWeekInVietnamese(selectedEvent.getNgayBatDau()) + " - " +
+                selectedEvent.getNgayBatDau() + " - " + selectedEvent.getGioBatDau();
+        time += "\n" + CalendarUtil.dayOfWeekInVietnamese(selectedEvent.getNgayKetThuc()) + " - " +
+                selectedEvent.getNgayKetThuc() + " - " + selectedEvent.getGioKetThuc();
+        timeEditText.setText(time);
         locationEditText.setText(selectedEvent.getDiaDiem());
         noteEditText.setText(selectedEvent.getGhiChu());
 
     }
 
     private void connectViews() {
-        toolbar = (Toolbar) findViewById(R.id.view_event_toolbar);
+        toolbar = findViewById(R.id.view_event_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Chi tiết sự kiện");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        addReminderButton = (Button) findViewById(R.id.view_event_add_reminder_button);
+        addReminderButton = findViewById(R.id.view_event_add_reminder_button);
         viewScheduleButton = findViewById(R.id.view_event_schedule_button);
 
-        titleEditText = (TextView) findViewById(R.id.view_event_title_text_view);
-        timeEditText = (TextView) findViewById(R.id.view_event_time_text_view);
-        locationEditText = (TextView) findViewById(R.id.view_event_location_text_view);
-        noteEditText = (TextView) findViewById(R.id.view_event_note_text_view);
+        titleEditText = findViewById(R.id.view_event_title_text_view);
+        timeEditText = findViewById(R.id.view_event_time_text_view);
+        locationEditText = findViewById(R.id.view_event_location_text_view);
+        noteEditText = findViewById(R.id.view_event_note_text_view);
 
-        employeeListView = (CustomListView) findViewById(R.id.view_event_employees_listview);
-        reminderListView = (CustomListView) findViewById(R.id.view_event_reminder_listview);
+        employeeListView = findViewById(R.id.view_event_employees_listview);
+        reminderListView = findViewById(R.id.view_event_reminder_listview);
     }
 
     private void addEvents() {

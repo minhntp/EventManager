@@ -182,10 +182,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
         endTimeEditText.setText(event.getGioKetThuc());
 
         try {
-            startDowTextView.setText(CalendarUtil.sdfDayOfWeek
-                    .format(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString())));
-            endDowTextView.setText(CalendarUtil.sdfDayOfWeek
-                    .format(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString())));
+            startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
+            endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -221,10 +219,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
 //                Update TextEdits & TextViews;
                 if (currentView == startDateEditText) {
                     startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    startDowTextView.setText(CalendarUtil.sdfDayOfWeek.format(calendar.getTime()));
+                    startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
                 } else {
                     endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    endDowTextView.setText(CalendarUtil.sdfDayOfWeek.format(calendar.getTime()));
+                    endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
                 }
 
 //                Set (end time = start time) if (end date == start date) and (end time < start time)
@@ -260,7 +258,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                         calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
                         calendar.add(Calendar.DATE, 1);
                         endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                        endDowTextView.setText(CalendarUtil.sdfDayOfWeek.format(calendar.getTime()));
+                        endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
