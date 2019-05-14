@@ -116,8 +116,8 @@ public class AddScheduleAdapter extends BaseAdapter {
                         e.printStackTrace();
                     }
                 }
-                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-                int mm = calendar.get(Calendar.MINUTE);
+//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
+//                int mm = calendar.get(Calendar.MINUTE);
                 new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
@@ -125,7 +125,7 @@ public class AddScheduleAdapter extends BaseAdapter {
                         calendar.set(Calendar.MINUTE, minute);
                         listener.onTimeEditTextSet(position, CalendarUtil.sdfTime.format(calendar.getTime()));
                     }
-                }, HH, mm, false).show();
+                }, 18, 0, false).show();
             }
         });
 

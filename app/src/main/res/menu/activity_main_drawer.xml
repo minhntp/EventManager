@@ -16,10 +16,6 @@
             android:id="@+id/nav_calculate_salaries"
             android:icon="@drawable/ic_money"
             android:title="Tính lương" />
-        <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Công cụ khác" />
     </group>
 
     <item android:title="Thông tin">
@@ -28,10 +24,6 @@
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_menu_share"
                 android:title="About" />
-            <item
-                android:id="@+id/nav_changelog"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Changelog" />
         </menu>
     </item>
 

@@ -173,6 +173,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
+                    android:textSize="18dp"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -200,7 +201,7 @@
                 android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
                 android:textStyle="bold"
-                android:textSize="20dp" />
+                android:textSize="18dp" />
         </LinearLayout>
     </ScrollView>
 

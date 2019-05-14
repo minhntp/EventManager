@@ -1,5 +1,6 @@
 package com.nqm.event_manager.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewEventActivity extends AppCompatActivity {
+    Activity context;
+
     Button addReminderButton, viewScheduleButton;
     TextView titleEditText, timeEditText, locationEditText, noteEditText;
     CustomListView employeeListView, reminderListView;
@@ -55,6 +58,8 @@ public class ViewEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
         connectViews();
+
+        context = this;
 
         eventId = getIntent().getStringExtra("eventId");
         selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
@@ -208,6 +213,7 @@ public class ViewEventActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == RESULT_FROM_EDIT_EVENT_INTENT && resultCode == RESULT_OK) {
             if (data.getBooleanExtra("edit event", false)) {
                 if (data.getBooleanExtra("edit event succeed", false)) {
@@ -236,7 +242,9 @@ public class ViewEventActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        context.finish();
         return super.onSupportNavigateUp();
     }
 }

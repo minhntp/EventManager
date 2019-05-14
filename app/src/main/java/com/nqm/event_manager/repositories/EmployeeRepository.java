@@ -1,7 +1,10 @@
 package com.nqm.event_manager.repositories;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -83,6 +86,25 @@ public class EmployeeRepository {
                 });
     }
 
+    public void deleteEmployeeByEmployeeId(String employeeId, final MyDeleteEmployeeCallback callback) {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EMPLOYEE_COLLECTION)
+                .document(employeeId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        callback.onCallback(true);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onCallback(false);
+                    }
+                });
+    }
+
     public ArrayList<String> getAllEmployeesIds() {
         ArrayList<String> allEmployeesIds = new ArrayList<>();
         for (Employee e : allEmployees.values()) {
@@ -139,5 +161,9 @@ public class EmployeeRepository {
 
     private interface MyEmployeeCallback {
         void onCallback(HashMap<String, Employee> employeeList);
+    }
+
+    public interface MyDeleteEmployeeCallback {
+        void onCallback(boolean deleteSucceed);
     }
 }

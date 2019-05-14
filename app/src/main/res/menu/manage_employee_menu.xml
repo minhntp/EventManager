@@ -6,4 +6,8 @@
         android:icon="@drawable/ic_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always"/>
+    <item android:id="@+id/manage_employee_add_action"
+        android:title="Thêm"
+        android:icon="@drawable/ic_add_black"
+        app:showAsAction="always"/>
 </menu>

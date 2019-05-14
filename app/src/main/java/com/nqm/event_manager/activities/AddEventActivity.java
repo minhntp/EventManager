@@ -373,10 +373,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
                     }
                 }
                 currentView = startTimeEditText;
-                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, HH,
-                        mm, false).show();
+//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
+//                int mm = calendar.get(Calendar.MINUTE);
+                new TimePickerDialog(AddEventActivity.this, timeSetListener, 18,
+                        0, false).show();
             }
         });
         endTimeEditText.setOnClickListener(new View.OnClickListener() {
@@ -391,10 +391,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
                     }
                 }
                 currentView = endTimeEditText;
-                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, HH,
-                        mm, false).show();
+//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
+//                int mm = calendar.get(Calendar.MINUTE);
+                new TimePickerDialog(AddEventActivity.this, timeSetListener, 18,
+                        0, false).show();
             }
         });
         scheduleButton.setOnClickListener(new View.OnClickListener() {
@@ -475,6 +475,11 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         schedules.get(position).setTime(timeText);
         addScheduleAdapter.notifyDataSetChanged();
         titleTextView.requestFocus();
+    }
+
+    @Override
+    public void onEmployeeListItemClicked(String employeeId) {
+
     }
 
     private void getAllSchedulesFromListView(boolean removeEmptySchedules) {

@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Hủy"
+            android:textSize="18dp"
             android:textStyle="bold" />
 
         <Button
@@ -49,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="OK"
+            android:textSize="18dp"
             android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

@@ -75,7 +75,7 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         int id = item.getItemId();
 
         //Mở cửa sổ thêm sự kiện
-        if (id == R.id.action_add_e) {
+        if (id == R.id.action_add_event) {
             Intent intent = new Intent(getActivity(), AddEventActivity.class);
             startActivity(intent);
             //  startActivityForResult(intent, RESULT_FROM_ADD_EVENT_INTENT);

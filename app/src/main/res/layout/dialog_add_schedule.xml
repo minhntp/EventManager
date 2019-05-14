@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:textSize="17dp"
+        android:textSize="18dp"
         android:text="Thêm"
         android:textStyle="bold"/>
 
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Lưu"
-            android:textSize="17dp"
+            android:textSize="18dp"
             android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

@@ -123,7 +123,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhắc nhở"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textSize="18dp"/>
             </LinearLayout>
 
             <Button
@@ -135,7 +136,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
-                android:textSize="20dp"
+                android:textSize="18dp"
                 android:textStyle="bold"/>
         </LinearLayout>
 

@@ -95,6 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Tính"
+                android:textSize="17dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -194,11 +195,12 @@
                 <Button
                     android:id="@+id/calculate_salary_single_save_button"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
+                    android:layout_width="163dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:text="Lưu thay đổi"
+                    android:textSize="17dp"
                     android:textStyle="bold" />
 
                 <Button
@@ -208,6 +210,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:textSize="17dp"
                     android:text="Thanh toán tất cả"
                     android:textStyle="bold" />
             </LinearLayout>

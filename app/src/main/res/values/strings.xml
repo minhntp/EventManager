@@ -8,6 +8,9 @@
     <string name="calculate_salary_fragment_label">Tính lương</string>
     <string name="event_list_fragment_label">Danh sách sự kiện</string>
     <string name="calculate_salary_single_employee_label">Tính lương cho nhân viên</string>
+    <string name="view_employee_single_label">Chi tiết nhân viên</string>
+    <string name="add_employee_single_label">Thêm nhân viên</string>
+    <string name="edit_employee_single_label">Sửa thông tin nhân viên</string>
     <string name="greeting">Tính lương</string>
     <string name="user_name">Nguyễn Quang Minh</string>
 

@@ -14,16 +14,18 @@ import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.CalculateSalaryForSingleEmployeeActivity;
+import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 
-public class ViewEmployeeAdapter extends BaseAdapter {
+public class ViewEmployeeListAdapter extends BaseAdapter {
     Activity context;
     ArrayList<String> employeesIds;
+    IOnCustomViewClicked listener;
 
-    public ViewEmployeeAdapter(Activity context, ArrayList<String> employeesIds) {
+    public ViewEmployeeListAdapter(Activity context, ArrayList<String> employeesIds) {
         this.context = context;
         this.employeesIds = employeesIds;
     }
@@ -91,33 +93,69 @@ public class ViewEmployeeAdapter extends BaseAdapter {
             }
         });
 
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onEmployeeListItemClicked(getItem(position).getId());
+            }
+        });
+
+        nameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onEmployeeListItemClicked(getItem(position).getId());
+            }
+        });
+
+        specialityTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onEmployeeListItemClicked(getItem(position).getId());
+            }
+        });
+
         return view;
     }
 
+    public void setListener(IOnCustomViewClicked listener) {
+        this.listener = listener;
+    }
+
     private void makePhoneCall(String phoneNumber) {
-        context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
+        if(!phoneNumber.isEmpty()) {
+            context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
+        } else {
+            Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void sendMessage(String phoneNumber) {
-        context.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("smsto", phoneNumber, null)));
+        if(!phoneNumber.isEmpty()) {
+            context.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("smsto", phoneNumber, null)));
+        } else {
+            Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void sendEmail(String emailAddress) {
-        String[] TO = {emailAddress};
-        String[] CC = {""};
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setData(Uri.parse("mailto:"));
-        emailIntent.setType("text/plain");
+        if(!emailAddress.isEmpty()) {
+            String[] TO = {emailAddress};
+            String[] CC = {""};
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setDataAndType(Uri.parse("mailto"), "text/plain");
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-        emailIntent.putExtra(Intent.EXTRA_CC, CC);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+            emailIntent.putExtra(Intent.EXTRA_CC, CC);
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "");
 
-        try {
-            context.startActivity(Intent.createChooser(emailIntent, "Gửi email..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(context, "Không tìm thấy ứng dụng gửi email", Toast.LENGTH_SHORT).show();
+            try {
+                context.startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email..."));
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(context, "Không tìm thấy ứng dụng gửi Email", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(context, "Không có địa chỉ Email", Toast.LENGTH_SHORT).show();
         }
     }
 

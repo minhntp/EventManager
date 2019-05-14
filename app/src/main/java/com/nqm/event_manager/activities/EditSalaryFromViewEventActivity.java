@@ -2,6 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +36,7 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     String eventId;
     Event event;
 
-    Context context;
+    Activity context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +127,21 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        new android.support.v7.app.AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Trở về mà không lưu")
+                .setMessage("Bạn có chắc chắn không?")
+                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.putExtra("edit salaries", false);
+                        setResult(RESULT_OK, intent);
+                        context.finish();
+                    }
+
+                })
+                .show();
         return super.onSupportNavigateUp();
     }
 }

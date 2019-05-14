@@ -21,6 +21,8 @@
 
     <com.nqm.event_manager.custom_views.CustomListView
         android:id="@+id/view_schedule_dialog_schedule_list_view"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/button_layout"
@@ -41,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Trở về"
+            android:textSize="18dp"
             android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

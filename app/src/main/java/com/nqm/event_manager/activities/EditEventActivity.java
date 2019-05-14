@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -67,7 +67,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
 
     Calendar calendar = Calendar.getInstance();
 
-    Context context;
+    Activity context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
     private void connectViews() {
         toolbar = findViewById(R.id.edit_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Chỉnh sửa sự kiện");
+        getSupportActionBar().setTitle(R.string.edit_event_activity_label);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -334,10 +334,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                     }
                 }
                 currentView = startTimeEditText;
-                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(EditEventActivity.this, timeSetListener, HH,
-                        mm, false).show();
+//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
+//                int mm = calendar.get(Calendar.MINUTE);
+                new TimePickerDialog(EditEventActivity.this, timeSetListener, 18,
+                        0, false).show();
             }
         });
         endTimeEditText.setOnClickListener(new View.OnClickListener() {
@@ -352,10 +352,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                     }
                 }
                 currentView = endTimeEditText;
-                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(EditEventActivity.this, timeSetListener, HH,
-                        mm, false).show();
+//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
+//                int mm = calendar.get(Calendar.MINUTE);
+                new TimePickerDialog(EditEventActivity.this, timeSetListener, 18,
+                        0, false).show();
             }
         });
     }
@@ -459,12 +459,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return super.onSupportNavigateUp();
-    }
-
-    @Override
     public void onDeleteButtonClicked(int position) {
         getAllSchedulesFromListView(false);
         schedules.remove(position);
@@ -480,6 +474,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
         titleTextView.requestFocus();
     }
 
+    @Override
+    public void onEmployeeListItemClicked(String employeeId) {
+
+    }
+
     private void getAllSchedulesFromListView(boolean removeEmptySchedules) {
         schedules.clear();
         for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
@@ -493,5 +492,25 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                 schedules.add(new Schedule("", "", time, content));
             }
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        new android.support.v7.app.AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Trở về mà không lưu")
+                .setMessage("Bạn có chắc chắn không?")
+                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.putExtra("edit event", false);
+                        setResult(RESULT_OK, intent);
+                        context.finish();
+                    }
+
+                })
+                .show();
+        return super.onSupportNavigateUp();
     }
 }

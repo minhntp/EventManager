@@ -36,7 +36,8 @@ import com.nqm.event_manager.utils.Constants;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ManageEventFragment extends Fragment implements IOnDataLoadComplete, IOnCustomCalendarGridItemClicked {
+public class ManageEventFragment extends Fragment implements IOnDataLoadComplete,
+        IOnCustomCalendarGridItemClicked {
 
     private static final int RESULT_FROM_DELETE_EVENT_INTENT = 1;
     private static final int RESULT_FROM_ADD_EVENT_INTENT = 2;
@@ -100,7 +101,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         int id = item.getItemId();
 
         //Mở cửa sổ thêm sự kiện
-        if (id == R.id.action_add_e) {
+        if (id == R.id.action_add_event) {
             Intent intent = new Intent(getActivity(), AddEventActivity.class);
             intent.putExtra("selectedDate", CalendarUtil.sdfDayMonthYear.format(selectedDate));
             startActivityForResult(intent, RESULT_FROM_ADD_EVENT_INTENT);
@@ -186,7 +187,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
             isFirstLoad = false;
         }
     }
-
 
 
     @Override
