@@ -38,10 +38,9 @@ public class AddScheduleAdapter extends BaseAdapter {
         this.context = context;
         this.schedules = schedules;
         this.listener = listener;
-        sortSchedule();
     }
 
-    private void sortSchedule() {
+    public void sort() {
         Collections.sort(schedules, new Comparator<Schedule>() {
             @Override
             public int compare(Schedule schedule1, Schedule schedule2) {
@@ -49,10 +48,10 @@ public class AddScheduleAdapter extends BaseAdapter {
                     return 0;
                 }
                 if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
-                    return -1;
+                    return 1;
                 }
                 if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    return 1;
+                    return -1;
                 }
                 int compareResult = 0;
                 try {
@@ -89,7 +88,6 @@ public class AddScheduleAdapter extends BaseAdapter {
 
         scheduleTimeEditText = view.findViewById(R.id.add_schedule_time_edit_text);
         scheduleContentEditText = view.findViewById(R.id.add_schedule_content_edit_text);
-        scheduleDeleteButton = view.findViewById(R.id.add_schedule_delete_button);
 
         //Fill information
         scheduleTimeEditText.setText(schedules.get(position).getTime());
@@ -100,8 +98,6 @@ public class AddScheduleAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 listener.onDeleteButtonClicked(position);
-//                schedules.remove(position);
-//                notifyDataSetChanged();
             }
         });
 
@@ -138,8 +134,11 @@ public class AddScheduleAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        sortSchedule();
         super.notifyDataSetChanged();
     }
 
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
 }

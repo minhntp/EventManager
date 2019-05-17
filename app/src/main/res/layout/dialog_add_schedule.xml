@@ -20,24 +20,40 @@
         android:textSize="20dp"
         android:textStyle="bold" />
 
-    <Button
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:id="@+id/add_schedule_add_button"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/add_schedule_button_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:textSize="18dp"
-        android:text="Thêm"
-        android:textStyle="bold"/>
+        android:layout_below="@id/add_schedule_dialog_title_text_view">
 
-    <com.nqm.event_manager.custom_views.CustomListView
-        android:id="@+id/add_schedule_dialog_schedule_list_view"
+        <Button
+            android:id="@+id/add_schedule_sort_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="Sắp xếp"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/add_schedule_add_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Thêm"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/add_schedule_dialog_schedule_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/button_layout"
-        android:layout_below="@id/add_schedule_dialog_title_text_view"/>
-    <!--</ScrollView>-->
+        android:layout_below="@id/add_schedule_button_layout" />
+
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
@@ -47,13 +63,13 @@
         android:weightSum="1">
 
         <Button
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/ok_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Lưu"
-            android:textSize="18dp"
-            android:textStyle="bold"/>
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
     </LinearLayout>
 </RelativeLayout>

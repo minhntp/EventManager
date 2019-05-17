@@ -31,14 +31,6 @@ public class DrawableCalendarEvent extends BaseCalendarEvent {
         this.eventID = eventID;
     }
 
-    // endregion
-
-    // region Public methods
-
-    // endregion
-
-    // region Class - BaseCalendarEvent
-
     @Override
     public CalendarEvent copy() {
         return new DrawableCalendarEvent(this);

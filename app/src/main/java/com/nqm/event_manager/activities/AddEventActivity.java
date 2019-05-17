@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +26,9 @@ import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.AddEmployeeFromAddEventAdapter;
-import com.nqm.event_manager.adapters.AddScheduleAdapter;
+import com.nqm.event_manager.adapters.AddScheduleRecyclerAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInAddEventAdapter;
+import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
 import com.nqm.event_manager.models.Event;
@@ -36,6 +39,8 @@ import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AddEventActivity extends AppCompatActivity implements IOnCustomViewClicked {
     Toolbar toolbar;
@@ -57,12 +62,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
     SelectEmployeeInAddEventAdapter selectAdapter;
 
     WindowManager.LayoutParams lWindowParams;
-    AddScheduleAdapter addScheduleAdapter;
-    ListView addScheduleListView;
-    Button okButton;
-    Button addScheduleButton;
+    AddScheduleRecyclerAdapter addScheduleAdapter;
+    RecyclerView addScheduleRecyclerView;
+    Button okButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
     TextView titleTextView;
+    AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
+    ItemTouchHelper touchHelper;
+
 
     Calendar calendar = Calendar.getInstance();
 
@@ -102,7 +109,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
         deleteAdapter = new AddEmployeeFromAddEventAdapter(this, selectedEmployeesIds);
         selectAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds);
-        addScheduleAdapter = new AddScheduleAdapter(this, schedules, this);
 
         deleteEmployeeListView.setAdapter(deleteAdapter);
 
@@ -130,18 +136,31 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         //connect views
-        addScheduleListView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_list_view);
+        addScheduleRecyclerView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_recycler_view);
         okButton = addScheduleDialog.findViewById(R.id.ok_button);
         addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
+        sortScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_sort_button);
         titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
 
-        addScheduleListView.setAdapter(addScheduleAdapter);
+        //init add schedule recycler view
+        addScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        addScheduleAdapter = new AddScheduleRecyclerAdapter();
+        addScheduleSwipeAndDragCallback = new AddScheduleSwipeAndDragCallback(addScheduleAdapter);
+        touchHelper = new ItemTouchHelper(addScheduleSwipeAndDragCallback);
+        addScheduleAdapter.setTouchHelper(touchHelper);
+        addScheduleAdapter.setSchedules(schedules);
+        addScheduleAdapter.setListener(this);
+        addScheduleAdapter.setContext(this);
+        addScheduleRecyclerView.setAdapter(addScheduleAdapter);
+        touchHelper.attachToRecyclerView(addScheduleRecyclerView);
 
+        //add events
         addScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAllSchedulesFromListView(false);
+                getAllSchedulesFromRecyclerView(false);
                 schedules.add(new Schedule());
+                addScheduleAdapter.setSchedules(schedules);
                 addScheduleAdapter.notifyDataSetChanged();
                 titleTextView.requestFocus();
             }
@@ -150,10 +169,23 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAllSchedulesFromListView(true);
+                getAllSchedulesFromRecyclerView(true);
+                addScheduleAdapter.setSchedules(schedules);
                 addScheduleDialog.dismiss();
             }
         });
+
+        sortScheduleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAllSchedulesFromRecyclerView(false);
+                sortSchedules();
+                addScheduleAdapter.setSchedules(schedules);
+                addScheduleAdapter.notifyDataSetChanged();
+                titleTextView.requestFocus();
+            }
+        });
+
     }
 
     private void connectViews() {
@@ -307,18 +339,22 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         startDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int d = 1;
+                int m = 1;
+                int y = 1990;
                 calendar = Calendar.getInstance();
                 if (!startDateEditText.getText().toString().isEmpty()) {
                     try {
                         calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+                        d = calendar.get(Calendar.DAY_OF_MONTH);
+                        m = calendar.get(Calendar.MONTH);
+                        y = calendar.get(Calendar.YEAR);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 currentView = startDateEditText;
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddEventActivity.this, dateSetListener, y,
                         m, d);
                 if (!endDateEditText.getText().toString().isEmpty()) {
@@ -336,18 +372,22 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         endDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int d = 1;
+                int m = 1;
+                int y = 1990;
                 calendar = Calendar.getInstance();
                 if (!endDateEditText.getText().toString().isEmpty()) {
                     try {
                         calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
+                        d = calendar.get(Calendar.DAY_OF_MONTH);
+                        m = calendar.get(Calendar.MONTH);
+                        y = calendar.get(Calendar.YEAR);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 currentView = endDateEditText;
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddEventActivity.this, dateSetListener, y,
                         m, d);
                 if (!startDateEditText.getText().toString().isEmpty()) {
@@ -364,10 +404,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         startTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int hourOfDay = 18;
+                int minute = 0;
                 calendar = Calendar.getInstance();
                 if (!startTimeEditText.getText().toString().isEmpty()) {
                     try {
                         calendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+                        hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                        minute = calendar.get(Calendar.MINUTE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -375,17 +419,21 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
                 currentView = startTimeEditText;
 //                int HH = calendar.get(Calendar.HOUR_OF_DAY);
 //                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, 18,
-                        0, false).show();
+                new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
+                        minute, false).show();
             }
         });
         endTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int hourOfDay = 18;
+                int minute = 0;
                 calendar = Calendar.getInstance();
                 if (!endTimeEditText.getText().toString().isEmpty()) {
                     try {
                         calendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+                        hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                        minute = calendar.get(Calendar.MINUTE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -393,8 +441,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
                 currentView = endTimeEditText;
 //                int HH = calendar.get(Calendar.HOUR_OF_DAY);
 //                int mm = calendar.get(Calendar.MINUTE);
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, 18,
-                        0, false).show();
+                new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
+                        minute, false).show();
             }
         });
         scheduleButton.setOnClickListener(new View.OnClickListener() {
@@ -462,17 +510,13 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
     @Override
     public void onDeleteButtonClicked(int position) {
-        //Save all data from add schedule adapter -> remove item[position] in adapter -> notifyDataSetChanged
-        getAllSchedulesFromListView(false);
-        schedules.remove(position);
-        addScheduleAdapter.notifyDataSetChanged();
-        titleTextView.requestFocus();
     }
 
     @Override
     public void onTimeEditTextSet(int position, String timeText) {
-        getAllSchedulesFromListView(false);
+        getAllSchedulesFromRecyclerView(false);
         schedules.get(position).setTime(timeText);
+        addScheduleAdapter.setSchedules(schedules);
         addScheduleAdapter.notifyDataSetChanged();
         titleTextView.requestFocus();
     }
@@ -482,11 +526,21 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
     }
 
-    private void getAllSchedulesFromListView(boolean removeEmptySchedules) {
+    @Override
+    public void onAddScheduleItemMoved() {
+        schedules = addScheduleAdapter.getSchedules();
+    }
+
+    @Override
+    public void onAddScheduleItemRemoved() {
+        schedules = addScheduleAdapter.getSchedules();
+    }
+
+    private void getAllSchedulesFromRecyclerView(boolean removeEmptySchedules) {
         schedules.clear();
-        for (int i = 0; i < addScheduleListView.getChildCount(); i++) {
-            EditText timeEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
-            EditText contentEditText = addScheduleListView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
+        for (int i = 0; i < addScheduleRecyclerView.getChildCount(); i++) {
+            EditText timeEditText = addScheduleRecyclerView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
+            EditText contentEditText = addScheduleRecyclerView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
             String time = timeEditText.getText().toString();
             String content = contentEditText.getText().toString();
             if (removeEmptySchedules && time.isEmpty() && content.isEmpty()) {
@@ -495,5 +549,38 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
                 schedules.add(new Schedule("", "", time, content));
             }
         }
+    }
+
+    private void sortSchedules() {
+        Collections.sort(schedules, new Comparator<Schedule>() {
+            @Override
+            public int compare(Schedule schedule1, Schedule schedule2) {
+                if (schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    if (schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
+                        return 0;
+                    } else if (schedule1.getContent().isEmpty() && !schedule2.getContent().isEmpty()) {
+                        return 1;
+                    } else if (!schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+                if (schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
+                    return 1;
+                }
+                if (!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+                    return -1;
+                }
+                int compareResult = 0;
+                try {
+                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
+                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
     }
 }

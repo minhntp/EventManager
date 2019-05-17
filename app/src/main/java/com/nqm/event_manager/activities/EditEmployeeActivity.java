@@ -96,17 +96,20 @@ public class EditEmployeeActivity extends AppCompatActivity {
         dateOfBirthEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int d = 1;
+                int m = 1;
+                int y = 1990;
                 calendar = Calendar.getInstance();
                 if (!dateOfBirthEditText.getText().toString().isEmpty()) {
                     try {
                         calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(dateOfBirthEditText.getText().toString()));
+                        d = calendar.get(Calendar.DAY_OF_MONTH);
+                        m = calendar.get(Calendar.MONTH);
+                        y = calendar.get(Calendar.YEAR);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                final int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override

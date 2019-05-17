@@ -23,6 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
@@ -160,7 +162,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Chọn nhân sự"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_button"
                 android:textStyle="bold" />
 
             <TextView
@@ -187,7 +189,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_button"
                 android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>

@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Tính"
-            android:textSize="18dp"
+            android:textSize="@dimen/text_button"
             android:textStyle="bold" />
 
         <TextView
@@ -161,7 +161,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Lưu thay đổi"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_button"
                 android:textStyle="bold" />
 
             <Button
@@ -172,7 +172,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Thanh toán tất cả"
-                android:textSize="18dp"
+                android:textSize="@dimen/text_button"
                 android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>

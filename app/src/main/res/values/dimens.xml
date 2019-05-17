@@ -10,6 +10,7 @@
     <dimen name="activity_title">23dp</dimen>
     <dimen name="title">17dp</dimen>
     <dimen name="content">18dp</dimen>
+    <dimen name="text_button">16dp</dimen>
     <dimen name="note">16dp</dimen>
     <dimen name="time_list_item">16dp</dimen>
     <dimen name="info_list_item">17dp</dimen>

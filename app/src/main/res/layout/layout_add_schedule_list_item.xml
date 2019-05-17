@@ -11,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:orientation="horizontal"
         android:weightSum="10"
-        android:layout_toStartOf="@id/add_schedule_delete_button">
+        android:layout_toStartOf="@id/add_schedule_reorder">
 
         <EditText
             android:id="@+id/add_schedule_time_edit_text"
@@ -30,13 +30,21 @@
             android:hint="Nội dung" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/add_schedule_delete_button"
-        android:layout_centerVertical="true"
+    <!--<ImageButton-->
+        <!--android:id="@+id/add_schedule_delete_button"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_width="30dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_toLeftOf="@id/add_schedule_reorder"-->
+        <!--android:src="@drawable/ic_delete"-->
+        <!--style="@style/ManageEmployeeButtonStyle"/>-->
+
+    <ImageView
+        android:id="@+id/add_schedule_reorder"
         android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_delete"
-        style="@style/ManageEmployeeButtonStyle"/>
+        android:layout_height="30dp"
+        android:src="@drawable/ic_reorder"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

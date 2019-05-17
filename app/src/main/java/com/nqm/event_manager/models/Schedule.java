@@ -20,6 +20,13 @@ public class Schedule {
         this.content = content;
     }
 
+    public Schedule(Schedule s) {
+        this.scheduleId = s.getScheduleId();
+        this.eventId = s.getEventId();
+        this.time = s.getTime();
+        this.content = s.getContent();
+    }
+
     public String getScheduleId() {
         return scheduleId;
     }

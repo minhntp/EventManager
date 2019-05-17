@@ -140,6 +140,16 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     }
 
     @Override
+    public void onAddScheduleItemMoved() {
+
+    }
+
+    @Override
+    public void onAddScheduleItemRemoved() {
+
+    }
+
+    @Override
     public void onResume() {
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(searchString);
