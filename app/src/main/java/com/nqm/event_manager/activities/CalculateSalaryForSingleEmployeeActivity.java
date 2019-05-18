@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,11 +20,13 @@ import android.widget.TextView;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
+import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.SalaryUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,7 +34,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity {
+public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
+implements IOnCalculateSalaryItemClicked {
 
     Context context;
 
@@ -103,6 +107,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
 
         resultSalariesIds = new ArrayList<>();
         calculateSalaryAdapter = new CalculateSalaryAdapter(this, resultSalariesIds);
+        calculateSalaryAdapter.setListener(this);
         resultListView.setAdapter(calculateSalaryAdapter);
 
         context = this;
@@ -268,21 +273,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
             }
         }
 
-        Collections.sort(resultSalaries, new Comparator<Salary>() {
-            @Override
-            public int compare(Salary s1, Salary s2) {
-                Date d1 = Calendar.getInstance().getTime();
-                Date d2 = Calendar.getInstance().getTime();
-                try {
-                    d1 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s1.getEventId()).getNgayBatDau());
-                    d2 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s2.getEventId()).getNgayBatDau());
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return d1.compareTo(d2);
-            }
-        });
+        SalaryUtil.sortSalariesByEventStartDate(resultSalaries);
 
         resultSalariesIds.clear();
         for (Salary s : resultSalaries) {
@@ -292,7 +283,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
     }
 
     public void showResult() {
-        int sum = 0, paid = 0, unpaid = 0;
+        int sum, paid = 0, unpaid = 0;
         for (String salaryId : resultSalariesIds) {
             Salary salary = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId);
             if (salary.isPaid()) {
@@ -372,6 +363,14 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
 
         sumTextView.requestFocus();
 
+        if (unpaid == 0) {
+            saveButton.setEnabled(false);
+            payAllButton.setEnabled(false);
+        } else {
+            saveButton.setEnabled(true);
+            payAllButton.setEnabled(true);
+        }
+
         SalaryRepository.getInstance(null).updateSalaries(resultSalariesIds,
                 changedSelectedSalariesAmount, changedSelectedSalariesPaidStatus,
                 new SalaryRepository.MyUpdateSalariesCallback() {
@@ -383,9 +382,22 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        getResultSalaries();
+        showResult();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
     }
 
+    @Override
+    public void onCalculateSalaryItemClicked(String eventId) {
+        Intent intent = new Intent(this, ViewEventActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
 }

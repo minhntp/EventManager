@@ -58,7 +58,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:text="7:00 PM - 9:00 PM Thứ 3 04/04/2019"
                     android:textSize="@dimen/content" />
 
                 <TextView
@@ -74,7 +73,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:text="1220 Võ Nguyên Giáp"
                     android:textSize="@dimen/content" />
 
                 <TextView

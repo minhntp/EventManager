@@ -32,5 +32,6 @@ public class Constants {
     public static String SCHEDULE_EVENT_ID = "sukienid";
     public static String SCHEDULE_TIME = "gio";
     public static String SCHEDULE_CONTENT = "noidung";
+    public static String SCHEDULE_ORDER = "thutu";
 
 }

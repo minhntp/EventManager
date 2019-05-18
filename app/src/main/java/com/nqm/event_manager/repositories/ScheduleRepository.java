@@ -72,10 +72,15 @@ public class ScheduleRepository {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             if (queryDocumentSnapshots.size() > 0) {
                                 Map<String, Object> data = doc.getData();
+                                int order = 0;
+                                if (data.get(Constants.SCHEDULE_ORDER) != null) {
+                                    order = Integer.parseInt((String) data.get(Constants.SCHEDULE_ORDER));
+                                }
                                 Schedule tempSchedule = new Schedule(doc.getId(),
                                         (String) data.get(Constants.SCHEDULE_EVENT_ID),
                                         (String) data.get(Constants.SCHEDULE_TIME),
-                                        (String) data.get(Constants.SCHEDULE_CONTENT));
+                                        (String) data.get(Constants.SCHEDULE_CONTENT),
+                                        order);
                                 scheduleList.put(tempSchedule.getScheduleId(), tempSchedule);
                             }
                         }
@@ -89,6 +94,7 @@ public class ScheduleRepository {
         data.put(Constants.SCHEDULE_EVENT_ID, schedule.getEventId());
         data.put(Constants.SCHEDULE_TIME, schedule.getTime());
         data.put(Constants.SCHEDULE_CONTENT, schedule.getContent());
+        data.put(Constants.SCHEDULE_ORDER, Integer.toString(schedule.getOrder()));
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SCHEDULE_COLLECTION)
                 .add(data)

@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,9 +14,10 @@ import android.widget.TimePicker;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.custom_views.AddScheduleItemViewHolder;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
-import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
+import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,7 +25,7 @@ import java.util.Calendar;
 public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements AddScheduleSwipeAndDragCallback.ActionCompletionContract {
 
-    IOnCustomViewClicked listener;
+    IOnAddScheduleViewClicked listener;
     ArrayList<Schedule> schedules;
     ItemTouchHelper itemTouchHelper;
     Calendar calendar = Calendar.getInstance();
@@ -35,7 +35,7 @@ public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
         this.context = context;
     }
 
-    public void setListener(IOnCustomViewClicked listener) {
+    public void setListener(IOnAddScheduleViewClicked listener) {
         this.listener = listener;
     }
 
@@ -88,6 +88,7 @@ public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void setSchedules(ArrayList<Schedule> schedules) {
+//        ScheduleUtil.sortSchedulesByOrder(schedules);
         this.schedules = schedules;
         notifyDataSetChanged();
     }

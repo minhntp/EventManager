@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Họ tên:"
-                android:textSize="@dimen/content" />
+                android:textSize="@dimen/title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_name_text_view"
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Chuyên môn:"
-                android:textSize="17dp" />
+                android:textSize="@dimen/title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_speciality_text_view"
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Ngày sinh:"
-                android:textSize="17dp"  />
+                android:textSize="@dimen/title"  />
 
             <TextView
                 android:id="@+id/view_employee_activity_date_of_birth_text_view"
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Số điện thoại:"
-                android:textSize="17dp" />
+                android:textSize="@dimen/title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_phone_number_text_view"
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Email:"
-                android:textSize="17dp" />
+                android:textSize="@dimen/title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_email_text_view"
@@ -182,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="CMND:"
-                android:textSize="17dp" />
+                android:textSize="@dimen/title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_cmnd_text_view"

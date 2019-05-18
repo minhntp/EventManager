@@ -30,20 +30,19 @@ import com.nqm.event_manager.adapters.AddScheduleRecyclerAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInEditEventAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
+import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 
-public class EditEventActivity extends AppCompatActivity implements IOnCustomViewClicked {
+public class EditEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked {
     android.support.v7.widget.Toolbar toolbar;
 
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
@@ -66,7 +65,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
     WindowManager.LayoutParams lWindowParams;
     AddScheduleRecyclerAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
-    Button okButton, addScheduleButton, sortScheduleButton;
+    Button saveSchedulesButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
     TextView titleTextView;
     AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
@@ -134,6 +133,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
 
         selectedEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
         schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+        ScheduleUtil.sortSchedulesByOrder(schedules);
         Log.d("debug", "got " + schedules.size() + " schedules for current event");
 
         deleteEmployeeAdapter = new AddEmployeeFromEditEventAdapter(this, eventId,
@@ -154,7 +154,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
 
         //connect views
         addScheduleRecyclerView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_recycler_view);
-        okButton = addScheduleDialog.findViewById(R.id.ok_button);
+        saveSchedulesButton = addScheduleDialog.findViewById(R.id.ok_button);
         addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
         sortScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_sort_button);
         titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
@@ -182,7 +182,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
             }
         });
 
-        okButton.setOnClickListener(new View.OnClickListener() {
+        saveSchedulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getAllSchedulesFromRecyclerView(true);
@@ -195,7 +195,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
             @Override
             public void onClick(View v) {
                 getAllSchedulesFromRecyclerView(false);
-                sortSchedules();
+                ScheduleUtil.sortSchedulesByStartTime(schedules);
                 addScheduleAdapter.setSchedules(schedules);
                 addScheduleAdapter.notifyDataSetChanged();
                 titleTextView.requestFocus();
@@ -446,7 +446,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                         intent.putExtra("edit event succeed", true);
                         setResult(RESULT_OK, intent);
                         Log.d("debug", "EditEventActivity: update event complete");
-                        ((Activity) context).finish();
+                        context.finish();
                     }
                 });
     }
@@ -501,21 +501,12 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
     }
 
     @Override
-    public void onDeleteButtonClicked(int position) {
-    }
-
-    @Override
     public void onTimeEditTextSet(int position, String timeText) {
         getAllSchedulesFromRecyclerView(false);
         schedules.get(position).setTime(timeText);
         addScheduleAdapter.setSchedules(schedules);
         addScheduleAdapter.notifyDataSetChanged();
         titleTextView.requestFocus();
-    }
-
-    @Override
-    public void onEmployeeListItemClicked(String employeeId) {
-
     }
 
     @Override
@@ -538,7 +529,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
             if (removeEmptySchedules && time.isEmpty() && content.isEmpty()) {
                 continue;
             } else {
-                schedules.add(new Schedule("", "", time, content));
+                schedules.add(new Schedule("", "", time, content, i));
             }
         }
     }
@@ -547,9 +538,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Trở về mà không lưu")
-                .setMessage("Bạn có chắc chắn không?")
-                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                .setTitle("Trở về mà không lưu?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent();
@@ -559,40 +549,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnCustomVie
                     }
 
                 })
+                .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
-    }
-
-    private void sortSchedules() {
-        Collections.sort(schedules, new Comparator<Schedule>() {
-            @Override
-            public int compare(Schedule schedule1, Schedule schedule2) {
-                if (schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    if (schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
-                        return 0;
-                    } else if (schedule1.getContent().isEmpty() && !schedule2.getContent().isEmpty()) {
-                        return 1;
-                    } else if (!schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-                if (schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
-                    return 1;
-                }
-                if (!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    return -1;
-                }
-                int compareResult = 0;
-                try {
-                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
-                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return compareResult;
-            }
-        });
     }
 }

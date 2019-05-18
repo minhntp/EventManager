@@ -13,15 +13,13 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CustomCalendarGridAdapter;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarGridItemClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class CustomCalendarView extends LinearLayout implements IOnCustomCalendarGridItemClicked {
-
-    static int DAYS_COUNT = 42;
+public class CustomCalendarView extends LinearLayout implements IOnCustomCalendarViewClicked {
 
     ImageView prevButton;
     ImageView nextButton;
@@ -31,7 +29,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
     GridView gridView;
     CustomCalendarGridAdapter gridAdapter;
 
-    IOnCustomCalendarGridItemClicked listener;
+    IOnCustomCalendarViewClicked listener;
 
     Context context;
 
@@ -97,7 +95,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
                         gridAdapter.setViewDate(calendar.getTime());
                         gridAdapter.setSelectedDate(calendar.getTime());
                         gridAdapter.notifyDataSetChanged();
-                        listener.onGridItemClickedFromCalendarView(gridAdapter.getSelectedDate());
+                        listener.onCustomCalendarCellClicked(gridAdapter.getSelectedDate());
                         monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(calendar.getTime()));
                     }
                 }, y, m, d);
@@ -114,7 +112,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
         monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(gridAdapter.getViewDate()));
     }
 
-    public void setListener(IOnCustomCalendarGridItemClicked listener) {
+    public void setListener(IOnCustomCalendarViewClicked listener) {
         this.listener = listener;
     }
 
@@ -131,13 +129,8 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
     }
 
     @Override
-    public void onGridItemClickedFromCalendarView(Date selectedDate) {
-
-    }
-
-    @Override
-    public void onGridItemClickedFromCalendarAdapter(Date selectedDate) {
-        listener.onGridItemClickedFromCalendarView(this.gridAdapter.getSelectedDate());
+    public void onCustomCalendarCellClicked(Date selectedDate) {
+        listener.onCustomCalendarCellClicked(this.gridAdapter.getSelectedDate());
     }
 
     public void updateView() {

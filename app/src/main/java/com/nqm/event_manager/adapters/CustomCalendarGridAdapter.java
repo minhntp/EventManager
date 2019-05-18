@@ -1,7 +1,6 @@
 package com.nqm.event_manager.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarGridItemClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
@@ -33,7 +31,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     private ArrayList<CellData> cellDataArrayList;
     private Calendar calendar = Calendar.getInstance();
 
-    IOnCustomCalendarGridItemClicked listener;
+    IOnCustomCalendarViewClicked listener;
 
     // Days in Current Month
     public CustomCalendarGridAdapter(Context context, Date selectedDate, Date viewDate) {
@@ -82,8 +80,6 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         //--else if item.day.toDayMonthYeat == selected date -> set 2 textviews' color = white, background = background
         //else set 2 textviews = "", 2 textviews' color = black, background = null
         CellData cellData = getItem(position);
-        String currentDateText = CalendarUtil.sdfDayMonthYear.format(currentDate);
-        String selectedDateText = CalendarUtil.sdfDayMonthYear.format(selectedDate);
         if (cellData.getDay() > 0) {
             //set text
             dayTextView.setText("" + cellData.getDay());
@@ -92,31 +88,32 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             } else {
                 numberOfEventsTextView.setText("");
             }
-            dayTextView.setTextColor(Color.BLACK);
-            numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
-            cellLayout.setBackground(null);
 
-            calendar.setTime(viewDate);
-            calendar.set(Calendar.DAY_OF_MONTH, cellData.getDay());
-            String thisDateText = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-
-            //current date
-            if (currentDateText.equals(thisDateText)) {
-                dayTextView.setTextColor(context.getColor(R.color.colorAccent));
-//                dayTextView.setTextColor(Color.BLUE);
-                numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
-            }
-            //selected Date
-            if (selectedDateText.equals(thisDateText)) {
-                dayTextView.setTextColor(Color.WHITE);
-                numberOfEventsTextView.setTextColor(Color.WHITE);
-                cellLayout.setBackground(context.getDrawable(R.drawable.custom_calendar_grid_item_background));
+            //set style
+            if (isCurrentDay(cellData.getDay())) {
+                if (isSelectedDay(cellData.getDay())) {
+                    dayTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
+                    numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
+                    cellLayout.setBackground(context.getDrawable(R.drawable.custom_calendar_grid_item_background));
+                } else {
+                    dayTextView.setTextColor(context.getColor(R.color.colorAccent));
+                    numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
+                    cellLayout.setBackground(null);
+                }
+            } else {
+                if (isSelectedDay(cellData.getDay())) {
+                    dayTextView.setTextColor(context.getColor(R.color.textPrimaryColor));
+                    numberOfEventsTextView.setTextColor(context.getColor(R.color.textPrimaryColor));
+                    cellLayout.setBackground(context.getDrawable(R.drawable.custom_calendar_grid_item_background));
+                } else {
+                    dayTextView.setTextColor(context.getColor(R.color.textBlack));
+                    numberOfEventsTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
+                    cellLayout.setBackground(null);
+                }
             }
         } else {
             dayTextView.setText("");
             numberOfEventsTextView.setText("");
-            dayTextView.setTextColor(Color.BLACK);
-            numberOfEventsTextView.setTextColor(Color.BLACK);
             cellLayout.setBackground(null);
         }
 
@@ -129,7 +126,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                     calendar.set(Calendar.DAY_OF_MONTH, getItem(position).getDay());
                     selectedDate = calendar.getTime();
                     notifyDataSetChanged();
-                    listener.onGridItemClickedFromCalendarAdapter(selectedDate);
+                    listener.onCustomCalendarCellClicked(selectedDate);
                 }
             }
         });
@@ -143,8 +140,14 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, 1); //dayOfMonth starts from 1
 
-        //dayOfWeek starts from 1 (sunday) -> dayOfWeek = 2 (monday) - offSet = 0
-        offSet = calendar.get(Calendar.DAY_OF_WEEK) - 2;
+        // dayOfWeek = 1 (sunday) -> offSet = 6 -> offSet = dayOfWeek + 5 (only Sunday)
+        // dayOfWeek = 2 (monday) -> offSet = 0 -> offSet = dayOfWeek - 2 (same for other days)
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        if (dayOfWeek >= 2) {
+            offSet = dayOfWeek - 2;
+        } else {
+            offSet = dayOfWeek + 5;
+        }
         for (int i = 0; i < 37; i++) {
             int day = i - offSet + 1;
             int numberOfEvents = 0;
@@ -159,7 +162,28 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         }
     }
 
-    public void setListener(IOnCustomCalendarGridItemClicked listener) {
+    private boolean isSelectedDay(int day) {
+        calendar.setTime(viewDate);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        if (CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
+                CalendarUtil.sdfDayMonthYear.format(selectedDate))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCurrentDay(int day) {
+        calendar.setTime(viewDate);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        if (CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
+                CalendarUtil.sdfDayMonthYear.format(currentDate))) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public void setListener(IOnCustomCalendarViewClicked listener) {
         this.listener = listener;
     }
 

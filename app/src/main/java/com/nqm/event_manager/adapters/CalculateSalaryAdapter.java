@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -24,6 +25,7 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     private final Activity context;
     int sum = 0, paid = 0, unpaid = 0;
     private ArrayList<String> resultSalariesIds;
+    IOnCalculateSalaryItemClicked listener;
 
     public CalculateSalaryAdapter(Activity context, ArrayList<String> resultSalariesIds) {
         this.context = context;
@@ -59,6 +61,10 @@ public class CalculateSalaryAdapter extends BaseAdapter {
         });
     }
 
+    public void setListener(IOnCalculateSalaryItemClicked listener) {
+        this.listener = listener;
+    }
+
     public int getSum() {
         return sum;
     }
@@ -77,7 +83,7 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Salary getItem(int i) {
         return SalaryRepository.getInstance(null).getAllSalaries().get(resultSalariesIds.get(i));
     }
 
@@ -98,10 +104,7 @@ public class CalculateSalaryAdapter extends BaseAdapter {
         CheckBox paidCheckBox = view.findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
 
         //Fill information
-        Salary salary = SalaryRepository.getInstance(null).getAllSalaries()
-                .get(resultSalariesIds.get(position));
-//        Employee employee = EmployeeRepository.getInstance(null).getAllEmployees()
-//                .get(salary.getEmployeeId());
+        final Salary salary = getItem(position);
         Event event = EventRepository.getInstance(null).getAllEvents().get(salary.getEventId());
 
         try {
@@ -122,6 +125,14 @@ public class CalculateSalaryAdapter extends BaseAdapter {
             paidCheckBox.setEnabled(true);
             salaryEditText.setEnabled(true);
         }
+
+        //Add events
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onCalculateSalaryItemClicked(salary.getEventId());
+            }
+        });
 
         return view;
     }

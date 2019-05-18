@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,34 +23,34 @@ public class ViewScheduleAdapter extends BaseAdapter {
 
     public ViewScheduleAdapter(Activity context, ArrayList<Schedule> schedules) {
         this.context = context;
+        ScheduleUtil.sortSchedulesByOrder(schedules);
         this.schedules = schedules;
-        sortSchedule();
     }
 
-    private void sortSchedule() {
-        Collections.sort(schedules, new Comparator<Schedule>() {
-            @Override
-            public int compare(Schedule schedule1, Schedule schedule2) {
-                if(schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    return 0;
-                }
-                if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
-                    return -1;
-                }
-                if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    return 1;
-                }
-                int compareResult = 0;
-                try {
-                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
-                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return compareResult;
-            }
-        });
-    }
+//    private void sortSchedule() {
+//        Collections.sort(schedules, new Comparator<Schedule>() {
+//            @Override
+//            public int compare(Schedule schedule1, Schedule schedule2) {
+//                if(schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+//                    return 0;
+//                }
+//                if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
+//                    return -1;
+//                }
+//                if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
+//                    return 1;
+//                }
+//                int compareResult = 0;
+//                try {
+//                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
+//                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                return compareResult;
+//            }
+//        });
+//    }
 
     @Override
     public int getCount() {

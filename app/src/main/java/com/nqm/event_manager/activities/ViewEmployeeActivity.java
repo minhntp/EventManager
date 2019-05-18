@@ -67,10 +67,20 @@ public class ViewEmployeeActivity extends AppCompatActivity {
                     .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent();
-                            intent.putExtra("delete?", true);
-                            intent.putExtra("employeeId", employee.getId());
-                            setResult(RESULT_OK, intent);
+//                            Intent intent = new Intent();
+//                            intent.putExtra("delete?", true);
+//                            intent.putExtra("employeeId", employee.getId());
+//                            setResult(RESULT_OK, intent);
+                            EmployeeRepository.getInstance(null).deleteEmployeeByEmployeeId(employee.getId(), new EmployeeRepository.MyDeleteEmployeeCallback() {
+                                @Override
+                                public void onCallback(boolean deleteSucceed) {
+                                    if (deleteSucceed) {
+                                        Toast.makeText(context, "Xóa nhân viên thành công", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(context, "Xóa nhân viên thất bại", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                             finish();
                         }
 

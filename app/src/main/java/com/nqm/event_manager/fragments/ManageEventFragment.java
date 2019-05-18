@@ -24,7 +24,7 @@ import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.EventListAdapter;
 import com.nqm.event_manager.custom_views.CustomCalendarView;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarGridItemClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -37,7 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ManageEventFragment extends Fragment implements IOnDataLoadComplete,
-        IOnCustomCalendarGridItemClicked {
+        IOnCustomCalendarViewClicked {
 
     private static final int RESULT_FROM_DELETE_EVENT_INTENT = 1;
     private static final int RESULT_FROM_ADD_EVENT_INTENT = 2;
@@ -152,7 +152,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESULT_FROM_DELETE_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
+        /*if (requestCode == RESULT_FROM_DELETE_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
             Log.d("debug", "delete? from EventDetails to EventManagement: " + data.getBooleanExtra("delete?", false));
             if (data.getBooleanExtra("delete?", false)) {
                 EventRepository.getInstance(null).deleteEventFromDatabase(data.getStringExtra("eventId"), new EventRepository.MyDeleteEventCallback() {
@@ -168,7 +168,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
                     }
                 });
             }
-        } else if (requestCode == RESULT_FROM_ADD_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
+        } else*/ if (requestCode == RESULT_FROM_ADD_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
             if (data.getBooleanExtra("added?", false)) {
                 Toast.makeText(getContext(), "Thêm sự kiện thành công", Toast.LENGTH_SHORT).show();
                 calendarView.updateView();
@@ -197,14 +197,9 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     }
 
     @Override
-    public void onGridItemClickedFromCalendarView(Date selectedDate) {
+    public void onCustomCalendarCellClicked(Date selectedDate) {
         this.selectedDate = selectedDate;
         dayTitleTextView.setText(Constants.DAY_TITLE_MAIN_FRAGMENT + CalendarUtil.sdfDayMonthYear.format(selectedDate));
         mainViewEventAdapter.notifyDataSetChanged(selectedDate);
-    }
-
-    @Override
-    public void onGridItemClickedFromCalendarAdapter(Date selectedDate) {
-
     }
 }

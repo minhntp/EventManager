@@ -3,6 +3,7 @@ package com.nqm.event_manager.fragments;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,14 +22,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.activities.ViewEmployeeActivity;
+import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
+import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.SalaryUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,7 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class CalculateSalaryFragment extends Fragment {
+public class CalculateSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked {
 
     Button calculateButton, payAllButton, saveButton;
     CustomListView resultListView;
@@ -92,6 +97,7 @@ public class CalculateSalaryFragment extends Fragment {
         selectEmployeeSpinner.setAdapter(employeesSpinnerAdapter);
 
         calculateSalaryAdapter = new CalculateSalaryAdapter(getActivity(), selectedSalariesIds);
+        calculateSalaryAdapter.setListener(this);
         resultListView.setAdapter(calculateSalaryAdapter);
 
         startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
@@ -295,21 +301,7 @@ public class CalculateSalaryFragment extends Fragment {
             }
         }
 
-        Collections.sort(resultSalaries, new Comparator<Salary>() {
-            @Override
-            public int compare(Salary s1, Salary s2) {
-                Date d1 = Calendar.getInstance().getTime();
-                Date d2 = Calendar.getInstance().getTime();
-                try {
-                    d1 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s1.getEventId()).getNgayBatDau());
-                    d2 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s2.getEventId()).getNgayBatDau());
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return d1.compareTo(d2);
-            }
-        });
+        SalaryUtil.sortSalariesByEventStartDate(resultSalaries);
 
         resultSalariesIds.clear();
         for (Salary s : resultSalaries) {
@@ -417,6 +409,14 @@ public class CalculateSalaryFragment extends Fragment {
 
         sumTextView.requestFocus();
 
+        if (unpaid == 0) {
+            saveButton.setEnabled(false);
+            payAllButton.setEnabled(false);
+        } else {
+            saveButton.setEnabled(true);
+            payAllButton.setEnabled(true);
+        }
+
         SalaryRepository.getInstance(null).updateSalaries(selectedSalariesIds,
                 changedSelectedSalariesAmount, changedSelectedSalariesPaidStatus,
                 new SalaryRepository.MyUpdateSalariesCallback() {
@@ -425,5 +425,20 @@ public class CalculateSalaryFragment extends Fragment {
                         // Completed updating salaries
                     }
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getResultSalaries();
+        updateEmployeesSpinner();
+        showResult();
+    }
+
+    @Override
+    public void onCalculateSalaryItemClicked(String eventId) {
+        Intent intent = new Intent(getContext(), ViewEventActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
     }
 }

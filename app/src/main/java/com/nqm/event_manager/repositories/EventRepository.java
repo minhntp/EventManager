@@ -135,12 +135,18 @@ public class EventRepository {
                             scheduleData.put(Constants.SCHEDULE_EVENT_ID, documentReference.getId());
                             scheduleData.put(Constants.SCHEDULE_TIME, schedule.getTime());
                             scheduleData.put(Constants.SCHEDULE_CONTENT, schedule.getContent());
+                            scheduleData.put(Constants.SCHEDULE_ORDER, Integer.toString(schedule.getOrder()));
                             batch.set(scheduleDocRef, scheduleData);
                         }
                         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 callback.onCallback(documentReference.getId());
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("debug", "Thêm sự kiện thất bại");
                             }
                         });
                     }
@@ -182,30 +188,6 @@ public class EventRepository {
                 callback.onCallback(true);
             }
         });
-
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.EVENT_COLLECTION)
-//                .document(eventId)
-//                .delete()
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Log.d("debug", "Xóa sự kiện " + eventId + " thành công");
-//                        SalaryRepository.getInstance(null).deleteSalariesByEventId(eventId, new SalaryRepository.MyDeleteSalariesByEventIdCallback() {
-//                            @Override
-//                            public void onCallback(boolean deleteSucceed) {
-//                                callback.onCallback(true, deleteSucceed);
-//                            }
-//                        });
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.d("debug", "Xóa sự kiện " + eventId + " thất bại");
-//                        callback.onCallback(false, false);
-//                    }
-//                });
     }
 
     public int getNumberOfEventsThroughDate(String date) {
@@ -264,6 +246,7 @@ public class EventRepository {
             addScheduleData.put(Constants.SCHEDULE_EVENT_ID, changedEvent.getId());
             addScheduleData.put(Constants.SCHEDULE_CONTENT, addSchedule.getContent());
             addScheduleData.put(Constants.SCHEDULE_TIME, addSchedule.getTime());
+            addScheduleData.put(Constants.SCHEDULE_ORDER, Integer.toString(addSchedule.getOrder()));
             batch.set(addScheduleDocRef, addScheduleData);
         }
 
@@ -271,6 +254,11 @@ public class EventRepository {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 callback.onCallback(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("debug", "Thêm sự kiện thất bại");
             }
         });
     }

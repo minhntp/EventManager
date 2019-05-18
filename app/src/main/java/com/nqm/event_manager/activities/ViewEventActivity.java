@@ -24,6 +24,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.ViewSalaryAdapter;
 import com.nqm.event_manager.adapters.ViewScheduleAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
+import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
@@ -35,7 +36,7 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ViewEventActivity extends AppCompatActivity {
+public class ViewEventActivity extends AppCompatActivity implements IOnViewSalaryItemClicked {
     Activity context;
 
     Button addReminderButton, viewScheduleButton;
@@ -66,6 +67,7 @@ public class ViewEventActivity extends AppCompatActivity {
         selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
         salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
         viewSalaryAdapter = new ViewSalaryAdapter(this, salaries);
+        viewSalaryAdapter.setListener(this);
         employeeListView.setAdapter(viewSalaryAdapter);
 
         addEvents();
@@ -94,32 +96,38 @@ public class ViewEventActivity extends AppCompatActivity {
                     .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent();
-                            intent.putExtra("delete?", true);
-                            intent.putExtra("eventId", eventId);
-                            setResult(RESULT_OK, intent);
-                            finish();
+//                            Intent intent = new Intent();
+//                            intent.putExtra("delete?", true);
+//                            intent.putExtra("eventId", eventId);
+//                            setResult(RESULT_OK, intent);
+                            EventRepository.getInstance(null).deleteEventFromDatabase(eventId, new EventRepository.MyDeleteEventCallback() {
+                                @Override
+                                public void onCallback(boolean deleteEventSucceed) {
+                                    if(deleteEventSucceed) {
+                                        Toast.makeText(context, "Xóa sự kiện thành công", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(context, "Xóa sự kiện thất bại", Toast.LENGTH_SHORT).show();
+                                    }
+                                    finish();
+                                }
+                            });
                         }
 
                     })
-                    .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-//                            Intent intent = new Intent();
-//                            intent.putExtra("deleted?",false);
-//                            setResult(RESULT_OK);
-//                            finish();
-                        }
-                    })
+                    .setNegativeButton("Không", null)
                     .show();
             return true;
         }
 
         //Chỉnh sửa lương
         if (id == R.id.view_event_action_edit_salaries) {
-            Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
-            intent.putExtra("eventId", eventId);
-            startActivityForResult(intent, RESULT_FROM_EDIT_SALARY_INTENT);
+            if (SalaryRepository.getInstance(null).getSalariesByEventId(eventId).size() > 0) {
+                Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivityForResult(intent, RESULT_FROM_EDIT_SALARY_INTENT);
+            } else {
+                Toast.makeText(context, "Sự kiện này không có bản lương nào", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
@@ -173,7 +181,12 @@ public class ViewEventActivity extends AppCompatActivity {
         viewScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openViewScheduleDialog();
+                schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+                if (schedules.size() > 0) {
+                    openViewScheduleDialog();
+                } else {
+                    Toast.makeText(context, "Sự kiện không có lịch trình nào", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -191,7 +204,6 @@ public class ViewEventActivity extends AppCompatActivity {
         final ListView viewScheduleListView = viewScheduleDialog.findViewById(R.id.view_schedule_dialog_schedule_list_view);
         Button backButton = viewScheduleDialog.findViewById(R.id.back_button);
 
-        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
         viewScheduleAdapter = new ViewScheduleAdapter(this, schedules);
         viewScheduleListView.setAdapter(viewScheduleAdapter);
 
@@ -250,5 +262,18 @@ public class ViewEventActivity extends AppCompatActivity {
         setResult(RESULT_OK, intent);
         context.finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onViewSalaryItemClicked(String employeeId) {
+        Intent intent = new Intent(this, ViewEmployeeActivity.class);
+        intent.putExtra("employeeId", employeeId);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewSalaryAdapter.notifyDataSetChanged(SalaryRepository.getInstance(null).getSalariesByEventId(eventId));
     }
 }

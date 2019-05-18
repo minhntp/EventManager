@@ -1,6 +1,7 @@
 package com.nqm.event_manager.adapters;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -19,6 +21,8 @@ public class ViewSalaryAdapter extends BaseAdapter {
     private final Activity context;
     private HashMap<String, Salary> salaries;
     private String[] salariesIds;
+
+    IOnViewSalaryItemClicked listener;
 
     public ViewSalaryAdapter(Activity context, HashMap<String, Salary> salaries) {
         this.context = context;
@@ -32,7 +36,7 @@ public class ViewSalaryAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Salary getItem(int i) {
         return salaries.get(salariesIds[i]);
     }
 
@@ -42,7 +46,7 @@ public class ViewSalaryAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.layout_view_salary_list_item, parent, false);
         }
@@ -53,13 +57,25 @@ public class ViewSalaryAdapter extends BaseAdapter {
         CheckBox daThanhToanCheckBox = view.findViewById(R.id.view_salary_paid_checkbox);
 
         //SHOW DATA
-        String employeeId = salaries.get(salariesIds[position]).getEmployeeId();
+        final String employeeId = getItem(position).getEmployeeId();
         hoTenTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId).getHoTen());
         chuyenMonTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId).getChuyenMon());
-        luongTextView.setText("" + salaries.get(salariesIds[position]).getSalary());
-        daThanhToanCheckBox.setChecked(salaries.get(salariesIds[position]).isPaid());
+        luongTextView.setText("" + getItem(position).getSalary());
+        daThanhToanCheckBox.setChecked(getItem(position).isPaid());
+
+        //ADD EVENTS
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onViewSalaryItemClicked(employeeId);
+            }
+        });
 
         return view;
+    }
+
+    public void setListener(IOnViewSalaryItemClicked listener) {
+        this.listener = listener;
     }
 
     public void notifyDataSetChanged(HashMap<String, Salary> salaries) {

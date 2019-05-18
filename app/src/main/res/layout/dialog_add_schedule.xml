@@ -15,7 +15,7 @@
         android:layout_marginBottom="10dp"
         android:focusableInTouchMode="true"
         android:gravity="center_vertical"
-        android:text="Thêm lịch trình"
+        android:text="Lịch trình"
         android:textAlignment="center"
         android:textSize="20dp"
         android:textStyle="bold" />

@@ -177,9 +177,8 @@ public class EditEmployeeActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Trở về mà không lưu")
-                .setMessage("Bạn có chắc chắn không?")
-                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                .setTitle("Trở về mà không lưu?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 //                        Intent intent = new Intent();
@@ -188,7 +187,7 @@ public class EditEmployeeActivity extends AppCompatActivity {
                         context.finish();
                     }
                 })
-                .setNegativeButton("Không", null)
+                .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
     }

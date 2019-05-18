@@ -3,12 +3,16 @@ package com.nqm.event_manager.repositories;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
@@ -87,22 +91,49 @@ public class EmployeeRepository {
     }
 
     public void deleteEmployeeByEmployeeId(String employeeId, final MyDeleteEmployeeCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.EMPLOYEE_COLLECTION)
-                .document(employeeId)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
+
+        DocumentReference employeeDocRef = DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EMPLOYEE_COLLECTION).document(employeeId);
+        batch.delete(employeeDocRef);
+
+        for (Salary salary : SalaryRepository.getInstance(null).getAllSalaries().values()) {
+            if (salary.getEmployeeId().equals(employeeId)) {
+                DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
+                        .collection(Constants.SALARY_COLLECTION).document(salary.getSalaryId());
+                batch.delete(salaryDocRef);
+            }
+        }
+
+        batch.commit()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         callback.onCallback(true);
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        callback.onCallback(false);
-                    }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                callback.onCallback(false);
+            }
+        });
+
+//        DatabaseAccess.getInstance().getDatabase()
+//                .collection(Constants.EMPLOYEE_COLLECTION)
+//                .document(employeeId)
+//                .delete()
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        callback.onCallback(true);
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        callback.onCallback(false);
+//                    }
+//                });
     }
 
     public ArrayList<String> getAllEmployeesIds() {

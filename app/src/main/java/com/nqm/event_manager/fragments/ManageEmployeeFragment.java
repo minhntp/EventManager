@@ -19,23 +19,22 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
-import com.nqm.event_manager.activities.AddEventActivity;
 import com.nqm.event_manager.activities.ViewEmployeeActivity;
 import com.nqm.event_manager.adapters.ViewEmployeeListAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
+import com.nqm.event_manager.interfaces.IOnAddEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.interfaces.IOnManageEmployeeViewClicked;
 import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 
-public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnCustomViewClicked {
+public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeViewClicked {
 
     private static final int RESULT_FROM_ADD_EMPLOYEE_INTENT = 8;
-    private static final int RESULT_FROM_DELETE_EMPLOYEE_INTENT = 9;
     static int RESULT_FROM_VIEW_EMPLOYEE_INTENT = 6;
 
     CustomListView employeeListView;
@@ -123,33 +122,6 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     }
 
     @Override
-    public void onDeleteButtonClicked(int position) {
-
-    }
-
-    @Override
-    public void onTimeEditTextSet(int position, String timeText) {
-
-    }
-
-    @Override
-    public void onEmployeeListItemClicked(String employeeId) {
-        Intent intent = new Intent(getActivity(), ViewEmployeeActivity.class);
-        intent.putExtra("employeeId", employeeId);
-        startActivityForResult(intent, RESULT_FROM_VIEW_EMPLOYEE_INTENT);
-    }
-
-    @Override
-    public void onAddScheduleItemMoved() {
-
-    }
-
-    @Override
-    public void onAddScheduleItemRemoved() {
-
-    }
-
-    @Override
     public void onResume() {
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(searchString);
@@ -161,7 +133,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_FROM_VIEW_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
+        /*if (requestCode == RESULT_FROM_VIEW_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
             if (data.getBooleanExtra("delete?", false)) {
                 String employeeId = data.getStringExtra("employeeId");
                 DatabaseAccess.getInstance().getDatabase()
@@ -184,7 +156,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
             } else {
                 employeeAdapter.notifyDataSetChanged(EmployeeRepository.getInstance(null).getAllEmployeesIds());
             }
-        } else if (requestCode == RESULT_FROM_ADD_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
+        } else*/ if (requestCode == RESULT_FROM_ADD_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
             if (data.getBooleanExtra("add?", false)) {
                 if(data.getBooleanExtra("add succeed", false)) {
                     Toast.makeText(getContext(), "Thêm nhân viên thành công", Toast.LENGTH_SHORT).show();
@@ -194,5 +166,12 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
                 }
             }
         }
+    }
+
+    @Override
+    public void onEmployeeListItemClicked(String employeeId) {
+        Intent intent = new Intent(getActivity(), ViewEmployeeActivity.class);
+        intent.putExtra("employeeId", employeeId);
+        startActivityForResult(intent, RESULT_FROM_VIEW_EMPLOYEE_INTENT);
     }
 }

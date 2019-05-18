@@ -5,19 +5,22 @@ public class Schedule {
     private String eventId;
     private String time;
     private String content;
+    private int order;
 
     public Schedule() {
         scheduleId = "";
         eventId = "";
         time = "";
         content = "";
+        order = 0;
     }
 
-    public Schedule(String scheduleId, String eventId, String time, String content) {
+    public Schedule(String scheduleId, String eventId, String time, String content, int order) {
         this.scheduleId = scheduleId;
         this.eventId = eventId;
         this.time = time;
         this.content = content;
+        this.order = order;
     }
 
     public Schedule(Schedule s) {
@@ -25,6 +28,15 @@ public class Schedule {
         this.eventId = s.getEventId();
         this.time = s.getTime();
         this.content = s.getContent();
+        this.order = s.getOrder();
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public String getScheduleId() {

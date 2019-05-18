@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -30,19 +31,18 @@ import com.nqm.event_manager.adapters.AddScheduleRecyclerAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInAddEventAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomViewClicked;
+import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 
-public class AddEventActivity extends AppCompatActivity implements IOnCustomViewClicked {
+public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked {
     Toolbar toolbar;
 
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
@@ -64,7 +64,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
     WindowManager.LayoutParams lWindowParams;
     AddScheduleRecyclerAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
-    Button okButton, addScheduleButton, sortScheduleButton;
+    Button saveSchedulesButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
     TextView titleTextView;
     AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
@@ -137,7 +137,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
         //connect views
         addScheduleRecyclerView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_schedule_recycler_view);
-        okButton = addScheduleDialog.findViewById(R.id.ok_button);
+        saveSchedulesButton = addScheduleDialog.findViewById(R.id.ok_button);
         addScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_add_button);
         sortScheduleButton = addScheduleDialog.findViewById(R.id.add_schedule_sort_button);
         titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
@@ -166,7 +166,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
             }
         });
 
-        okButton.setOnClickListener(new View.OnClickListener() {
+        saveSchedulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getAllSchedulesFromRecyclerView(true);
@@ -179,7 +179,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
             @Override
             public void onClick(View v) {
                 getAllSchedulesFromRecyclerView(false);
-                sortSchedules();
+                ScheduleUtil.sortSchedulesByStartTime(schedules);
                 addScheduleAdapter.setSchedules(schedules);
                 addScheduleAdapter.notifyDataSetChanged();
                 titleTextView.requestFocus();
@@ -191,7 +191,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
     private void connectViews() {
         toolbar = findViewById(R.id.add_event_toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle(R.string.add_event_activity_label);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -504,12 +503,21 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        new android.support.v7.app.AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Trở về mà không lưu?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent intent = new Intent();
+//                        intent.putExtra("edit?", false);
+//                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
         return super.onSupportNavigateUp();
-    }
-
-    @Override
-    public void onDeleteButtonClicked(int position) {
     }
 
     @Override
@@ -519,11 +527,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
         addScheduleAdapter.setSchedules(schedules);
         addScheduleAdapter.notifyDataSetChanged();
         titleTextView.requestFocus();
-    }
-
-    @Override
-    public void onEmployeeListItemClicked(String employeeId) {
-
     }
 
     @Override
@@ -538,6 +541,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
 
     private void getAllSchedulesFromRecyclerView(boolean removeEmptySchedules) {
         schedules.clear();
+        int index = 0;
         for (int i = 0; i < addScheduleRecyclerView.getChildCount(); i++) {
             EditText timeEditText = addScheduleRecyclerView.getChildAt(i).findViewById(R.id.add_schedule_time_edit_text);
             EditText contentEditText = addScheduleRecyclerView.getChildAt(i).findViewById(R.id.add_schedule_content_edit_text);
@@ -546,41 +550,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnCustomView
             if (removeEmptySchedules && time.isEmpty() && content.isEmpty()) {
                 continue;
             } else {
-                schedules.add(new Schedule("", "", time, content));
+                schedules.add(new Schedule("", "", time, content, index));
+                index++;
             }
         }
-    }
-
-    private void sortSchedules() {
-        Collections.sort(schedules, new Comparator<Schedule>() {
-            @Override
-            public int compare(Schedule schedule1, Schedule schedule2) {
-                if (schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    if (schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
-                        return 0;
-                    } else if (schedule1.getContent().isEmpty() && !schedule2.getContent().isEmpty()) {
-                        return 1;
-                    } else if (!schedule1.getContent().isEmpty() && schedule2.getContent().isEmpty()) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                }
-                if (schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
-                    return 1;
-                }
-                if (!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-                    return -1;
-                }
-                int compareResult = 0;
-                try {
-                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
-                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return compareResult;
-            }
-        });
     }
 }
