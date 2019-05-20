@@ -39,9 +39,6 @@ import java.util.Date;
 public class ManageEventFragment extends Fragment implements IOnDataLoadComplete,
         IOnCustomCalendarViewClicked {
 
-    private static final int RESULT_FROM_DELETE_EVENT_INTENT = 1;
-    private static final int RESULT_FROM_ADD_EVENT_INTENT = 2;
-
     CustomListView eventsListView;
     TextView dayTitleTextView;
     //    CalendarView calendarView;
@@ -104,7 +101,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         if (id == R.id.action_add_event) {
             Intent intent = new Intent(getActivity(), AddEventActivity.class);
             intent.putExtra("selectedDate", CalendarUtil.sdfDayMonthYear.format(selectedDate));
-            startActivityForResult(intent, RESULT_FROM_ADD_EVENT_INTENT);
+            startActivity(intent);
             return true;
         }
         //Xem sự kiện theo danh sách dọc
@@ -144,37 +141,9 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent eventDetailsIntent = new Intent(getActivity(), ViewEventActivity.class);
                 eventDetailsIntent.putExtra("eventId", mainViewEventAdapter.getEventIds().get(position));
-                startActivityForResult(eventDetailsIntent, RESULT_FROM_DELETE_EVENT_INTENT);
+                startActivity(eventDetailsIntent);
             }
         });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        /*if (requestCode == RESULT_FROM_DELETE_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
-            Log.d("debug", "delete? from EventDetails to EventManagement: " + data.getBooleanExtra("delete?", false));
-            if (data.getBooleanExtra("delete?", false)) {
-                EventRepository.getInstance(null).deleteEventFromDatabase(data.getStringExtra("eventId"), new EventRepository.MyDeleteEventCallback() {
-                    @Override
-                    public void onCallback(boolean deleteEventSucceed) {
-                        if (deleteEventSucceed) {
-                            Toast.makeText(getActivity(), "Xóa sự kiện thành công", Toast.LENGTH_SHORT).show();
-                            calendarView.updateView();
-                            mainViewEventAdapter.notifyDataSetChanged(selectedDate);
-                        } else {
-                            Toast.makeText(getActivity(), "Xóa sự kiện thất bại", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        } else*/ if (requestCode == RESULT_FROM_ADD_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
-            if (data.getBooleanExtra("added?", false)) {
-                Toast.makeText(getContext(), "Thêm sự kiện thành công", Toast.LENGTH_SHORT).show();
-                calendarView.updateView();
-                mainViewEventAdapter.notifyDataSetChanged(selectedDate);
-            }
-        }
     }
 
     //Cập nhật danh sách sự kiện của ngày hiện tại khi mở ứng dụng

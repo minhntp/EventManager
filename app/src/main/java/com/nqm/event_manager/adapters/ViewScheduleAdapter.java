@@ -27,31 +27,6 @@ public class ViewScheduleAdapter extends BaseAdapter {
         this.schedules = schedules;
     }
 
-//    private void sortSchedule() {
-//        Collections.sort(schedules, new Comparator<Schedule>() {
-//            @Override
-//            public int compare(Schedule schedule1, Schedule schedule2) {
-//                if(schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-//                    return 0;
-//                }
-//                if(schedule1.getTime().isEmpty() && !schedule2.getTime().isEmpty()) {
-//                    return -1;
-//                }
-//                if(!schedule1.getTime().isEmpty() && schedule2.getTime().isEmpty()) {
-//                    return 1;
-//                }
-//                int compareResult = 0;
-//                try {
-//                    compareResult = CalendarUtil.sdfTime.parse(schedule1.getTime()).compareTo(
-//                            CalendarUtil.sdfTime.parse(schedule2.getTime()));
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                return compareResult;
-//            }
-//        });
-//    }
-
     @Override
     public int getCount() {
         return schedules.size();
@@ -85,5 +60,11 @@ public class ViewScheduleAdapter extends BaseAdapter {
 
     public ArrayList<Schedule> getSchedules() {
         return schedules;
+    }
+
+    public void notifyDataSetChanged(ArrayList<Schedule> schedules) {
+        ScheduleUtil.sortSchedulesByOrder(schedules);
+        this.schedules = schedules;
+        super.notifyDataSetChanged();
     }
 }

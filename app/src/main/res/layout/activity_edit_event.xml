@@ -33,13 +33,12 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:focusable="true"
-                android:focusableInTouchMode="true"></LinearLayout>
+                android:focusableInTouchMode="true"/>
 
             <EditText
                 android:id="@+id/event_edit_title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
                 android:nextFocusLeft="@id/event_edit_title_edit_text"
                 android:nextFocusUp="@id/event_edit_title_edit_text"
                 android:textSize="@dimen/large_text"

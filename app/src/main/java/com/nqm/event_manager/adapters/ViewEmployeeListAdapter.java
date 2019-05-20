@@ -140,20 +140,14 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
 
     private void sendEmail(String emailAddress) {
         if(!emailAddress.isEmpty()) {
-            String[] TO = {emailAddress};
-            String[] CC = {""};
-            Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.setDataAndType(Uri.parse("mailto"), "text/plain");
-
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-            emailIntent.putExtra(Intent.EXTRA_CC, CC);
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
-            emailIntent.putExtra(Intent.EXTRA_TEXT, "");
-
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            String mailto = "mailto:";
+            mailto += emailAddress;
+            emailIntent.setData(Uri.parse(mailto));
             try {
-                context.startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email..."));
-            } catch (android.content.ActivityNotFoundException ex) {
-                Toast.makeText(context, "Không tìm thấy ứng dụng gửi Email", Toast.LENGTH_SHORT).show();
+                context.startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email:"));
+            } catch (Exception e) {
+                Toast.makeText(context, "Không tìm thấy ứng dụng gửi email", Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, "Không có địa chỉ Email", Toast.LENGTH_SHORT).show();

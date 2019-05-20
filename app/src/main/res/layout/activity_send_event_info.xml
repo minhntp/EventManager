@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp">
+
+    <TextView
+        android:id="@+id/send_event_info_dialog_title_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:text="Gửi thông tin sự kiện"
+        android:textAlignment="center"
+        android:textSize="21dp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:id="@+id/send_event_info_dialog_employee_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/send_event_info_dialog_title_text_view">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Chọn nhân viên"
+            android:textSize="19dp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/send_event_select_all_employee_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/send_event_deselect_all_employee_button"
+            android:text="Chọn tất cả"
+            android:textAllCaps="false"
+            android:textStyle="italic"/>
+
+        <Button
+            android:id="@+id/send_event_deselect_all_employee_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Bỏ chọn tất cả"
+            android:textAllCaps="false"
+            android:textStyle="italic"/>
+
+    </RelativeLayout>
+
+    <com.nqm.event_manager.custom_views.CustomListView
+        android:id="@+id/send_event_info_dialog_employee_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/send_event_info_dialog_employee_layout"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
+    <RadioGroup
+        android:id="@+id/send_event_cc_bcc_radio_group"
+        android:layout_below="@id/send_event_info_dialog_employee_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <RadioButton
+            android:id="@+id/send_event_cc_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="CC"/>
+        <RadioButton
+            android:id="@+id/send_event_bcc_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:text="BCC"/>
+    </RadioGroup>
+
+    <RelativeLayout
+        android:id="@+id/send_event_info_dialog_section_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/send_event_cc_bcc_radio_group">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Chọn nội dung"
+            android:textSize="19dp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/send_event_select_all_section_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/send_event_deselect_all_section_button"
+            android:text="Chọn tất cả"
+            android:textAllCaps="false"
+            android:textStyle="italic"/>
+
+        <Button
+            android:id="@+id/send_event_deselect_all_section_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Bỏ chọn tất cả"
+            android:textAllCaps="false"
+            android:textStyle="italic"/>
+
+    </RelativeLayout>
+
+    <com.nqm.event_manager.custom_views.CustomListView
+        android:id="@+id/send_event_info_dialog_section_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/send_event_info_dialog_section_layout"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
+
+    <LinearLayout
+        android:id="@+id/send_event_info_dialog_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/send_event_info_dialog_cancel_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hủy"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/send_event_info_dialog_send_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Gửi"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

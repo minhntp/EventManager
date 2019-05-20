@@ -5,12 +5,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,37 +38,72 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
     Button addReminderButton, viewScheduleButton;
     TextView titleEditText, timeEditText, locationEditText, noteEditText;
-    CustomListView employeeListView, reminderListView;
+    CustomListView reminderListView;
     android.support.v7.widget.Toolbar toolbar;
+
+    String eventId;
+    Event selectedEvent;
 
     HashMap<String, Salary> salaries;
     ViewSalaryAdapter viewSalaryAdapter;
-    Event selectedEvent;
-    String eventId;
+    CustomListView salaryListView;
 
+    Dialog viewScheduleDialog;
+    WindowManager.LayoutParams lWindowParams;
     ArrayList<Schedule> schedules;
     ViewScheduleAdapter viewScheduleAdapter;
-
-    int RESULT_FROM_EDIT_EVENT_INTENT = 3;
-    int RESULT_FROM_EDIT_SALARY_INTENT = 4;
+    CustomListView scheduleListView;
+    Button scheduleBackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
-        connectViews();
 
+        connectViews();
+        init();
+        addEvents();
+    }
+
+    private void init() {
         context = this;
 
         eventId = getIntent().getStringExtra("eventId");
         selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
+
+        fillInformation();
+
+        // SALARY LIST VIEW
         salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
         viewSalaryAdapter = new ViewSalaryAdapter(this, salaries);
         viewSalaryAdapter.setListener(this);
-        employeeListView.setAdapter(viewSalaryAdapter);
+        salaryListView.setAdapter(viewSalaryAdapter);
 
-        addEvents();
-        fillInformation();
+        // SCHEDULE DIALOG
+        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+        viewScheduleDialog = new Dialog(this);
+        viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
+
+        lWindowParams = new WindowManager.LayoutParams();
+        lWindowParams.copyFrom(viewScheduleDialog.getWindow().getAttributes());
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        scheduleListView = viewScheduleDialog.findViewById(R.id.view_schedule_dialog_schedule_list_view);
+        scheduleBackButton = viewScheduleDialog.findViewById(R.id.back_button);
+
+        viewScheduleAdapter = new ViewScheduleAdapter(this, schedules);
+        scheduleListView.setAdapter(viewScheduleAdapter);
+
+        scheduleBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewScheduleDialog.dismiss();
+            }
+        });
+
+        //DISABLE BUTTONS
+        viewScheduleButton.setEnabled(!(schedules.size() == 0));
     }
 
     @Override
@@ -80,8 +112,6 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         return super.onCreateOptionsMenu(menu);
     }
 
-
-    //Add events for menu items
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -96,14 +126,10 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                     .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            Intent intent = new Intent();
-//                            intent.putExtra("delete?", true);
-//                            intent.putExtra("eventId", eventId);
-//                            setResult(RESULT_OK, intent);
                             EventRepository.getInstance(null).deleteEventFromDatabase(eventId, new EventRepository.MyDeleteEventCallback() {
                                 @Override
                                 public void onCallback(boolean deleteEventSucceed) {
-                                    if(deleteEventSucceed) {
+                                    if (deleteEventSucceed) {
                                         Toast.makeText(context, "Xóa sự kiện thành công", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Toast.makeText(context, "Xóa sự kiện thất bại", Toast.LENGTH_SHORT).show();
@@ -121,12 +147,13 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
         //Chỉnh sửa lương
         if (id == R.id.view_event_action_edit_salaries) {
-            if (SalaryRepository.getInstance(null).getSalariesByEventId(eventId).size() > 0) {
+            if (allSalariesArePaid()) {
+                Toast.makeText(context, "Không có bản lương nào hoặc tất cả các bản lương đều " +
+                        "đã được trả", Toast.LENGTH_LONG).show();
+            } else {
                 Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
                 intent.putExtra("eventId", eventId);
-                startActivityForResult(intent, RESULT_FROM_EDIT_SALARY_INTENT);
-            } else {
-                Toast.makeText(context, "Sự kiện này không có bản lương nào", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
             }
             return true;
         }
@@ -135,15 +162,30 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         if (id == R.id.view_event_action_edit_event) {
             Intent intent = new Intent(this, EditEventActivity.class);
             intent.putExtra("eventId", eventId);
-            startActivityForResult(intent, RESULT_FROM_EDIT_EVENT_INTENT);
+            startActivity(intent);
             return true;
         }
+
         //Gửi thông báo
         if (id == R.id.view_event_action_send_notification) {
-            Toast.makeText(this, "Gửi thông báo cho nhân viên", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SendEventInfo.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean allSalariesArePaid() {
+        if (salaries.size() > 0) {
+            for (Salary s : salaries.values()) {
+                if (!s.isPaid()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
     }
 
     private void fillInformation() {
@@ -155,7 +197,6 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         timeEditText.setText(time);
         locationEditText.setText(selectedEvent.getDiaDiem());
         noteEditText.setText(selectedEvent.getGhiChu());
-
     }
 
     private void connectViews() {
@@ -173,7 +214,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         locationEditText = findViewById(R.id.view_event_location_text_view);
         noteEditText = findViewById(R.id.view_event_note_text_view);
 
-        employeeListView = findViewById(R.id.view_event_employees_listview);
+        salaryListView = findViewById(R.id.view_event_salaries_listview);
         reminderListView = findViewById(R.id.view_event_reminder_listview);
     }
 
@@ -183,7 +224,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
             public void onClick(View view) {
                 schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
                 if (schedules.size() > 0) {
-                    openViewScheduleDialog();
+                    showViewScheduleDialog();
                 } else {
                     Toast.makeText(context, "Sự kiện không có lịch trình nào", Toast.LENGTH_SHORT).show();
                 }
@@ -191,68 +232,13 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         });
     }
 
-    private void openViewScheduleDialog() {
-        final Dialog viewScheduleDialog = new Dialog(this);
-        viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
-
-        WindowManager.LayoutParams lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(viewScheduleDialog.getWindow().getAttributes());
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT; // this is where the magic happens
-        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        //Connect views
-        final ListView viewScheduleListView = viewScheduleDialog.findViewById(R.id.view_schedule_dialog_schedule_list_view);
-        Button backButton = viewScheduleDialog.findViewById(R.id.back_button);
-
-        viewScheduleAdapter = new ViewScheduleAdapter(this, schedules);
-        viewScheduleListView.setAdapter(viewScheduleAdapter);
-
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewScheduleDialog.dismiss();
-            }
-        });
-
-        if (!isFinishing()) {
+    private void showViewScheduleDialog() {
+        if (schedules.size() == 0) {
+            Toast toast = Toast.makeText(this, "Không có lịch trình nào", Toast.LENGTH_SHORT);
+            toast.show();
+        } else if (!isFinishing()) {
             viewScheduleDialog.show();
             viewScheduleDialog.getWindow().setAttributes(lWindowParams);
-            if (schedules.size() == 0) {
-                Toast toast = Toast.makeText(this, "Không có lịch trình nào", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.TOP, 0, 1000);
-                toast.show();
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RESULT_FROM_EDIT_EVENT_INTENT && resultCode == RESULT_OK) {
-            if (data.getBooleanExtra("edit event", false)) {
-                if (data.getBooleanExtra("edit event succeed", false)) {
-                    selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
-                    fillInformation();
-                    salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
-                    viewSalaryAdapter.notifyDataSetChanged(salaries);
-                    Toast.makeText(this, "Cập nhật sự kiện thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Cập nhật sự kiện thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else if (requestCode == RESULT_FROM_EDIT_SALARY_INTENT && resultCode == RESULT_OK) {
-            if (data.getBooleanExtra("edit salaries", false)) {
-                if (data.getBooleanExtra("edit salaries succeed", false)) {
-                    fillInformation();
-                    salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
-                    viewSalaryAdapter.notifyDataSetChanged(salaries);
-                    Toast.makeText(this, "Cập nhật lương thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Cập nhật lương thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
         }
     }
 
@@ -274,6 +260,13 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     @Override
     protected void onResume() {
         super.onResume();
-        viewSalaryAdapter.notifyDataSetChanged(SalaryRepository.getInstance(null).getSalariesByEventId(eventId));
+        selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
+        salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
+        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+        fillInformation();
+        viewSalaryAdapter.notifyDataSetChanged(salaries);
+        viewScheduleAdapter.notifyDataSetChanged(schedules);
+
+        viewScheduleButton.setEnabled(!(schedules.size() == 0));
     }
 }

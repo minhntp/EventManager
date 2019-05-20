@@ -20,16 +20,13 @@ import android.widget.Toast;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.repositories.EventRepository;
-import com.nqm.event_manager.repositories.SalaryRepository;
 
 public class ViewEmployeeActivity extends AppCompatActivity {
 
     Activity context;
 
-    private static final int RESULT_FROM_EDIT_EMPLOYEE_INTENT = 7;
-
     Employee employee;
+    String employeeId;
 
     TextView nameTextView, specialityTextView, phoneNumberTextView, dateOfBirthTextView,
             emailTextView, cmndTextView;
@@ -93,7 +90,7 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         if (id == R.id.view_employee_action_edit) {
             Intent intent = new Intent(this, EditEmployeeActivity.class);
             intent.putExtra("employeeId", employee.getId());
-            startActivityForResult(intent, RESULT_FROM_EDIT_EMPLOYEE_INTENT);
+            startActivity(intent);
             return true;
         }
 
@@ -129,8 +126,8 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(getIntent()
-                .getStringExtra("employeeId"));
+        employeeId = getIntent().getStringExtra("employeeId");
+        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
 
         fillInformation();
     }
@@ -173,19 +170,13 @@ public class ViewEmployeeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!employee.getEmail().isEmpty()) {
-                    String[] TO = {employee.getEmail()};
-                    String[] CC = {""};
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setDataAndType(Uri.parse("mailto"), "text/plain");
-
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-                    emailIntent.putExtra(Intent.EXTRA_CC, CC);
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, "");
-
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+                    String mailto = "mailto:";
+                    mailto += employee.getEmail();
+                    emailIntent.setData(Uri.parse(mailto));
                     try {
-                        context.startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi email..."));
-                    } catch (android.content.ActivityNotFoundException ex) {
+                        startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email:"));
+                    } catch (Exception e) {
                         Toast.makeText(context, "Không tìm thấy ứng dụng gửi email", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -196,25 +187,15 @@ public class ViewEmployeeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RESULT_FROM_EDIT_EMPLOYEE_INTENT && resultCode == RESULT_OK) {
-            if (data.getBooleanExtra("edit?", false)) {
-                if (data.getBooleanExtra("edit succeed", false)) {
-                    employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employee.getId());
-                    fillInformation();
-                    Toast.makeText(this, "Lưu thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Lưu thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
+        fillInformation();
     }
 }

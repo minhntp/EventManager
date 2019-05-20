@@ -1,9 +1,7 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;
@@ -27,10 +26,8 @@ import java.util.HashMap;
 public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     Toolbar toolbar;
 
-    TextView titleEditText, timeEditText, locationEditText, noteEditText;
     CustomListView salaryListView;
 
-    HashMap<String, Salary> salaries;
     ArrayList<String> salariesIds;
     EditSalaryAdapter editSalaryAdapter;
     String eventId;
@@ -48,14 +45,12 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
 
         eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
-        salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
-        salariesIds = new ArrayList<>(salaries.keySet());
+        salariesIds = SalaryRepository.getInstance(null).getSalariesIdsByEventId(eventId);
 
         editSalaryAdapter = new EditSalaryAdapter(this, salariesIds);
         salaryListView.setAdapter(editSalaryAdapter);
 
         addEvents();
-        fillInformation();
     }
 
     @Override
@@ -90,11 +85,12 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
         SalaryRepository.getInstance(null).updateSalaries(salariesIds, salariesAmounts, salariesPaidStatus, new SalaryRepository.MyUpdateSalariesCallback() {
             @Override
             public void onCallback(boolean updateSucceed) {
-                Intent intent = new Intent();
-                intent.putExtra("edit salaries", true);
-                intent.putExtra("edit salaries succeed", true);
-                setResult(RESULT_OK, intent);
-                ((Activity) context).finish();
+                if (updateSucceed) {
+                    Toast.makeText(context, "Cập nhật lương thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Cập nhật lương thất bại", Toast.LENGTH_SHORT).show();
+                }
+                context.finish();
             }
         });
     }
@@ -102,27 +98,15 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     private void connectViews() {
         toolbar = findViewById(R.id.edit_salary_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Chỉnh sửa lương");
+        getSupportActionBar().setTitle(R.string.edit_salary_activity_label);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titleEditText = findViewById(R.id.edit_salary_from_view_event_title_text_view);
-        timeEditText = findViewById(R.id.edit_salary_from_view_event_time_text_view);
-        locationEditText = findViewById(R.id.edit_salary_from_view_event_location_text_view);
-        noteEditText = findViewById(R.id.edit_salary_from_view_event_note_text_view);
         salaryListView = findViewById(R.id.edit_salary_from_view_event_salary_list_view);
     }
 
     private void addEvents() {
 
-    }
-
-    private void fillInformation() {
-        titleEditText.setText(event.getTen());
-        timeEditText.setText(event.getGioBatDau() + " - " + event.getNgayBatDau() + "\n"
-                + event.getGioKetThuc() + " - " + event.getNgayKetThuc());
-        locationEditText.setText(event.getDiaDiem());
-        noteEditText.setText(event.getGhiChu());
     }
 
     @Override
@@ -133,9 +117,6 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.putExtra("edit salaries", false);
-                        setResult(RESULT_OK, intent);
                         context.finish();
                     }
 
@@ -143,5 +124,10 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
                 .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onSupportNavigateUp();
     }
 }

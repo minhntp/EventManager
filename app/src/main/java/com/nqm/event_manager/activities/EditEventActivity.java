@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.AddEmployeeFromEditEventAdapter;
@@ -134,7 +134,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         selectedEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
         schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
         ScheduleUtil.sortSchedulesByOrder(schedules);
-        Log.d("debug", "got " + schedules.size() + " schedules for current event");
 
         deleteEmployeeAdapter = new AddEmployeeFromEditEventAdapter(this, eventId,
                 selectedEmployeesIds);
@@ -441,11 +440,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 addEmployeesIds, schedules, new EventRepository.MyUpdateEventCallback() {
                     @Override
                     public void onCallback(boolean updateEventSucceed) {
-                        Intent intent = new Intent();
-                        intent.putExtra("edit event", true);
-                        intent.putExtra("edit event succeed", true);
-                        setResult(RESULT_OK, intent);
-                        Log.d("debug", "EditEventActivity: update event complete");
+                        if (updateEventSucceed) {
+                            Toast.makeText(context, "Cập nhật sự kiện thành công", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Cập nhật sự kiện thất bại", Toast.LENGTH_SHORT).show();
+                        }
                         context.finish();
                     }
                 });
@@ -542,9 +541,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.putExtra("edit event", false);
-                        setResult(RESULT_OK, intent);
                         context.finish();
                     }
 
@@ -552,5 +548,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onSupportNavigateUp();
     }
 }

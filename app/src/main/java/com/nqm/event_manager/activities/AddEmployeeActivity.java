@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -143,20 +144,14 @@ public class AddEmployeeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Intent intent = new Intent();
-                        intent.putExtra("add?", true);
-                        intent.putExtra("add succeed", true);
-                        setResult(RESULT_OK, intent);
+                        Toast.makeText(context, "Thêm nhân viên thành công", Toast.LENGTH_SHORT).show();
                         context.finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Intent intent = new Intent();
-                        intent.putExtra("add?", true);
-                        intent.putExtra("add succeed", false);
-                        setResult(RESULT_OK, intent);
+                        Toast.makeText(context, "Thêm nhân viên thất bại", Toast.LENGTH_SHORT).show();
                         context.finish();
                     }
                 });
@@ -166,19 +161,20 @@ public class AddEmployeeActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Trở về mà không lưu")
-                .setMessage("Bạn có chắc chắn không?")
-                .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                .setTitle("Trở về mà không lưu?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.putExtra("added?", false);
-                        setResult(RESULT_OK, intent);
                         context.finish();
                     }
                 })
+                .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
     }
 
+    @Override
+    public void onBackPressed() {
+        onSupportNavigateUp();
+    }
 }

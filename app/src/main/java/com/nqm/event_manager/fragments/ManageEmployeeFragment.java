@@ -34,9 +34,6 @@ import java.util.ArrayList;
 
 public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeViewClicked {
 
-    private static final int RESULT_FROM_ADD_EMPLOYEE_INTENT = 8;
-    static int RESULT_FROM_VIEW_EMPLOYEE_INTENT = 6;
-
     CustomListView employeeListView;
     ViewEmployeeListAdapter employeeAdapter;
     ArrayList<String> resultEmployeesIds;
@@ -102,7 +99,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
 
         if (id == R.id.manage_employee_add_action) {
             Intent intent = new Intent(getActivity(), AddEmployeeActivity.class);
-            startActivityForResult(intent, RESULT_FROM_ADD_EMPLOYEE_INTENT);
+            startActivity(intent);
             return true;
         }
 
@@ -130,48 +127,9 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        /*if (requestCode == RESULT_FROM_VIEW_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
-            if (data.getBooleanExtra("delete?", false)) {
-                String employeeId = data.getStringExtra("employeeId");
-                DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.EMPLOYEE_COLLECTION)
-                        .document(employeeId)
-                        .delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getContext(), "Xóa nhân viên thành công", Toast.LENGTH_SHORT).show();
-                                employeeAdapter.notifyDataSetChanged(EmployeeRepository.getInstance(null).getAllEmployeesIds());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getContext(), "Xóa nhân viên thất bại", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            } else {
-                employeeAdapter.notifyDataSetChanged(EmployeeRepository.getInstance(null).getAllEmployeesIds());
-            }
-        } else*/ if (requestCode == RESULT_FROM_ADD_EMPLOYEE_INTENT && resultCode == Activity.RESULT_OK) {
-            if (data.getBooleanExtra("add?", false)) {
-                if(data.getBooleanExtra("add succeed", false)) {
-                    Toast.makeText(getContext(), "Thêm nhân viên thành công", Toast.LENGTH_SHORT).show();
-                    employeeAdapter.notifyDataSetChanged(EmployeeRepository.getInstance(null).getAllEmployeesIds());
-                } else {
-                    Toast.makeText(getContext(), "Thêm nhân viên thất bại", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    @Override
     public void onEmployeeListItemClicked(String employeeId) {
         Intent intent = new Intent(getActivity(), ViewEmployeeActivity.class);
         intent.putExtra("employeeId", employeeId);
-        startActivityForResult(intent, RESULT_FROM_VIEW_EMPLOYEE_INTENT);
+        startActivity(intent);
     }
 }

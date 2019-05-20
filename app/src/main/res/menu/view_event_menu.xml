@@ -11,18 +11,18 @@
         android:id="@+id/view_event_action_edit_salaries"
         android:icon="@drawable/ic_money"
         android:orderInCategory="2"
-        android:title=""
+        android:title="Chỉnh sửa lương"
         app:showAsAction="always" />
     <item
         android:id="@+id/view_event_action_edit_event"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="3"
-        android:title="Chỉnh sửa"
+        android:title="Chỉnh sửa sự kiện"
         app:showAsAction="always" />
     <item
         android:id="@+id/view_event_action_send_notification"
         android:icon="@drawable/ic_menu_send"
         android:orderInCategory="1"
-        android:title="Sắp xếp"
+        android:title="Gửi thông tin cho nhân viên"
         app:showAsAction="always" />
 </menu>

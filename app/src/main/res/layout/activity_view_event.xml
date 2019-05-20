@@ -84,7 +84,7 @@
                     android:textStyle="bold" />
 
                 <com.nqm.event_manager.custom_views.CustomListView
-                    android:id="@+id/view_event_employees_listview"
+                    android:id="@+id/view_event_salaries_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

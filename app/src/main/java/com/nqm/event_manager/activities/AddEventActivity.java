@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.AddEmployeeFromAddEventAdapter;
@@ -73,7 +74,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
 
     Calendar calendar = Calendar.getInstance();
 
-    Context context;
+    Activity context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,10 +238,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             EventRepository.getInstance(null).addEventToDatabase(event, salaries, schedules, new EventRepository.MyAddEventCallback() {
                 @Override
                 public void onCallback(String eventId) {
-                    Intent intent = new Intent();
-                    intent.putExtra("added?", true);
-                    setResult(RESULT_OK, intent);
-                    ((Activity) context).finish();
+                    Toast.makeText(context, "Thêm sự kiện thành công", Toast.LENGTH_SHORT).show();
+                    context.finish();
                 }
             });
         } else {
@@ -416,8 +415,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
                     }
                 }
                 currentView = startTimeEditText;
-//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-//                int mm = calendar.get(Calendar.MINUTE);
                 new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
                         minute, false).show();
             }
@@ -438,8 +435,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
                     }
                 }
                 currentView = endTimeEditText;
-//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-//                int mm = calendar.get(Calendar.MINUTE);
                 new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
                         minute, false).show();
             }
@@ -502,25 +497,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        new android.support.v7.app.AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle("Trở về mà không lưu?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent = new Intent();
-//                        intent.putExtra("edit?", false);
-//                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-        return super.onSupportNavigateUp();
-    }
-
-    @Override
     public void onTimeEditTextSet(int position, String timeText) {
         getAllSchedulesFromRecyclerView(false);
         schedules.get(position).setTime(timeText);
@@ -554,5 +530,26 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
                 index++;
             }
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        new android.support.v7.app.AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Trở về mà không lưu?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+        return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onSupportNavigateUp();
     }
 }

@@ -3,7 +3,6 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -154,20 +154,14 @@ public class EditEmployeeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Intent intent = new Intent();
-                        intent.putExtra("edit?", true);
-                        intent.putExtra("edit succeed", true);
-                        setResult(RESULT_OK, intent);
+                        Toast.makeText(context, "Cập nhật nhân viên thành công", Toast.LENGTH_SHORT).show();
                         context.finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Intent intent = new Intent();
-                        intent.putExtra("edit?", true);
-                        intent.putExtra("edit succeed", false);
-                        setResult(RESULT_OK, intent);
+                        Toast.makeText(context, "Cập nhật nhân viên thất bại", Toast.LENGTH_SHORT).show();
                         context.finish();
                     }
                 });
@@ -181,14 +175,16 @@ public class EditEmployeeActivity extends AppCompatActivity {
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent = new Intent();
-//                        intent.putExtra("edit?", false);
-//                        setResult(RESULT_OK, intent);
                         context.finish();
                     }
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onSupportNavigateUp();
     }
 }
