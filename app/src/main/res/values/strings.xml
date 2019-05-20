@@ -28,5 +28,5 @@
         <item>Lịch trình</item>
     </string-array>
 
-    <string name="tab">\u0009</string>
+    <string name="tab">    </string>
 </resources>
