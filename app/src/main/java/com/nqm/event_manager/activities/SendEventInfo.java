@@ -211,7 +211,7 @@ public class SendEventInfo extends AppCompatActivity {
             }
             content += "\n";
         }
-//        content.replaceAll("\t", getString(R.string.tab));
+        content.replaceAll("\t", getString(R.string.tab));
         return content;
     }
 
