@@ -392,7 +392,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
         Intent intent = new Intent(getContext(), ViewEventActivity.class);
-        intent.putExtra("eventId", eventId);
+        intent.putExtra("event Id", eventId);
         startActivity(intent);
     }
 

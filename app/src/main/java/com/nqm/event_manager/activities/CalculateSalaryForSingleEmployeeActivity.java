@@ -314,7 +314,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
         Intent intent = new Intent(this, ViewEventActivity.class);
-        intent.putExtra("eventId", eventId);
+        intent.putExtra("event Id", eventId);
         startActivity(intent);
     }
 

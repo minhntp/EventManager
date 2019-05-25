@@ -139,7 +139,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
     private void init() {
         context = this;
 
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("event Id");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
 
         selectedEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
@@ -469,18 +469,18 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         }
 
         for (Reminder r : selectedReminders) {
-            Calendar calendar = Calendar.getInstance();
+            Calendar calendarDateTime = Calendar.getInstance();
             Calendar calendarTime = Calendar.getInstance();
             try {
-                calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(event.getNgayBatDau()));
-                calendarTime.setTime(CalendarUtil.sdfTime.parse(event.getGioBatDau()));
-                calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
-                calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
+                calendarDateTime.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayBatDau()));
+                calendarTime.setTime(CalendarUtil.sdfTime.parse(changedEvent.getGioBatDau()));
+                calendarDateTime.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
+                calendarDateTime.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
-            r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+            calendarDateTime.add(Calendar.MINUTE, r.getMinute() * (-1));
+            r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendarDateTime.getTime()));
         }
 
         EventRepository.getInstance(null).updateEventToDatabase(changedEvent, deleteEmployeesIds,

@@ -71,7 +71,7 @@ public class SendEventInfo extends AppCompatActivity {
     private void init() {
         context = this;
 
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("event Id");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
         employeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
         sectionsTitles = getResources().getStringArray(R.array.sections_titles);

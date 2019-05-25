@@ -87,7 +87,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         ScheduleRepository.getInstance().setListener(this);
         ReminderRepository.getInstance().setListener(this);
 
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra("event Id");
         Log.d("debug", "event Id got in ViewEventActivity: " + eventId);
         selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
 
@@ -167,7 +167,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                         "đã được trả", Toast.LENGTH_LONG).show();
             } else {
                 Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
-                intent.putExtra("eventId", eventId);
+                intent.putExtra("event Id", eventId);
                 startActivity(intent);
             }
             return true;
@@ -176,7 +176,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         //Chỉnh sửa sự kiện
         if (id == R.id.view_event_action_edit_event) {
             Intent intent = new Intent(this, EditEventActivity.class);
-            intent.putExtra("eventId", eventId);
+            intent.putExtra("event Id", eventId);
             startActivity(intent);
             return true;
         }
@@ -184,7 +184,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         //Gửi thông báo
         if (id == R.id.view_event_action_send_notification) {
             Intent intent = new Intent(this, SendEventInfo.class);
-            intent.putExtra("eventId", eventId);
+            intent.putExtra("event Id", eventId);
             startActivity(intent);
             return true;
         }

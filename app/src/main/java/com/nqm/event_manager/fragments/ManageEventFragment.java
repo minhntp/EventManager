@@ -148,9 +148,9 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         eventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent eventDetailsIntent = new Intent(getActivity(), ViewEventActivity.class);
-                eventDetailsIntent.putExtra("eventId", mainViewEventAdapter.getEventIds().get(position));
-                startActivity(eventDetailsIntent);
+                Intent viewEventIntent = new Intent(getActivity(), ViewEventActivity.class);
+                viewEventIntent.putExtra("event Id", mainViewEventAdapter.getEventIds().get(position));
+                startActivity(viewEventIntent);
             }
         });
     }

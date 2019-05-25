@@ -18,16 +18,16 @@ import com.nqm.event_manager.repositories.EventRepository;
 public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        String eventId = intent.getStringExtra("eventId");
+        String eventId = intent.getStringExtra("event Id");
         Log.d("debug", "got alarm from event " + eventId);
         Event event = EventRepository.getInstance().getAllEvents().get(eventId);
 
         Intent viewEventIntent = new Intent(RootActivity.context, ViewEventActivity.class);
-        viewEventIntent.putExtra("eventId", eventId);
+        viewEventIntent.putExtra("event Id", eventId);
         Log.d("debug", "set notification for event " + eventId);
         viewEventIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingViewEventIntent = PendingIntent.getActivity(RootActivity.context,
-                0, viewEventIntent, 0);
+                0, viewEventIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String bigText = "Địa điểm: " + "\n" +
                 "\t" + event.getDiaDiem() + "\n" +

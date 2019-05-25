@@ -15,43 +15,56 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SendEventInfo"
+
+        <activity
+            android:name=".activities.SendEventInfo"
             android:label="@string/send_event_info_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".activities.AddEmployeeActivity"
             android:label="@string/add_employee_single_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".activities.EditEmployeeActivity"
             android:label="@string/edit_employee_single_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".activities.ViewEmployeeActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".activities.ViewEventActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
-        <activity android:name=".activities.RootActivity$EventDetailsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".activities.ViewEmployeeActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".activities.ViewEventActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"/>
+
         <activity
             android:name=".activities.AddEventActivity"
             android:label="@string/add_event_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".activities.EditSalaryFromViewEventActivity"
             android:label="@string/edit_salary_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <activity
             android:name=".activities.EditEventActivity"
             android:label="@string/edit_event_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <receiver android:name="com.nqm.event_manager.BroadcastReceiver.MyBroadcastReceiver" />
     </application>
 

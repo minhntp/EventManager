@@ -123,7 +123,7 @@ public class ReminderRepository {
                     " - " + CalendarUtil.sdfDayMonthYearTime.format(currentCalendar.getTime()));
             if(reminderCalendar.compareTo(currentCalendar) >= 0) {
                 Intent intent = new Intent(RootActivity.context, MyBroadcastReceiver.class);
-                intent.putExtra("eventId", r.getEventId());
+                intent.putExtra("event Id", r.getEventId());
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(RootActivity.context,
                         requestCode++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
