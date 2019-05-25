@@ -76,10 +76,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         ScheduleRepository.getInstance().setListener(this);
         ReminderRepository.getInstance().setListener(this);
 
-        if (ReminderRepository.alarmManager == null) {
-            ReminderRepository.alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        }
-
         connectViews(view);
         addEvents();
 
@@ -149,7 +145,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent viewEventIntent = new Intent(getActivity(), ViewEventActivity.class);
-                viewEventIntent.putExtra("event Id", mainViewEventAdapter.getEventIds().get(position));
+                viewEventIntent.putExtra("eventId", mainViewEventAdapter.getEventIds().get(position));
                 startActivity(viewEventIntent);
             }
         });

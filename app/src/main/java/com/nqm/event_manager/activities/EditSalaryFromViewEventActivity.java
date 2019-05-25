@@ -41,7 +41,7 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
         context = this;
         connectViews();
 
-        eventId = getIntent().getStringExtra("event Id");
+        eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
         salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
 

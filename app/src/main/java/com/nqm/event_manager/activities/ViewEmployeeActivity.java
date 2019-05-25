@@ -185,11 +185,13 @@ public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLo
     protected void onResume() {
         super.onResume();
         EmployeeRepository.getInstance().setListener(this);
+        employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
+        fillInformation();
     }
 
     @Override
     public void notifyOnLoadComplete() {
-        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
+        employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
     }
 }

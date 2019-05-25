@@ -34,7 +34,6 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
-import com.nqm.event_manager.utils.SalaryUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -309,7 +308,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
 
         resultEventsSize = resultEventIds.size();
 
-        SalaryUtil.sortSalariesByEventStartDate(resultSalaries);
+        SalaryRepository.sortSalariesByEventStartDate(resultSalaries);
     }
 
     private void updateEmployeesSpinner() {
@@ -392,7 +391,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
         Intent intent = new Intent(getContext(), ViewEventActivity.class);
-        intent.putExtra("event Id", eventId);
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 

@@ -40,4 +40,8 @@ public class Constants {
     public static String REMINDER_TEXT = "text";
     public static String REMINDER_TIME = "thoigian";
 
+    public static String BOOT_COMPLETE = "khoidong";
+    public static String BOOT_COMPLETED = "hoantat";
+    public static String BOOT_TIME = "thoigian";
+
 }

@@ -140,10 +140,10 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         // dayOfWeek = 1 (sunday) -> offSet = 6 -> offSet = dayOfWeek + 5 (only Sunday)
         // dayOfWeek = 2 (monday) -> offSet = 0 -> offSet = dayOfWeek - 2 (same for other days)
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        if (dayOfWeek >= 2) {
-            offSet = dayOfWeek - 2;
-        } else {
+        if (dayOfWeek == Calendar.SUNDAY) {
             offSet = dayOfWeek + 5;
+        } else {
+            offSet = dayOfWeek - 2;
         }
         for (int i = 0; i < 37; i++) {
             int day = i - offSet + 1;

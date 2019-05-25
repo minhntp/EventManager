@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.utils.ScheduleUtil;
+import com.nqm.event_manager.repositories.ScheduleRepository;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class ViewScheduleAdapter extends BaseAdapter {
 
     public ViewScheduleAdapter(Activity context, ArrayList<Schedule> schedules) {
         this.context = context;
-        ScheduleUtil.sortSchedulesByOrder(schedules);
+        ScheduleRepository.sortSchedulesByOrder(schedules);
         this.schedules = schedules;
     }
 
@@ -60,7 +60,7 @@ public class ViewScheduleAdapter extends BaseAdapter {
     }
 
     public void notifyDataSetChanged(ArrayList<Schedule> schedules) {
-        ScheduleUtil.sortSchedulesByOrder(schedules);
+        ScheduleRepository.sortSchedulesByOrder(schedules);
         this.schedules = schedules;
         super.notifyDataSetChanged();
     }

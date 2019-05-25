@@ -22,47 +22,21 @@ public class EventListAdapter extends BaseAdapter {
 
     private final Activity context;
     Date date;
-    private HashMap<String, Event> events;
-    private ArrayList<String> eventIds;
+    private ArrayList<Event> events;
 
     public EventListAdapter(Activity context, Date date) {
         this.context = context;
         this.date = date;
-        events = EventRepository.getInstance(null).getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
-        eventIds = new ArrayList<>(events.keySet());
-        sortEvents();
-    }
-
-    private void sortEvents() {
-        //sort by start date
-        Collections.sort(eventIds, new Comparator<String>() {
-            @Override
-            public int compare(String id1, String id2) {
-                int compareResult = 0;
-                Event e1 = EventRepository.getInstance(null).getEventByEventId(id1);
-                Event e2 = EventRepository.getInstance(null).getEventByEventId(id2);
-                try {
-                    if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
-                        compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
-                                CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
-                    } else {
-                        compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
-                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return compareResult;
-            }
-        });
+        events = EventRepository.getInstance(null).getEventsArrayListThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
+        EventRepository.getInstance().sortEventsByStartDateTime(events);
     }
 
     public ArrayList<String> getEventIds() {
-        return eventIds;
-    }
-
-    public void setEventIds(ArrayList<String> eventIds) {
-        this.eventIds = eventIds;
+        ArrayList<String> eventsIds = new ArrayList<>();
+        for (Event e : events) {
+            eventsIds.add(e.getId());
+        }
+        return  eventsIds;
     }
 
     @Override
@@ -72,7 +46,7 @@ public class EventListAdapter extends BaseAdapter {
 
     @Override
     public Event getItem(int i) {
-        return events.get(eventIds.get(i));
+        return events.get(i);
     }
 
     @Override
@@ -90,37 +64,36 @@ public class EventListAdapter extends BaseAdapter {
         TextView titleTextView = view.findViewById(R.id.event_title_text_view);
         TextView locationTextView = view.findViewById(R.id.event_location_text_view);
 
-        Event thisEvent = events.get(eventIds.get(position));
-
-        String start = thisEvent.getGioBatDau();
-        String end = thisEvent.getGioKetThuc();
+        String startTime = getItem(position).getGioBatDau();
+        String endTime = getItem(position).getGioKetThuc();
         try {
-            if (!thisEvent.getNgayBatDau().equals(thisEvent.getNgayKetThuc())) {
+            if (!getItem(position).getNgayBatDau().equals(getItem(position).getNgayKetThuc())) {
                 if (CalendarUtil.sdfDayMonthYear.parse(CalendarUtil.sdfDayMonthYear.format(date)).compareTo(
-                        CalendarUtil.sdfDayMonthYear.parse(thisEvent.getNgayBatDau())) > 0) {
-                    start = CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear.parse(thisEvent.getNgayBatDau()));
+                        CalendarUtil.sdfDayMonthYear.parse(getItem(position).getNgayBatDau())) > 0) {
+                    startTime = CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
+                            .parse(getItem(position).getNgayBatDau()));
                 }
                 if (CalendarUtil.sdfDayMonthYear.parse(CalendarUtil.sdfDayMonthYear.format(date)).compareTo(
-                        CalendarUtil.sdfDayMonthYear.parse(thisEvent.getNgayKetThuc())) < 0) {
-                    end = CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear.parse(thisEvent.getNgayKetThuc()));
+                        CalendarUtil.sdfDayMonthYear.parse(getItem(position).getNgayKetThuc())) < 0) {
+                    endTime = CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
+                            .parse(getItem(position).getNgayKetThuc()));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String time = start + "\n" + end;
+        String time = startTime + "\n" + endTime;
         timeTextView.setText(time);
-        titleTextView.setText(events.get(eventIds.get(position)).getTen());
-        locationTextView.setText(events.get(eventIds.get(position)).getDiaDiem());
+        titleTextView.setText(getItem(position).getTen());
+        locationTextView.setText(getItem(position).getDiaDiem());
 
         return view;
     }
 
     public void notifyDataSetChanged(Date date) {
         this.date = date;
-        events = EventRepository.getInstance().getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
-        eventIds = new ArrayList<>(events.keySet());
-        sortEvents();
+        events = EventRepository.getInstance().getEventsArrayListThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
+        EventRepository.getInstance().sortEventsByStartDateTime(events);
         super.notifyDataSetChanged();
     }
 }

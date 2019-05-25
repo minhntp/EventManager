@@ -10,6 +10,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
+import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -230,7 +231,22 @@ public class EmployeeRepository {
         return employeesIds;
     }
 
-    public String normalizeString(String s) {
+    public ArrayList<Employee> getEmployeesBySearchString(String searchString) {
+        if (searchString.isEmpty()) {
+            return (new ArrayList<>(getAllEmployees().values()));
+        }
+
+        ArrayList<Employee> employees = new ArrayList<>();
+        for (Employee e : allEmployees.values()) {
+            if (normalizeString(e.getHoTen()).contains(normalizeString(searchString)) ||
+                    normalizeString(e.getChuyenMon()).contains(normalizeString(searchString))) {
+                employees.add(e);
+            }
+        }
+        return employees;
+    }
+
+    private String normalizeString(String s) {
         try {
             String tempS = Normalizer.normalize(s, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
@@ -243,5 +259,16 @@ public class EmployeeRepository {
 
     private interface MyEmployeeCallback {
         void onCallback(HashMap<String, Employee> employeeList);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    public ArrayList<String> getConflictEvents(String employeeId, String startDateTime, String endDateTime) {
+        ArrayList<Salary> salaries = SalaryRepository.getInstance()
+                .getSalariesByStartTimeAndEndTimeAndEmployeeId(startDateTime, endDateTime, employeeId);
+        ArrayList<String> eventsIds = new ArrayList<>();
+        for (Salary s : salaries) {
+            eventsIds.add(s.getEventId());
+        }
+        return eventsIds;
     }
 }

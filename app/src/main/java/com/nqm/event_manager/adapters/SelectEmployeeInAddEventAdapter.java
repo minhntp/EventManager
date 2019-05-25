@@ -9,36 +9,41 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SelectEmployeeInAddEventAdapter extends BaseAdapter implements IOnDataLoadComplete {
+public class SelectEmployeeInAddEventAdapter extends BaseAdapter {
 
-    private final Activity context;
+    Activity context;
     private ArrayList<String> selectedEmployeesIds;
-    private HashMap<String, Employee> allEmployees;
-    private String[] allEmployeesIds;
+    private ArrayList<Employee> employees;
+    private IOnSelectEmployeeViewClicked listener;
 
-    public SelectEmployeeInAddEventAdapter(Activity context, ArrayList<String> selectedEmployeesIds) {
+    public SelectEmployeeInAddEventAdapter(Activity context, ArrayList<String> selectedEmployeesIds,
+                                           ArrayList<Employee> employees) {
         this.context = context;
         this.selectedEmployeesIds = selectedEmployeesIds;
-        this.allEmployees = EmployeeRepository.getInstance().getAllEmployees();
-        allEmployeesIds = allEmployees.keySet().toArray(new String[allEmployees.size()]);
-        EmployeeRepository.getInstance().setListener(this);
+        this.employees = employees;
+    }
+
+    public void setListener(IOnSelectEmployeeViewClicked listener) {
+        this.listener = listener;
     }
 
     @Override
     public int getCount() {
-        return allEmployees.size();
+        return employees.size();
     }
 
     @Override
-    public Object getItem(int i) {
-        return allEmployees.get(i);
+    public Employee getItem(int position) {
+        return employees.get(position);
     }
 
     @Override
@@ -55,39 +60,43 @@ public class SelectEmployeeInAddEventAdapter extends BaseAdapter implements IOnD
         //Connect views
         TextView hoTenTextView = view.findViewById(R.id.select_ho_ten_text_view);
         TextView chuyenMonTextView = view.findViewById(R.id.select_chuyen_mon_text_view);
-        CheckBox addEmployeeCheckBox = view.findViewById(R.id.add_employee_checkbox);
+        final CheckBox addEmployeeCheckBox = view.findViewById(R.id.add_employee_checkbox);
 
         //Fill information
-        hoTenTextView.setText(allEmployees.get(allEmployeesIds[position]).getHoTen());
-        chuyenMonTextView.setText(allEmployees.get(allEmployeesIds[position]).getChuyenMon());
+        hoTenTextView.setText(getItem(position).getHoTen());
+        chuyenMonTextView.setText(getItem(position).getChuyenMon());
 
-        //--get checkbox to checked if this employees id is contained in selectedEmployeesIds
-        if (selectedEmployeesIds.size() > 0 && selectedEmployeesIds.contains(allEmployees.get(allEmployeesIds[position]).getId())) {
+        //if employee is selected -> set checkbox to checked
+        if (selectedEmployeesIds.contains(getItem(position).getId())) {
             addEmployeeCheckBox.setChecked(true);
         } else {
             addEmployeeCheckBox.setChecked(false);
         }
 
+        //update selectedEmployees when user click on checkbox
+        addEmployeeCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onCheckBoxClicked(getItem(position).getId(), addEmployeeCheckBox.isChecked());
+            }
+        });
+
         return view;
     }
 
-    public String[] getAllEmployeesIds() {
-        return allEmployeesIds;
-    }
-
-    public void setAllEmployeesIds(String[] allEmployeesIds) {
-        this.allEmployeesIds = allEmployeesIds;
-    }
-
-    public void notifyDataSetChanged(ArrayList<String> selectedEmployeesIds) {
+    public void setSelectedEmployeesIds(ArrayList<String> selectedEmployeesIds) {
         this.selectedEmployeesIds = selectedEmployeesIds;
+    }
+
+    public ArrayList<String> getSelectedEmployeesIds() {
+        return selectedEmployeesIds;
+    }
+
+    public void notifyDataSetChanged(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees) {
+        this.selectedEmployeesIds = selectedEmployeesIds;
+        this.employees = employees;
         super.notifyDataSetChanged();
     }
 
-    @Override
-    public void notifyOnLoadComplete() {
-        allEmployees = EmployeeRepository.getInstance().getAllEmployees();
-        allEmployeesIds = allEmployees.keySet().toArray(new String[allEmployees.size()]);
-    }
 
 }

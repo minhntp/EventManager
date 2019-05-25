@@ -130,7 +130,7 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
             @Override
             public void onEventSelected(CalendarEvent event) {
                 Intent eventDetailsIntent = new Intent(getContext(), ViewEventActivity.class);
-                eventDetailsIntent.putExtra("event Id", ((DrawableCalendarEvent) event).getEventID());
+                eventDetailsIntent.putExtra("eventId", ((DrawableCalendarEvent) event).getEventID());
                 getActivity().startActivityForResult(eventDetailsIntent, RESULT_FROM_DELETE_EVENT_INTENT);
             }
 

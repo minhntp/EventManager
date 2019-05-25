@@ -8,19 +8,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
         android:text="Chọn Nhân sự"
         android:textAlignment="center"
         android:textSize="20dp"
         android:textStyle="bold" />
 
+    <android.support.v7.widget.SearchView
+        android:id="@+id/select_employee_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_schedule_dialog_title_text_view"
+        android:layoutDirection="rtl"/>
+
     <com.nqm.event_manager.custom_views.CustomListView
         android:id="@+id/select_employee_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/button_layout"
-        android:layout_below="@id/add_schedule_dialog_title_text_view"/>
+        android:layout_below="@id/select_employee_search_view"/>
     <!--</ScrollView>-->
     <LinearLayout
         android:id="@+id/button_layout"

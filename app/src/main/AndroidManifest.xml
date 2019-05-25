@@ -2,13 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nqm.event_manager">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".application.EventManager">
+        <activity android:name=".ShowConflictActivity"/>
         <activity
             android:name=".activities.RootActivity"
             android:label="@string/app_name"
@@ -17,55 +21,52 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.SendEventInfo"
             android:label="@string/send_event_info_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.AddEmployeeActivity"
             android:label="@string/add_employee_single_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.EditEmployeeActivity"
             android:label="@string/edit_employee_single_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.ViewEmployeeActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.ViewEventActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
+            android:excludeFromRecents="true"
             android:taskAffinity=""
-            android:excludeFromRecents="true"/>
-
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activities.AddEventActivity"
             android:label="@string/add_event_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.EditSalaryFromViewEventActivity"
             android:label="@string/edit_salary_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
-
         <activity
             android:name=".activities.EditEventActivity"
             android:label="@string/edit_event_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <receiver android:name="com.nqm.event_manager.BroadcastReceiver.MyBroadcastReceiver" />
+        <receiver android:name=".broadcast_receivers.ReminderNotificationReceiver" />
+        <receiver android:name=".broadcast_receivers.SetRemindersOnBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

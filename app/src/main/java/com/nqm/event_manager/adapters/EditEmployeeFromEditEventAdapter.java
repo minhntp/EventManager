@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EditEmployeeFromEditEventAdapter extends BaseAdapter {
-    private final Activity context;
+    private Activity context;
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, Employee> allEmployees;
     private String eventId;
@@ -28,7 +29,7 @@ public class EditEmployeeFromEditEventAdapter extends BaseAdapter {
         this.context = context;
         this.eventId = eventId;
         this.selectedEmployeesIds = selectedEmployeesIds;
-        allEmployees = EmployeeRepository.getInstance(null).getAllEmployees();
+        allEmployees = EmployeeRepository.getInstance().getAllEmployees();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class EditEmployeeFromEditEventAdapter extends BaseAdapter {
         hoTenTextView.setText(allEmployees.get(selectedEmployeesIds.get(position)).getHoTen());
         chuyenMonTextView.setText(allEmployees.get(selectedEmployeesIds.get(position)).getChuyenMon());
 
-        //Delete event
+        //Delete
         deleteEmployeeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,8 +92,8 @@ public class EditEmployeeFromEditEventAdapter extends BaseAdapter {
         this.selectedEmployeesIds = selectedEmployeesIds;
     }
 
-    @Override
-    public void notifyDataSetChanged() {
+    public void notifyDataSetChanged(ArrayList<String> selectedEmployeesIds) {
+        this.selectedEmployeesIds = selectedEmployeesIds;
         super.notifyDataSetChanged();
     }
 }

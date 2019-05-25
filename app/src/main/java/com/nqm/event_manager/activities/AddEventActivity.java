@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
@@ -33,19 +34,23 @@ import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
+import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
+import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
-import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked {
+public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked,
+        IOnSelectEmployeeViewClicked {
     Activity context;
 
     Toolbar toolbar;
@@ -64,7 +69,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     ArrayList<Reminder> selectedReminders;
 
     EditEmployeeFromAddEventAdapter editEmployeeAdapter;
-    SelectEmployeeInAddEventAdapter selectEmployeeAdapter;
 
     WindowManager.LayoutParams lWindowParams;
     EditScheduleRecyclerAdapter addScheduleAdapter;
@@ -75,9 +79,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
     ItemTouchHelper touchHelper;
 
+    ListView selectEmployeeListView;
+    SelectEmployeeInAddEventAdapter selectEmployeeAdapter;
+
     CustomListView reminderListView;
     Button addReminderButton;
     EditReminderAdapter editReminderAdapter;
+
+    String searchString = "";
 
     Calendar calendar = Calendar.getInstance();
 
@@ -140,7 +149,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         selectedReminders = new ArrayList<>();
 
         editEmployeeAdapter = new EditEmployeeFromAddEventAdapter(this, selectedEmployeesIds);
-        selectEmployeeAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds);
         editEmployeeListView.setAdapter(editEmployeeAdapter);
 
         //Set start date, end date edit texts from selected date
@@ -215,7 +223,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             @Override
             public void onClick(View v) {
                 getAllSchedulesFromRecyclerView(false);
-                ScheduleUtil.sortSchedulesByStartTime(schedules);
+                ScheduleRepository.sortSchedulesByStartTime(schedules);
                 addScheduleAdapter.setSchedules(schedules);
                 addScheduleAdapter.notifyDataSetChanged();
                 titleTextView.requestFocus();
@@ -277,7 +285,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         addEmployeeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openAddEmployeeDialog();
+                openSelectEmployeeDialog();
             }
         });
 
@@ -480,44 +488,67 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         }
     }
 
-    private void openAddEmployeeDialog() {
-        final Dialog addEmployeeDialog = new Dialog(this);
-        addEmployeeDialog.setContentView(R.layout.dialog_select_employee);
+    private void openSelectEmployeeDialog() {
+        final Dialog selectEmployeeDialog = new Dialog(this);
+        selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
+        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         //Connect views
-        final ListView selectEmployeeListView = addEmployeeDialog.findViewById(R.id.select_employee_list_view);
-        Button cancelButton = addEmployeeDialog.findViewById(R.id.cancel_button);
-        Button okButton = addEmployeeDialog.findViewById(R.id.ok_button);
+        selectEmployeeListView = selectEmployeeDialog.findViewById(R.id.select_employee_list_view);
+        Button cancelButton = selectEmployeeDialog.findViewById(R.id.cancel_button);
+        Button okButton = selectEmployeeDialog.findViewById(R.id.ok_button);
 
+        selectEmployeeAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds,
+                EmployeeRepository.getInstance().getEmployeesBySearchString(searchString));
+        selectEmployeeAdapter.setListener(this);
         selectEmployeeListView.setAdapter(selectEmployeeAdapter);
+
+        SearchView searchView = selectEmployeeDialog.findViewById(R.id.select_employee_search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchString = newText;
+                ArrayList<Employee> employees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
+                selectEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds, employees);
+                return true;
+            }
+        });
 
         //Add events
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CheckBox tempCheckbox;
-                for (int i = 0; i < selectEmployeeListView.getChildCount(); i++) {
-                    tempCheckbox = selectEmployeeListView.getChildAt(i).findViewById(R.id.add_employee_checkbox);
-                    if (tempCheckbox.isChecked() &&
-                            !selectedEmployeesIds.contains(selectEmployeeAdapter.getAllEmployeesIds()[i])) {
-                        selectedEmployeesIds.add(selectEmployeeAdapter.getAllEmployeesIds()[i]);
-                    }
-                    if (!tempCheckbox.isChecked()) {
-                        selectedEmployeesIds.remove(selectEmployeeAdapter.getAllEmployeesIds()[i]);
-                    }
-                }
-                editEmployeeAdapter.notifyDataSetChanged();
-                addEmployeeDialog.dismiss();
+//                CheckBox tempCheckbox;
+//                for (int i = 0; i < selectEmployeeListView.getChildCount(); i++) {
+//                    tempCheckbox = selectEmployeeListView.getChildAt(i).findViewById(R.id.add_employee_checkbox);
+//                    if (tempCheckbox.isChecked() &&
+//                            !selectedEmployeesIds.contains(selectEmployeeAdapter.getAllEmployeesIds()[i])) {
+//                        selectedEmployeesIds.add(selectEmployeeAdapter.getAllEmployeesIds()[i]);
+//                    }
+//                    if (!tempCheckbox.isChecked()) {
+//                        selectedEmployeesIds.remove(selectEmployeeAdapter.getAllEmployeesIds()[i]);
+//                    }
+//                }
+                selectedEmployeesIds = selectEmployeeAdapter.getSelectedEmployeesIds();
+                editEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds);
+                selectEmployeeDialog.dismiss();
             }
         });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addEmployeeDialog.dismiss();
+                selectEmployeeDialog.dismiss();
             }
         });
         if (!isFinishing()) {
-            addEmployeeDialog.show();
+            selectEmployeeDialog.show();
         }
     }
 
@@ -616,5 +647,17 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     @Override
     public void onBackPressed() {
         onSupportNavigateUp();
+    }
+
+    @Override
+    public void onCheckBoxClicked(String employeeId, boolean isChecked) {
+        if (isChecked) {
+            selectedEmployeesIds.add(employeeId);
+        } else {
+            selectedEmployeesIds.remove(employeeId);
+        }
+
+        selectEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds,
+                EmployeeRepository.getInstance().getEmployeesBySearchString(searchString));
     }
 }

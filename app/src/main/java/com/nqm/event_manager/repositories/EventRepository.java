@@ -19,6 +19,8 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -283,16 +285,21 @@ public class EventRepository {
             batch.set(addScheduleDocRef, addScheduleData);
         }
 
-        ReminderRepository.getInstance().deleteRemindersByEventId(changedEvent.getId());
+        for (String reminderId : ReminderRepository.getInstance().getRemindersIdsByEventId(changedEvent.getId())) {
+            DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
+                    .collection(Constants.REMINDER_COLLECTION).document(reminderId);
+            batch.delete(reminderDocRef);
+        }
 
         for (Reminder reminder : reminders) {
             DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.REMINDER_COLLECTION).document();
-            HashMap<String, String> reminderData = new HashMap<>();
-            reminderData.put(Constants.REMINDER_EVENT_ID, eventDocRef.getId());
+            Map<String, Object> reminderData = new HashMap<>();
+            reminderData.put(Constants.REMINDER_EVENT_ID, changedEvent.getId());
             reminderData.put(Constants.REMINDER_MINUTE, "" + reminder.getMinute());
             reminderData.put(Constants.REMINDER_TEXT, reminder.getText());
             reminderData.put(Constants.REMINDER_TIME, reminder.getTime());
+
             batch.set(reminderDocRef, reminderData);
         }
 
@@ -335,6 +342,25 @@ public class EventRepository {
         return events;
     }
 
+    public ArrayList<Event> getEventsArrayListThroughDate(String date) {
+        ArrayList<Event> events = new ArrayList<>();
+        if (getAllEvents().size() > 0) {
+            for (Event tempE : allEvents.values()) {
+                try {
+                    if ((CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
+                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0) &&
+                            (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
+                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0)) {
+                        events.add(tempE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return events;
+    }
+
     public Date getEventStartDateTimeByReminder(Reminder r) {
         Calendar calendarDate = Calendar.getInstance();
         Calendar calendarTime = Calendar.getInstance();
@@ -352,5 +378,27 @@ public class EventRepository {
 
     private interface MyEventCallback {
         void onCallback(HashMap<String, Event> eventList);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    public void sortEventsByStartDateTime(ArrayList<Event> events) {
+        Collections.sort(events, new Comparator<Event>() {
+            @Override
+            public int compare(Event e1, Event e2) {
+                int compareResult = 0;
+                try {
+                    if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
+                        compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
+                                CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
+                    } else {
+                        compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
+                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
     }
 }

@@ -26,6 +26,7 @@ import com.nqm.event_manager.adapters.ViewScheduleAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.interfaces.IOnReminderViewClicked;
 import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ViewEventActivity extends AppCompatActivity implements IOnViewSalaryItemClicked,
-        IOnDataLoadComplete {
+        IOnDataLoadComplete, IOnReminderViewClicked {
     Activity context;
 
     Button viewScheduleButton;
@@ -68,6 +69,8 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
+    boolean reminderSectionTouched;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,20 +90,22 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         ScheduleRepository.getInstance().setListener(this);
         ReminderRepository.getInstance().setListener(this);
 
-        eventId = getIntent().getStringExtra("event Id");
-        Log.d("debug", "event Id got in ViewEventActivity: " + eventId);
-        selectedEvent = EventRepository.getInstance(null).getAllEvents().get(eventId);
+        eventId = getIntent().getStringExtra("eventId");
+//        Log.d("debug", "eventId got in ViewEvent: " + eventId);
+        selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
 
-        fillInformation();
+        if (selectedEvent != null) {
+            fillInformation();
+        }
 
         // SALARY LIST VIEW
-        salaries = SalaryRepository.getInstance(null).getSalariesByEventId(eventId);
+        salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
         viewSalaryAdapter = new ViewSalaryAdapter(this, salaries);
         viewSalaryAdapter.setListener(this);
         salaryListView.setAdapter(viewSalaryAdapter);
 
         // SCHEDULE DIALOG
-        schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+        schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
         viewScheduleDialog = new Dialog(this);
         viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
 
@@ -127,7 +132,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
         selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
         editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
+        editReminderAdapter.setListener(this);
         editReminderListView.setAdapter(editReminderAdapter);
+        reminderSectionTouched = false;
     }
 
     @Override
@@ -167,7 +174,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                         "đã được trả", Toast.LENGTH_LONG).show();
             } else {
                 Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
-                intent.putExtra("event Id", eventId);
+                intent.putExtra("eventId", eventId);
                 startActivity(intent);
             }
             return true;
@@ -176,7 +183,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         //Chỉnh sửa sự kiện
         if (id == R.id.view_event_action_edit_event) {
             Intent intent = new Intent(this, EditEventActivity.class);
-            intent.putExtra("event Id", eventId);
+            intent.putExtra("eventId", eventId);
             startActivity(intent);
             return true;
         }
@@ -184,7 +191,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         //Gửi thông báo
         if (id == R.id.view_event_action_send_notification) {
             Intent intent = new Intent(this, SendEventInfo.class);
-            intent.putExtra("event Id", eventId);
+            intent.putExtra("eventId", eventId);
             startActivity(intent);
             return true;
         }
@@ -251,6 +258,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
             @Override
             public void onClick(View v) {
                 openSelectReminderDialog();
+                reminderSectionTouched = true;
             }
         });
     }
@@ -321,7 +329,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
             calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
         }
-        ReminderRepository.getInstance().updateRemindersByEventId(selectedReminders, eventId);
+        if (reminderSectionTouched) {
+            ReminderRepository.getInstance().updateRemindersByEventId(selectedReminders, eventId);
+        }
         finish();
         return super.onSupportNavigateUp();
     }
@@ -345,20 +355,42 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
         ReminderRepository.getInstance().setListener(this);
+
+        selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
+
+        if (selectedEvent != null) {
+            salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
+            schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
+            fillInformation();
+            viewSalaryAdapter.notifyDataSetChanged(salaries);
+            viewScheduleAdapter.notifyDataSetChanged(schedules);
+            viewScheduleButton.setEnabled(!(schedules.size() == 0));
+
+            selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
+            editReminderAdapter.notifyDataSetChanged(selectedReminders);
+        }
+
         super.onResume();
     }
 
     @Override
     public void notifyOnLoadComplete() {
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
-        salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
-        schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
-        fillInformation();
-        viewSalaryAdapter.notifyDataSetChanged(salaries);
-        viewScheduleAdapter.notifyDataSetChanged(schedules);
-        viewScheduleButton.setEnabled(!(schedules.size() == 0));
+        if (selectedEvent != null) {
+            salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
+            schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
+            fillInformation();
+            viewSalaryAdapter.notifyDataSetChanged(salaries);
+            viewScheduleAdapter.notifyDataSetChanged(schedules);
+            viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
-        selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
-        editReminderAdapter.notifyDataSetChanged(selectedReminders);
+            selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
+            editReminderAdapter.notifyDataSetChanged(selectedReminders);
+        }
+    }
+
+    @Override
+    public void onReminderClearButtonClicked() {
+        reminderSectionTouched = true;
     }
 }

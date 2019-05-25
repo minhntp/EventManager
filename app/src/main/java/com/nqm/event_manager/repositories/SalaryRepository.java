@@ -14,12 +14,16 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,10 +180,10 @@ public class SalaryRepository {
     }
 
     public String getSalaryIdByEventIdAndEmployeeId(String eventId, String employeeId) {
-        for (HashMap.Entry<String, Salary> entry : allSalaries.entrySet()) {
-            if (entry.getValue().getEventId().equals(eventId) &&
-                    entry.getValue().getEmployeeId().equals(employeeId)) {
-                return entry.getKey();
+        for (Salary s : allSalaries.values()) {
+            if (s.getEventId().equals(eventId) &&
+                    s.getEmployeeId().equals(employeeId)) {
+                return s.getSalaryId();
             }
         }
         return "";
@@ -259,7 +263,71 @@ public class SalaryRepository {
         return salaries;
     }
 
+    public ArrayList<Salary> getSalariesByStartTimeAndEndTimeAndEmployeeId(String startTime,
+                                                                           String endTime,
+                                                                           String employeeId) {
+        ArrayList<Salary> salaries = new ArrayList<>();
+        for (Salary s : allSalaries.values()) {
+            if (s.getEmployeeId().equals(employeeId)) {
+                try {
+                    Calendar startCalendar = Calendar.getInstance();
+                    startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
+                    Calendar endCalendar = Calendar.getInstance();
+                    endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
+
+                    Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
+                    Calendar tempCalendar = Calendar.getInstance();
+
+                    Calendar salaryStartCalendar = Calendar.getInstance();
+                    salaryStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
+                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
+                    salaryStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                    salaryStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                    salaryStartCalendar.set(Calendar.SECOND, 0);
+                    salaryStartCalendar.set(Calendar.MILLISECOND, 0);
+
+                    Calendar salaryEndCalendar = Calendar.getInstance();
+                    salaryEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
+                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
+                    salaryEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                    salaryEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                    salaryEndCalendar.set(Calendar.SECOND, 0);
+                    salaryEndCalendar.set(Calendar.MILLISECOND, 0);
+
+                    if((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
+                            salaryStartCalendar.compareTo(endCalendar) <= 0) ||
+                    (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
+                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
+                        salaries.add(s);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return salaries;
+    }
+
     private interface MySalaryCallback {
         void onCallback(HashMap<String, Salary> salaryList);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    public static void sortSalariesByEventStartDate(ArrayList<Salary> salaries) {
+        Collections.sort(salaries, new Comparator<Salary>() {
+            @Override
+            public int compare(Salary s1, Salary s2) {
+                Date d1 = Calendar.getInstance().getTime();
+                Date d2 = Calendar.getInstance().getTime();
+                try {
+                    d1 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s1.getEventId()).getNgayBatDau());
+                    d2 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s2.getEventId()).getNgayBatDau());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return d1.compareTo(d2);
+            }
+        });
     }
 }

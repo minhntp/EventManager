@@ -25,7 +25,6 @@ import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
-import com.nqm.event_manager.utils.SalaryUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -245,7 +244,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         }
         resultEventsSize = resultEventIds.size();
 
-        SalaryUtil.sortSalariesByEventStartDate(resultSalaries);
+        SalaryRepository.sortSalariesByEventStartDate(resultSalaries);
     }
 
     public void showResult() {
@@ -314,12 +313,13 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
         Intent intent = new Intent(this, ViewEventActivity.class);
-        intent.putExtra("event Id", eventId);
+        intent.putExtra("eventId", eventId);
         startActivity(intent);
     }
 
     @Override
     public void notifyOnLoadComplete() {
-
+        getResultSalaries();
+        showResult();
     }
 }

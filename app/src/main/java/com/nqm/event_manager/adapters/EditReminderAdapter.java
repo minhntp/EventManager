@@ -9,8 +9,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnReminderViewClicked;
 import com.nqm.event_manager.models.Reminder;
-import com.nqm.event_manager.utils.ReminderUtil;
+import com.nqm.event_manager.repositories.ReminderRepository;
 
 import java.util.ArrayList;
 
@@ -18,11 +19,16 @@ public class EditReminderAdapter extends BaseAdapter {
 
     Activity context;
     ArrayList<Reminder> selectedReminders;
+    IOnReminderViewClicked listener;
 
     public EditReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {
         this.context = context;
         this.selectedReminders = selectedReminders;
-        ReminderUtil.sortReminder(selectedReminders);
+        ReminderRepository.sortReminder(selectedReminders);
+    }
+
+    public void setListener(IOnReminderViewClicked listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -56,6 +62,7 @@ public class EditReminderAdapter extends BaseAdapter {
             public void onClick(View v) {
                 selectedReminders.remove(position);
                 notifyDataSetChanged();
+                listener.onReminderClearButtonClicked();
             }
         });
 
@@ -64,7 +71,7 @@ public class EditReminderAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(ArrayList<Reminder> selectedReminders) {
         this.selectedReminders = selectedReminders;
-        ReminderUtil.sortReminder(selectedReminders);
+        ReminderRepository.sortReminder(selectedReminders);
         super.notifyDataSetChanged();
     }
 }

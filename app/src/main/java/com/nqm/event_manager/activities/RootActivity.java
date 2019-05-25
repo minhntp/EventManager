@@ -30,33 +30,12 @@ public class RootActivity extends AppCompatActivity
     Toolbar toolbar;
 
     public static Activity context;
-    public static NotificationCompat.Builder notificationBuilder;
-    public static String NOTIFICATION_CHANNEL_ID = "event-manager-notification";
-    public static int NOTIFICATION_ID = 111;
-    public static NotificationChannel notificationChannel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         context = this;
-
-        notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_event_noti)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(false);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            notificationChannel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
 
         setContentView(R.layout.activity_main);
         initView();

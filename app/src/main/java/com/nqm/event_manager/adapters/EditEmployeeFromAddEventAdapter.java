@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
@@ -18,14 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
-    private final Activity context;
+    Activity context;
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, Employee> allEmployees;
 
     public EditEmployeeFromAddEventAdapter(Activity context, ArrayList<String> selectedEmployeesIds) {
         this.context = context;
         this.selectedEmployeesIds = selectedEmployeesIds;
-        allEmployees = EmployeeRepository.getInstance(null).getAllEmployees();
+        allEmployees = EmployeeRepository.getInstance().getAllEmployees();
     }
 
     @Override
@@ -34,7 +35,7 @@ public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Employee getItem(int i) {
         return allEmployees.get(selectedEmployeesIds.get(i));
     }
 
@@ -46,7 +47,8 @@ public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.list_item_add_employee, parent, false);
+            view = LayoutInflater.from(context)
+                    .inflate(R.layout.list_item_add_employee, parent, false);
         }
 
         //Connect views
@@ -58,7 +60,7 @@ public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
         hoTenTextView.setText(allEmployees.get(selectedEmployeesIds.get(position)).getHoTen());
         chuyenMonTextView.setText(allEmployees.get(selectedEmployeesIds.get(position)).getChuyenMon());
 
-        //Delete event
+        //Delete
         deleteEmployeeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,9 +68,6 @@ public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             }
         });
-        //if salary is paid -> disable deleteButton
-
-//        if(SalaryRepository.getInstance(null).getSalaryIdByEventIdAndEmployeeId())
 
         return view;
     }
@@ -81,9 +80,8 @@ public class EditEmployeeFromAddEventAdapter extends BaseAdapter {
         this.selectedEmployeesIds = selectedEmployeesIds;
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        Log.d("debug", "deleteEmployeeAdapter: dataSetChanged: selected employees size = " + selectedEmployeesIds.size());
+    public void notifyDataSetChanged(ArrayList<String> selectedEmployeesIds) {
+        this.selectedEmployeesIds = selectedEmployeesIds;
         super.notifyDataSetChanged();
     }
 }

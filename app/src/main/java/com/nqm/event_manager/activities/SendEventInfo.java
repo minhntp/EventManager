@@ -21,7 +21,6 @@ import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
-import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 
@@ -71,7 +70,7 @@ public class SendEventInfo extends AppCompatActivity {
     private void init() {
         context = this;
 
-        eventId = getIntent().getStringExtra("event Id");
+        eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
         employeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
         sectionsTitles = getResources().getStringArray(R.array.sections_titles);
@@ -203,7 +202,7 @@ public class SendEventInfo extends AppCompatActivity {
         cb = sectionListView.getChildAt(5).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
             ArrayList<Schedule> schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
-            ScheduleUtil.sortSchedulesByOrder(schedules);
+            ScheduleRepository.sortSchedulesByOrder(schedules);
             content += "Lịch trình: " + "\n";
             for (Schedule s : schedules) {
                 content += "\t" + s.getTime() + ": " + s.getContent() + "\n";

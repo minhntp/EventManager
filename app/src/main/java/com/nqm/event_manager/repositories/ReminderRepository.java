@@ -2,6 +2,7 @@ package com.nqm.event_manager.repositories;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -11,9 +12,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.nqm.event_manager.BroadcastReceiver.MyBroadcastReceiver;
 import com.nqm.event_manager.activities.RootActivity;
+import com.nqm.event_manager.application.EventManager;
+import com.nqm.event_manager.broadcast_receivers.ReminderNotificationReceiver;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
@@ -21,7 +24,8 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +36,13 @@ public class ReminderRepository {
     private IOnDataLoadComplete listener;
     private HashMap<String, Reminder> allReminders;
     public static AlarmManager alarmManager;
+    private static int numberOfSetAlarms;
 
     //------------------------------------------------------------------------------------
 
     private ReminderRepository() {
         allReminders = new HashMap<>();
+        alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
         addListener();
     }
 
@@ -62,7 +68,13 @@ public class ReminderRepository {
                             if (queryDocumentSnapshots.size() > 0) {
                                 Map<String, Object> data = doc.getData();
                                 String eventId = (String) data.get(Constants.REMINDER_EVENT_ID);
-                                int minute = Integer.parseInt((String) data.get(Constants.REMINDER_MINUTE));
+                                String minuteString = (String) data.get(Constants.REMINDER_MINUTE);
+                                int minute = 0;
+                                if (minuteString != null) {
+                                    if (!minuteString.isEmpty()) {
+                                        minute = Integer.parseInt(minuteString);
+                                    }
+                                }
                                 String text = (String) data.get(Constants.REMINDER_TEXT);
                                 String time = (String) data.get(Constants.REMINDER_TIME);
                                 Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, text, time);
@@ -70,7 +82,7 @@ public class ReminderRepository {
                             }
                         }
                         allReminders = reminders;
-                        Log.d("debug", "all reminders size = " + allReminders.size());
+//                        Log.d("debug", "all reminders size = " + allReminders.size());
                         if (reminders.size() > 0) {
                             addAlarmForAllReminders();
                         }
@@ -84,51 +96,44 @@ public class ReminderRepository {
     }
 
     private void addAlarmForAllReminders() {
-        int requestCode = 100;
-        Log.d("debug", "add alarms");
+        //CANCEL OLD ALARMS
+        for(int i=0;i<numberOfSetAlarms;i++) {
+            Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
+                    i, intent, PendingIntent.FLAG_NO_CREATE);
+            if (pendingIntent != null) {
+                alarmManager.cancel(pendingIntent);
+            }
+        }
+
+        //SET NEW ALARMS
+        int requestCode = 0;
+
         for (Reminder r : allReminders.values()) {
-//            Date dateTime = EventRepository.getInstance().getEventStartDateTimeByReminder(r);
-//
-//            Calendar calendarOfReminder = Calendar.getInstance();
-//            calendarOfReminder.setTime(dateTime);
-//            calendarOfReminder.add(Calendar.MINUTE, r.getMinute() * (-1));
-//            calendarOfReminder.set(Calendar.SECOND, 0);
-//            calendarOfReminder.set(Calendar.MILLISECOND, 0);
-//
-//            Calendar calendarOfCurrentTime = Calendar.getInstance();
-//            calendarOfCurrentTime.set(Calendar.SECOND, 0);
-//            calendarOfCurrentTime.set(Calendar.MILLISECOND, 0);
-//
-//            Log.d("debug", CalendarUtil.sdfDayMonthYearTime.format(calendarOfReminder.getTime()) +
-//                    " - " + CalendarUtil.sdfDayMonthYearTime.format(calendarOfCurrentTime.getTime()));
-//
-//            if (calendarOfReminder.compareTo(calendarOfCurrentTime) >= 0) {
-//                Intent intent = new Intent(RootActivity.context, MyBroadcastReceiver.class);
-//                intent.putExtra("eventId", r.getEventId());
-//                PendingIntent pendingIntent = PendingIntent.getBroadcast(RootActivity.context,
-//                        requestCode++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//                alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendarOfReminder.getTimeInMillis(), pendingIntent);
-//            }
             Calendar reminderCalendar = Calendar.getInstance();
             try {
                 reminderCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(r.getTime()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             Calendar currentCalendar = Calendar.getInstance();
             currentCalendar.set(Calendar.SECOND, 0);
             currentCalendar.set(Calendar.MILLISECOND, 0);
-            Log.d("debug", CalendarUtil.sdfDayMonthYearTime.format(reminderCalendar.getTime()) +
-                    " - " + CalendarUtil.sdfDayMonthYearTime.format(currentCalendar.getTime()));
-            if(reminderCalendar.compareTo(currentCalendar) >= 0) {
-                Intent intent = new Intent(RootActivity.context, MyBroadcastReceiver.class);
-                intent.putExtra("event Id", r.getEventId());
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(RootActivity.context,
-                        requestCode++, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            if (reminderCalendar.compareTo(currentCalendar) >= 0) {
+                Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
+                intent.putExtra("eventId", r.getEventId());
+
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
+                        requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCalendar.getTimeInMillis(), pendingIntent);
+
+                Log.d("debug", "set alarm, request code = " + requestCode);
+                requestCode++;
             }
+            numberOfSetAlarms = requestCode;
         }
     }
 
@@ -221,34 +226,9 @@ public class ReminderRepository {
         batch.commit();
     }
 
-    public void updateRemindersByEventId(ArrayList<Reminder> reminders, String eventId) {
-        WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
-
-        ArrayList<Integer> oldRemindersMinutes = getRemindersMinutesByEventId(eventId);
-        ArrayList<Integer> newRemindersMinutes = new ArrayList<>();
-        for (Reminder r : reminders) {
-            newRemindersMinutes.add(r.getMinute());
-            if (!oldRemindersMinutes.contains(r.getMinute())) {
-                DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.REMINDER_COLLECTION).document();
-                Map<String, Object> reminderData = new HashMap<>();
-                reminderData.put(Constants.REMINDER_EVENT_ID, eventId);
-                reminderData.put(Constants.REMINDER_MINUTE, "" + r.getMinute());
-                reminderData.put(Constants.REMINDER_TEXT, r.getText());
-                reminderData.put(Constants.REMINDER_TIME, r.getTime());
-                batch.set(reminderDocRef, reminderData);
-            }
-        }
-        ArrayList<Reminder> oldReminders = getRemindersInArrayListByEventId(eventId);
-        for (Reminder r : oldReminders) {
-            if (!newRemindersMinutes.contains(r.getMinute())) {
-                DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.REMINDER_COLLECTION).document(r.getId());
-                batch.delete(reminderDocRef);
-            }
-        }
-
-        batch.commit();
+    public void updateRemindersByEventId(ArrayList<Reminder> newReminders, String eventId) {
+        deleteRemindersByEventId(eventId);
+        addRemindersByEventId(newReminders, eventId);
     }
 
     public void deleteRemindersByEventId(String eventId) {
@@ -299,16 +279,26 @@ public class ReminderRepository {
 
     public static ArrayList<Reminder> defaultReminders = new ArrayList<Reminder>() {
         {
-            add(new Reminder("", "", 0, "Thời điểm diễn ra",""));
+            add(new Reminder("", "", 0, "Thời điểm diễn ra", ""));
             add(new Reminder("", "", 10, "10 phút", ""));
-            add(new Reminder("", "", 20, "20 phút",""));
+            add(new Reminder("", "", 20, "20 phút", ""));
             add(new Reminder("", "", 30, "30 phút", ""));
-            add(new Reminder("", "", 60, "1 giờ",""));
+            add(new Reminder("", "", 60, "1 giờ", ""));
             add(new Reminder("", "", 120, "2 giờ", ""));
-            add(new Reminder("", "", 240, "4 giờ",""));
+            add(new Reminder("", "", 240, "4 giờ", ""));
             add(new Reminder("", "", 480, "8 giờ", ""));
-            add(new Reminder("", "", 1440, "1 ngày",""));
-            add(new Reminder("", "", 2880, "2 ngày",""));
+            add(new Reminder("", "", 1440, "1 ngày", ""));
+            add(new Reminder("", "", 2880, "2 ngày", ""));
         }
     };
+
+    //----------------------------------------------------------------------------------------------
+    public static void sortReminder(ArrayList<Reminder> reminders) {
+        Collections.sort(reminders, new Comparator<Reminder>() {
+            @Override
+            public int compare(Reminder r1, Reminder r2) {
+                return r1.getMinute() - r2.getMinute();
+            }
+        });
+    }
 }
