@@ -17,12 +17,11 @@ import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
-import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class EditScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements AddScheduleSwipeAndDragCallback.ActionCompletionContract {
 
     IOnAddScheduleViewClicked listener;
@@ -41,7 +40,7 @@ public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_add_schedule_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_add_schedule, parent, false);
         return new AddScheduleItemViewHolder(view);
     }
 
@@ -87,14 +86,14 @@ public class AddScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerVie
         });
     }
 
+    public ArrayList<Schedule> getSchedules() {
+        return schedules;
+    }
+
     public void setSchedules(ArrayList<Schedule> schedules) {
 //        ScheduleUtil.sortSchedulesByOrder(schedules);
         this.schedules = schedules;
         notifyDataSetChanged();
-    }
-
-    public ArrayList<Schedule> getSchedules() {
-        return schedules;
     }
 
     @Override

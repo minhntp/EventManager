@@ -12,8 +12,6 @@ public class Employee {
     public Employee() {
     }
 
-    ;
-
     public Employee(String id, String hoTen, String chuyenMon, String cmnd, String ngaySinh, String sdt, String email) {
         this.id = id;
         this.hoTen = hoTen;

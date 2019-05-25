@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.github.tibolte.agendacalendarview.AgendaCalendarView;
 import com.github.tibolte.agendacalendarview.CalendarPickerController;
@@ -96,8 +95,8 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         for (String e : EventRepository.getInstance(null).getAllEvents().keySet()) {
             try {
                 Event event = EventRepository.getInstance(null).getAllEvents().get(e);
-                String day1[] = event.getNgayBatDau().split("/");
-                String day2[] = event.getNgayKetThuc().split("/");
+                String[] day1 = event.getNgayBatDau().split("/");
+                String[] day2 = event.getNgayKetThuc().split("/");
                 Calendar startTime1 = Calendar.getInstance();
                 startTime1.set(Integer.parseInt(day1[2]), Integer.parseInt(day1[1]), Integer.parseInt(day1[0]));
                 Calendar endTime1 = Calendar.getInstance();
@@ -111,7 +110,6 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
 
 
         }
-        ;
     }
 
     private void intCalendar() {
@@ -154,17 +152,7 @@ public class EventListFragment extends Fragment implements IOnDataLoadComplete {
         if (requestCode == RESULT_FROM_DELETE_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
             Log.d("debug", "delete? from EventDetails to EventManagement: " + data.getBooleanExtra("delete?", false));
             if (data.getBooleanExtra("delete?", false)) {
-                EventRepository.getInstance(null).deleteEventFromDatabase(data.getStringExtra("eventId"), new EventRepository.MyDeleteEventCallback() {
-                    @Override
-                    public void onCallback(boolean deleteEventSucceed) {
-                        if (deleteEventSucceed) {
-                            Toast.makeText(getActivity(), "Xóa sự kiện thành công", Toast.LENGTH_SHORT).show();
-                            intCalendar();
-                        } else {
-                            Toast.makeText(getActivity(), "Xóa sự kiện thất bại", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                EventRepository.getInstance().deleteEventFromDatabase(data.getStringExtra("eventId"));
             }
         } else if (requestCode == RESULT_FROM_ADD_EVENT_INTENT && resultCode == Activity.RESULT_OK) {
             if (data.getBooleanExtra("added?", false)) {

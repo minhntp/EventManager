@@ -1,12 +1,7 @@
 package com.nqm.event_manager.repositories;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -30,8 +25,14 @@ import javax.annotation.Nullable;
 public class EmployeeRepository {
 
     static EmployeeRepository instance;
-    HashMap<String, Employee> allEmployees;
-    IOnDataLoadComplete listener;
+    private HashMap<String, Employee> allEmployees;
+    private IOnDataLoadComplete listener;
+
+    //------------------------------------------------------------------------------------------
+
+    private EmployeeRepository() {
+        addListener();
+    }
 
     private EmployeeRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
@@ -52,6 +53,13 @@ public class EmployeeRepository {
         }
     }
 
+    static public EmployeeRepository getInstance() {
+        if (instance == null) {
+            instance = new EmployeeRepository();
+        }
+        return instance;
+    }
+
     static public EmployeeRepository getInstance(IOnDataLoadComplete listener) {
         if (instance == null) {
             instance = new EmployeeRepository(listener);
@@ -59,8 +67,38 @@ public class EmployeeRepository {
         return instance;
     }
 
-    public HashMap<String, Employee> getAllEmployees() {
-        return allEmployees;
+    //------------------------------------------------------------------------------------------
+
+    private void addListener() {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EMPLOYEE_COLLECTION)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("debug", "Employees listen failed.", e);
+                            return;
+                        }
+                        HashMap<String, Employee> employees = new HashMap<>();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            Map<String, Object> tempHashMap = doc.getData();
+                            Employee tempEmployee = new Employee(doc.getId(),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_NAME),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_SPECIALITY),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_IDENTITY),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_DAY_OF_BIRTH),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
+                            employees.put(tempEmployee.getId(), tempEmployee);
+                        }
+                        allEmployees = employees;
+                        listener.notifyOnLoadComplete();
+                    }
+                });
+    }
+
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     private void addListener(final EmployeeRepository.MyEmployeeCallback callback) {
@@ -90,7 +128,31 @@ public class EmployeeRepository {
                 });
     }
 
-    public void deleteEmployeeByEmployeeId(String employeeId, final MyDeleteEmployeeCallback callback) {
+    //------------------------------------------------------------------------------------------
+
+    public HashMap<String, Employee> getAllEmployees() {
+        return allEmployees;
+    }
+
+    public void addEmployee(Employee employee) {
+        WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
+
+        DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EMPLOYEE_COLLECTION).document();
+
+        HashMap<String, String> employeeData = new HashMap<>();
+        employeeData.put(Constants.EMPLOYEE_NAME, employee.getHoTen());
+        employeeData.put(Constants.EMPLOYEE_SPECIALITY, employee.getChuyenMon());
+        employeeData.put(Constants.EMPLOYEE_DAY_OF_BIRTH, employee.getNgaySinh());
+        employeeData.put(Constants.EMPLOYEE_IDENTITY, employee.getCmnd());
+        employeeData.put(Constants.EMPLOYEE_PHONE_NUMBER, employee.getSdt());
+        employeeData.put(Constants.EMPLOYEE_EMAIL, employee.getEmail());
+
+        batch.set(eventDocRef, employeeData);
+        batch.commit();
+    }
+
+    public void deleteEmployeeByEmployeeId(String employeeId) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference employeeDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -105,35 +167,25 @@ public class EmployeeRepository {
             }
         }
 
-        batch.commit()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        callback.onCallback(true);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                callback.onCallback(false);
-            }
-        });
+        batch.commit();
+    }
 
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.EMPLOYEE_COLLECTION)
-//                .document(employeeId)
-//                .delete()
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        callback.onCallback(true);
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        callback.onCallback(false);
-//                    }
-//                });
+    public void updateEmployee(Employee employee) {
+        WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
+        DocumentReference employeeDocRef = DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EMPLOYEE_COLLECTION).document(employee.getId());
+
+        HashMap<String, Object> employeeData = new HashMap<>();
+        employeeData.put(Constants.EMPLOYEE_NAME, employee.getHoTen());
+        employeeData.put(Constants.EMPLOYEE_SPECIALITY, employee.getChuyenMon());
+        employeeData.put(Constants.EMPLOYEE_DAY_OF_BIRTH, employee.getNgaySinh());
+        employeeData.put(Constants.EMPLOYEE_IDENTITY, employee.getCmnd());
+        employeeData.put(Constants.EMPLOYEE_PHONE_NUMBER, employee.getSdt());
+        employeeData.put(Constants.EMPLOYEE_EMAIL, employee.getEmail());
+
+        batch.update(employeeDocRef, employeeData);
+
+        batch.commit();
     }
 
     public ArrayList<String> getAllEmployeesIds() {
@@ -146,18 +198,17 @@ public class EmployeeRepository {
 
     public ArrayList<String> getEmployeesIdsByEventId(String eventId) {
         ArrayList<String> employeesIds = new ArrayList<>();
-        for (Salary s : SalaryRepository.getInstance(null).getSalariesByEventId(eventId).values()) {
+        for (Salary s : SalaryRepository.getInstance().getSalariesByEventId(eventId)) {
             employeesIds.add(s.getEmployeeId());
         }
         return employeesIds;
     }
 
-    public ArrayList<String> getEmployeesIdsFromSalariesIds(ArrayList<String> salariesIds) {
+    public ArrayList<String> getEmployeesIdsFromSalaries(ArrayList<Salary> salaries) {
         ArrayList<String> employeesIds = new ArrayList<>();
-        for (String salaryId : salariesIds) {
-            String employeeId = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId).getEmployeeId();
-            if (!employeesIds.contains(employeeId)) {
-                employeesIds.add(employeeId);
+        for (Salary s : salaries) {
+            if (!employeesIds.contains(s.getEmployeeId())) {
+                employeesIds.add(s.getEmployeeId());
             }
         }
 
@@ -192,9 +243,5 @@ public class EmployeeRepository {
 
     private interface MyEmployeeCallback {
         void onCallback(HashMap<String, Employee> employeeList);
-    }
-
-    public interface MyDeleteEmployeeCallback {
-        void onCallback(boolean deleteSucceed);
     }
 }

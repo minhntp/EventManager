@@ -5,12 +5,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;
@@ -21,14 +20,13 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     CustomListView salaryListView;
 
-    ArrayList<String> salariesIds;
+    ArrayList<Salary> salaries;
     EditSalaryAdapter editSalaryAdapter;
     String eventId;
     Event event;
@@ -45,9 +43,9 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
 
         eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
-        salariesIds = SalaryRepository.getInstance(null).getSalariesIdsByEventId(eventId);
+        salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
 
-        editSalaryAdapter = new EditSalaryAdapter(this, salariesIds);
+        editSalaryAdapter = new EditSalaryAdapter(this, salaries);
         salaryListView.setAdapter(editSalaryAdapter);
 
         addEvents();
@@ -69,30 +67,21 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     }
 
     private void saveSalaries() {
-        ArrayList<Integer> salariesAmounts = new ArrayList<>();
-        ArrayList<Boolean> salariesPaidStatus = new ArrayList<>();
         for (int i = 0; i < salaryListView.getChildCount(); i++) {
             EditText salaryEditText = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
             CheckBox isPaidCheckBox = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
 
+            Log.d("debug", "salary = " + salaryEditText.getText().toString());
             if (salaryEditText.getText().toString().equals("")) {
-                salariesAmounts.add(0);
+                salaries.get(i).setSalary(0);
             } else {
-                salariesAmounts.add(Integer.parseInt(salaryEditText.getText().toString()));
+                salaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
+                Log.d("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
             }
-            salariesPaidStatus.add(isPaidCheckBox.isChecked());
+            salaries.get(i).setPaid(isPaidCheckBox.isChecked());
         }
-        SalaryRepository.getInstance(null).updateSalaries(salariesIds, salariesAmounts, salariesPaidStatus, new SalaryRepository.MyUpdateSalariesCallback() {
-            @Override
-            public void onCallback(boolean updateSucceed) {
-                if (updateSucceed) {
-                    Toast.makeText(context, "Cập nhật lương thành công", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Cập nhật lương thất bại", Toast.LENGTH_SHORT).show();
-                }
-                context.finish();
-            }
-        });
+        SalaryRepository.getInstance().updateSalaries(salaries);
+        context.finish();
     }
 
     private void connectViews() {
@@ -112,7 +101,7 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override

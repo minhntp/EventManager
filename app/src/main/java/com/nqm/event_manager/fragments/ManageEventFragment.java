@@ -1,12 +1,16 @@
 package com.nqm.event_manager.fragments;
 
-import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEventActivity;
@@ -28,6 +31,7 @@ import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -39,15 +43,14 @@ import java.util.Date;
 public class ManageEventFragment extends Fragment implements IOnDataLoadComplete,
         IOnCustomCalendarViewClicked {
 
+    public static IOnDataLoadComplete thisListener;
+
     CustomListView eventsListView;
     TextView dayTitleTextView;
-    //    CalendarView calendarView;
     CustomCalendarView calendarView;
     EventListAdapter mainViewEventAdapter;
-
-    boolean isFirstLoad = true;
-
     Date selectedDate;
+    boolean allDataLoaded = false;
 
     public ManageEventFragment() {
         // Required empty public constructor
@@ -64,16 +67,22 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisListener = this;
+
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
+        ReminderRepository.getInstance().setListener(this);
+
+        if (ReminderRepository.alarmManager == null) {
+            ReminderRepository.alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        }
+
         connectViews(view);
         addEvents();
 
-        //Update eventList at EventRepository & employeeList at EmployeeRepository
-        EventRepository.getInstance(this);
-        EmployeeRepository.getInstance(this);
-        SalaryRepository.getInstance(this);
-        ScheduleRepository.getInstance(this);
-
-//        selectedDate = CalendarUtil.sdfDayMonthYear.format(calendarView.getDate());
         selectedDate = calendarView.getSelectedDate();
         dayTitleTextView.setText(Constants.DAY_TITLE_MAIN_FRAGMENT + CalendarUtil.sdfDayMonthYear.format(selectedDate));
 
@@ -149,20 +158,34 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     //Cập nhật danh sách sự kiện của ngày hiện tại khi mở ứng dụng
     @Override
     public void notifyOnLoadComplete() {
-        if (isFirstLoad) {
-            Date date = calendarView.getSelectedDate();
-            mainViewEventAdapter.notifyDataSetChanged(date);
-            calendarView.updateView();
-            isFirstLoad = false;
+        if (!allDataLoaded &&
+                EventRepository.getInstance().getAllEvents() != null &&
+                EventRepository.getInstance().getAllEvents().size() > 0 &&
+                EmployeeRepository.getInstance().getAllEmployees() != null &&
+                EmployeeRepository.getInstance().getAllEmployees().size() > 0 &&
+                ScheduleRepository.getInstance().getAllSchedules() != null &&
+                ScheduleRepository.getInstance().getAllSchedules().size() > 0 &&
+                SalaryRepository.getInstance().getAllSalaries() != null &&
+                SalaryRepository.getInstance().getAllSalaries().size() > 0) {
+            allDataLoaded = true;
         }
+        Date date = calendarView.getSelectedDate();
+        mainViewEventAdapter.notifyDataSetChanged(date);
+        calendarView.updateView();
     }
-
 
     @Override
     public void onResume() {
-        super.onResume();
-        mainViewEventAdapter.notifyDataSetChanged(selectedDate);
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
+        ReminderRepository.getInstance().setListener(this);
+
+        Date date = calendarView.getSelectedDate();
+        mainViewEventAdapter.notifyDataSetChanged(date);
         calendarView.updateView();
+        super.onResume();
     }
 
     @Override

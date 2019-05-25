@@ -34,4 +34,10 @@ public class Constants {
     public static String SCHEDULE_CONTENT = "noidung";
     public static String SCHEDULE_ORDER = "thutu";
 
+    public static String REMINDER_COLLECTION = "nhacnho";
+    public static String REMINDER_EVENT_ID = "sukienid";
+    public static String REMINDER_MINUTE = "phut";
+    public static String REMINDER_TEXT = "text";
+    public static String REMINDER_TIME = "thoigian";
+
 }

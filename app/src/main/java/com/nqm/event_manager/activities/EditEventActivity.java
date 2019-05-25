@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,25 +21,29 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.adapters.AddEmployeeFromEditEventAdapter;
-import com.nqm.event_manager.adapters.AddScheduleRecyclerAdapter;
+import com.nqm.event_manager.adapters.EditEmployeeFromEditEventAdapter;
+import com.nqm.event_manager.adapters.EditReminderAdapter;
+import com.nqm.event_manager.adapters.EditScheduleRecyclerAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeInEditEventAdapter;
+import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class EditEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked {
     android.support.v7.widget.Toolbar toolbar;
@@ -60,16 +63,21 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
     ArrayList<String> selectedEmployeesIds;
     ArrayList<Schedule> schedules;
 
-    AddEmployeeFromEditEventAdapter deleteEmployeeAdapter;
+    EditEmployeeFromEditEventAdapter deleteEmployeeAdapter;
 
     WindowManager.LayoutParams lWindowParams;
-    AddScheduleRecyclerAdapter addScheduleAdapter;
+    EditScheduleRecyclerAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
     Button saveSchedulesButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
     TextView titleTextView;
     AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
     ItemTouchHelper touchHelper;
+
+    ArrayList<Reminder> selectedReminders;
+    CustomListView editReminderListView;
+    EditReminderAdapter editReminderAdapter;
+    Button selectReminderButton;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -123,6 +131,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         scheduleButton = findViewById(R.id.edit_event_schedule_button);
 
         employeeListView = findViewById(R.id.event_edit_employee_list_view);
+
+        editReminderListView = findViewById(R.id.edit_event_reminder_list_view);
+        selectReminderButton = findViewById(R.id.edit_event_add_reminder_button);
     }
 
     private void init() {
@@ -135,11 +146,15 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
         ScheduleUtil.sortSchedulesByOrder(schedules);
 
-        deleteEmployeeAdapter = new AddEmployeeFromEditEventAdapter(this, eventId,
+        deleteEmployeeAdapter = new EditEmployeeFromEditEventAdapter(this, eventId,
                 selectedEmployeesIds);
 
         fillInformation();
         initAddScheduleDialog();
+
+        selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
+        editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
+        editReminderListView.setAdapter(editReminderAdapter);
     }
 
     private void initAddScheduleDialog() {
@@ -159,7 +174,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
 
         addScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        addScheduleAdapter = new AddScheduleRecyclerAdapter();
+        addScheduleAdapter = new EditScheduleRecyclerAdapter();
         addScheduleSwipeAndDragCallback = new AddScheduleSwipeAndDragCallback(addScheduleAdapter);
         touchHelper = new ItemTouchHelper(addScheduleSwipeAndDragCallback);
         addScheduleAdapter.setTouchHelper(touchHelper);
@@ -244,7 +259,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 calendar.set(Calendar.MONTH, monthOfYear);
                 calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-//                Update TextEdits & TextViews;
+                //Update TextEdits & TextViews;
                 if (currentView == startDateEditText) {
                     startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
@@ -253,18 +268,35 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                     endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
                 }
 
-//                Set (end time = start time) if (end date == start date) and (end time < start time)
+                //Make sure start date + start time < end date + end time
                 try {
-                    if (endDateEditText.getText().toString().equals(startDateEditText.getText().toString())
-                            && CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()).getTime() <
-                            CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()).getTime()) {
-                        endTimeEditText.setText(startTimeEditText.getText().toString());
+                    Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
+                    Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
+                    Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+                    Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
+
+                    if (startDate.compareTo(endDate) > 0) {
+                        if (currentView == startDateEditText) {
+                            endDateEditText.setText(startDateEditText.getText().toString());
+                            endDowTextView.setText(startDowTextView.getText().toString());
+                        } else {
+                            startDateEditText.setText(endDateEditText.getText().toString());
+                            startDowTextView.setText(endDowTextView.getText().toString());
+                        }
+                        if (startTime.compareTo(endTime) > 0) {
+                            endTimeEditText.setText(startTimeEditText.getText().toString());
+                        }
+                    } else if (startDate.compareTo(endDate) == 0) {
+                        if (startTime.compareTo(endTime) > 0) {
+                            endTimeEditText.setText(startTimeEditText.getText().toString());
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
+
         timeSetListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
@@ -276,23 +308,32 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 } else {
                     endTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
                 }
-                boolean increaseEndDateCondition = !(endTimeEditText.getText().toString().isEmpty() ||
-                        startTimeEditText.getText().toString().isEmpty());
+
+                //Make sure start date + start time < end date + end time
                 try {
-                    if (increaseEndDateCondition
-                            && startDateEditText.getText().toString().equals(endDateEditText.getText().toString())
-                            && (CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()).getTime()
-                            > CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()).getTime())) {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-                        calendar.add(Calendar.DATE, 1);
-                        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                        endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
+                    Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
+                    Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
+                    Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+                    Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
+
+                    if (startDate.compareTo(endDate) == 0) {
+                        if (startTime.compareTo(endTime) > 0) {
+                            if (currentView == startTimeEditText) {
+                                endTimeEditText.setText(startTimeEditText.getText().toString());
+                            } else {
+                                calendar.setTime(endDate);
+                                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                                endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                                endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
+                            }
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
+
         startDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -312,15 +353,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                 }
                 currentView = startDateEditText;
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this, dateSetListener, y,
-                        m, d);
-                if (!endDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        datePickerDialog.getDatePicker().setMaxDate(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this,
+                        dateSetListener, y, m, d);
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });
@@ -343,15 +378,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                     }
                 }
                 currentView = endDateEditText;
-                DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this, dateSetListener, y,
-                        m, d);
-                if (!startDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        datePickerDialog.getDatePicker().setMinDate(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                DatePickerDialog datePickerDialog = new DatePickerDialog(EditEventActivity.this,
+                        dateSetListener, y, m, d);
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });
@@ -371,12 +400,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                     }
                 }
                 currentView = startTimeEditText;
-//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-//                int mm = calendar.get(Calendar.MINUTE);
                 new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
                         minute, false).show();
             }
         });
+
         endTimeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -393,10 +421,15 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                     }
                 }
                 currentView = endTimeEditText;
-//                int HH = calendar.get(Calendar.HOUR_OF_DAY);
-//                int mm = calendar.get(Calendar.MINUTE);
                 new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
                         minute, false).show();
+            }
+        });
+
+        selectReminderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddReminderDialog();
             }
         });
     }
@@ -435,19 +468,24 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
             }
         }
 
-        //Update
+        for (Reminder r : selectedReminders) {
+            Calendar calendar = Calendar.getInstance();
+            Calendar calendarTime = Calendar.getInstance();
+            try {
+                calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(event.getNgayBatDau()));
+                calendarTime.setTime(CalendarUtil.sdfTime.parse(event.getGioBatDau()));
+                calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
+                calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
+            r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+        }
+
         EventRepository.getInstance(null).updateEventToDatabase(changedEvent, deleteEmployeesIds,
-                addEmployeesIds, schedules, new EventRepository.MyUpdateEventCallback() {
-                    @Override
-                    public void onCallback(boolean updateEventSucceed) {
-                        if (updateEventSucceed) {
-                            Toast.makeText(context, "Cập nhật sự kiện thành công", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(context, "Cập nhật sự kiện thất bại", Toast.LENGTH_SHORT).show();
-                        }
-                        context.finish();
-                    }
-                });
+                addEmployeesIds, schedules, selectedReminders);
+        context.finish();
     }
 
     private void openAddEmployeeDialog() {
@@ -472,8 +510,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
                             !selectedEmployeesIds.contains(selectEmployeeInAddEventAdapter.getAllEmployeesIds()[i])) {
                         selectedEmployeesIds.add(selectEmployeeInAddEventAdapter.getAllEmployeesIds()[i]);
                     }
-                    if (!tempCheckbox.isChecked() &&
-                            selectedEmployeesIds.contains(selectEmployeeInAddEventAdapter.getAllEmployeesIds()[i])) {
+                    if (!tempCheckbox.isChecked()) {
                         selectedEmployeesIds.remove(selectEmployeeInAddEventAdapter.getAllEmployeesIds()[i]);
                     }
                 }
@@ -533,10 +570,50 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         }
     }
 
+    private void openAddReminderDialog() {
+        final Dialog selectReminderDialog = new Dialog(this);
+        selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
+
+        //Connect views
+        final ListView selectReminderListView = selectReminderDialog.findViewById(R.id.select_reminder_list_view);
+        Button cancelButton = selectReminderDialog.findViewById(R.id.select_reminder_cancel_button);
+        Button okButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
+
+        final SelectReminderAdapter selectReminderAdapter;
+        selectReminderAdapter = new SelectReminderAdapter(this, selectedReminders);
+        selectReminderListView.setAdapter(selectReminderAdapter);
+
+        //Add events
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectedReminders.clear();
+                for (int i = 0; i < selectReminderListView.getChildCount(); i++) {
+                    CheckBox tempCheckbox = selectReminderListView.getChildAt(i)
+                            .findViewById(R.id.select_reminder_item_select_check_box);
+                    if (tempCheckbox.isChecked()) {
+                        selectedReminders.add(selectReminderAdapter.getItem(i));
+                    }
+                }
+                editReminderAdapter.notifyDataSetChanged(selectedReminders);
+                selectReminderDialog.dismiss();
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectReminderDialog.dismiss();
+            }
+        });
+        if (!isFinishing()) {
+            selectReminderDialog.show();
+        }
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override

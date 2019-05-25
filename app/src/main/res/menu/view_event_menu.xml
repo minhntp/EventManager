@@ -23,6 +23,6 @@
         android:id="@+id/view_event_action_send_notification"
         android:icon="@drawable/ic_menu_send"
         android:orderInCategory="1"
-        android:title="Gửi thông tin cho nhân viên"
+        android:title="Gửi thông tin sự kiện"
         app:showAsAction="always" />
 </menu>

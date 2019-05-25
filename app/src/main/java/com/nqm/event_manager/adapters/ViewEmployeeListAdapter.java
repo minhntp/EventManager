@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.CalculateSalaryForSingleEmployeeActivity;
-import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.interfaces.IOnManageEmployeeViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
@@ -49,7 +48,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_view_employee_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_view_employee, parent, false);
         }
 
         //connect views
@@ -123,7 +122,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     }
 
     private void makePhoneCall(String phoneNumber) {
-        if(!phoneNumber.isEmpty()) {
+        if (!phoneNumber.isEmpty()) {
             context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phoneNumber, null)));
         } else {
             Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
@@ -131,7 +130,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     }
 
     private void sendMessage(String phoneNumber) {
-        if(!phoneNumber.isEmpty()) {
+        if (!phoneNumber.isEmpty()) {
             context.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("smsto", phoneNumber, null)));
         } else {
             Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
@@ -139,7 +138,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     }
 
     private void sendEmail(String emailAddress) {
-        if(!emailAddress.isEmpty()) {
+        if (!emailAddress.isEmpty()) {
             Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
             String mailto = "mailto:";
             mailto += emailAddress;

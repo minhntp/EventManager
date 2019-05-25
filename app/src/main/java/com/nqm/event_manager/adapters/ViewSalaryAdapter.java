@@ -1,10 +1,5 @@
 package com.nqm.event_manager.adapters;
 
-import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
-import com.nqm.event_manager.models.Salary;
-import com.nqm.event_manager.repositories.EmployeeRepository;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,22 +7,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.HashMap;
+import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
+import com.nqm.event_manager.models.Salary;
+import com.nqm.event_manager.repositories.EmployeeRepository;
+
+import java.util.ArrayList;
 
 public class ViewSalaryAdapter extends BaseAdapter {
 
     private final Activity context;
-    private HashMap<String, Salary> salaries;
-    private String[] salariesIds;
-
     IOnViewSalaryItemClicked listener;
+    private ArrayList<Salary> salaries;
 
-    public ViewSalaryAdapter(Activity context, HashMap<String, Salary> salaries) {
+    public ViewSalaryAdapter(Activity context, ArrayList<Salary> salaries) {
         this.context = context;
         this.salaries = salaries;
-        salariesIds = salaries.keySet().toArray(new String[salaries.size()]);
     }
 
     @Override
@@ -37,7 +33,7 @@ public class ViewSalaryAdapter extends BaseAdapter {
 
     @Override
     public Salary getItem(int i) {
-        return salaries.get(salariesIds[i]);
+        return salaries.get(i);
     }
 
     @Override
@@ -48,7 +44,7 @@ public class ViewSalaryAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_view_salary_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_view_salary, parent, false);
         }
 
         TextView hoTenTextView = view.findViewById(R.id.view_salary_employee_name_text_view);
@@ -58,8 +54,8 @@ public class ViewSalaryAdapter extends BaseAdapter {
 
         //SHOW DATA
         final String employeeId = getItem(position).getEmployeeId();
-        hoTenTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId).getHoTen());
-        chuyenMonTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId).getChuyenMon());
+        hoTenTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getHoTen());
+        chuyenMonTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getChuyenMon());
         luongTextView.setText("" + getItem(position).getSalary());
         daThanhToanCheckBox.setChecked(getItem(position).isPaid());
 
@@ -78,9 +74,8 @@ public class ViewSalaryAdapter extends BaseAdapter {
         this.listener = listener;
     }
 
-    public void notifyDataSetChanged(HashMap<String, Salary> salaries) {
+    public void notifyDataSetChanged(ArrayList<Salary> salaries) {
         this.salaries = salaries;
-        salariesIds = salaries.keySet().toArray(new String[salaries.size()]);
         super.notifyDataSetChanged();
     }
 }

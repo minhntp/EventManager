@@ -1,18 +1,13 @@
 package com.nqm.event_manager.repositories;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.Constants;
@@ -26,8 +21,15 @@ import javax.annotation.Nullable;
 
 public class ScheduleRepository {
     static ScheduleRepository instance;
-    IOnDataLoadComplete listener;
+    private IOnDataLoadComplete listener;
     private HashMap<String, Schedule> allSchedules;
+
+    //------------------------------------------------------------------------------------
+
+    private ScheduleRepository() {
+        allSchedules = new HashMap<>();
+        addListener();
+    }
 
     private ScheduleRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
@@ -47,6 +49,13 @@ public class ScheduleRepository {
         }
     }
 
+    static public ScheduleRepository getInstance() {
+        if (instance == null) {
+            instance = new ScheduleRepository();
+        }
+        return instance;
+    }
+
     static public ScheduleRepository getInstance(IOnDataLoadComplete listener) {
         if (instance == null) {
             instance = new ScheduleRepository(listener);
@@ -54,8 +63,42 @@ public class ScheduleRepository {
         return instance;
     }
 
-    public HashMap<String, Schedule> getAllSchedules() {
-        return allSchedules;
+    //------------------------------------------------------------------------------------
+
+    private void addListener() {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.SCHEDULE_COLLECTION)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("debug", "Schedule collection listen failed.", e);
+                            return;
+                        }
+                        HashMap<String, Schedule> schedules = new HashMap<>();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            if (queryDocumentSnapshots.size() > 0) {
+                                Map<String, Object> data = doc.getData();
+                                int order = 0;
+                                if (data.get(Constants.SCHEDULE_ORDER) != null) {
+                                    order = Integer.parseInt((String) data.get(Constants.SCHEDULE_ORDER));
+                                }
+                                Schedule tempSchedule = new Schedule(doc.getId(),
+                                        (String) data.get(Constants.SCHEDULE_EVENT_ID),
+                                        (String) data.get(Constants.SCHEDULE_TIME),
+                                        (String) data.get(Constants.SCHEDULE_CONTENT),
+                                        order);
+                                schedules.put(tempSchedule.getScheduleId(), tempSchedule);
+                            }
+                        }
+                        allSchedules = schedules;
+                        listener.notifyOnLoadComplete();
+                    }
+                });
+    }
+
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     private void addListener(final ScheduleRepository.MyScheduleCallback callback) {
@@ -89,7 +132,13 @@ public class ScheduleRepository {
                 });
     }
 
-    public void addScheduleToDatabase(Schedule schedule, final MyAddScheduleCallback callback) {
+    //------------------------------------------------------------------------------------
+
+    public HashMap<String, Schedule> getAllSchedules() {
+        return allSchedules;
+    }
+
+    public void addScheduleToDatabase(Schedule schedule) {
         HashMap<String, String> data = new HashMap<>();
         data.put(Constants.SCHEDULE_EVENT_ID, schedule.getEventId());
         data.put(Constants.SCHEDULE_TIME, schedule.getTime());
@@ -97,41 +146,21 @@ public class ScheduleRepository {
         data.put(Constants.SCHEDULE_ORDER, Integer.toString(schedule.getOrder()));
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SCHEDULE_COLLECTION)
-                .add(data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        callback.onCallback(documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
+                .add(data);
     }
 
-    public void deleteSchedulesByEventId(String eventId, final MyDeleteSchedulesByEventIdCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.SCHEDULE_COLLECTION)
-                .whereEqualTo(Constants.SCHEDULE_EVENT_ID, eventId)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot doc : task.getResult()) {
-                                DatabaseAccess.getInstance().getDatabase()
-                                        .collection(Constants.SCHEDULE_COLLECTION)
-                                        .document(doc.getId())
-                                        .delete();
-                            }
-                            callback.onCallback(true);
-                        } else {
-                            callback.onCallback(false);
-                        }
-                    }
-                });
+    public void deleteSchedulesByEventId(String eventId) {
+        WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
+
+        for (Schedule schedule : allSchedules.values()) {
+            if (schedule.getEventId().equals(eventId)) {
+                DocumentReference scheduleDocRef = DatabaseAccess.getInstance().getDatabase()
+                        .collection(Constants.SCHEDULE_COLLECTION).document(schedule.getScheduleId());
+                batch.delete(scheduleDocRef);
+            }
+        }
+
+        batch.commit();
     }
 
     public ArrayList<Schedule> getSchedulesInArrayListByEventId(String eventId) {
@@ -154,15 +183,8 @@ public class ScheduleRepository {
         return schedulesIds;
     }
 
-    public interface MyAddScheduleCallback {
-        void onCallback(String scheduleId);
-    }
-
     private interface MyScheduleCallback {
         void onCallback(HashMap<String, Schedule> scheduleList);
     }
 
-    public interface MyDeleteSchedulesByEventIdCallback {
-        void onCallback(boolean deleteSucceed);
-    }
 }

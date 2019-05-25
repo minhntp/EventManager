@@ -47,7 +47,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
 
-        View rootView = inflate(getContext(), R.layout.layout_custom_calendar, this);
+        View rootView = inflate(getContext(), R.layout.view_custom_calendar, this);
 
         prevButton = rootView.findViewById(R.id.calendar_view_prev_button);
         nextButton = rootView.findViewById(R.id.calendar_view_next_button);
@@ -99,6 +99,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
                         monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(calendar.getTime()));
                     }
                 }, y, m, d);
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });

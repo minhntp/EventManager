@@ -3,37 +3,26 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
-import com.nqm.event_manager.utils.Constants;
-import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddEmployeeActivity extends AppCompatActivity {
 
     Activity context;
-
-    Employee employee;
 
     Toolbar toolbar;
     EditText nameEditText, specialityEditText, phoneNumberEditText, dateOfBirthEditText,
@@ -49,6 +38,7 @@ public class AddEmployeeActivity extends AppCompatActivity {
         connectViews();
         context = this;
         addEvents();
+        nameEditText.requestFocus();
     }
 
     private void connectViews() {
@@ -95,6 +85,7 @@ public class AddEmployeeActivity extends AppCompatActivity {
                                 dateOfBirthEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                             }
                         }, y, m, d);
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });
@@ -130,37 +121,21 @@ public class AddEmployeeActivity extends AppCompatActivity {
             specialityEditText.setError(null);
         }
 
-        Map<String, Object> newEmployeeData = new HashMap<>();
-        newEmployeeData.put(Constants.EMPLOYEE_NAME, nameEditText.getText().toString());
-        newEmployeeData.put(Constants.EMPLOYEE_SPECIALITY, specialityEditText.getText().toString());
-        newEmployeeData.put(Constants.EMPLOYEE_IDENTITY, cmndEditText.getText().toString());
-        newEmployeeData.put(Constants.EMPLOYEE_DAY_OF_BIRTH, dateOfBirthEditText.getText().toString());
-        newEmployeeData.put(Constants.EMPLOYEE_PHONE_NUMBER, phoneNumberEditText.getText().toString());
-        newEmployeeData.put(Constants.EMPLOYEE_EMAIL, emailEditText.getText().toString());
-
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.EMPLOYEE_COLLECTION)
-                .add(newEmployeeData)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(context, "Thêm nhân viên thành công", Toast.LENGTH_SHORT).show();
-                        context.finish();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Thêm nhân viên thất bại", Toast.LENGTH_SHORT).show();
-                        context.finish();
-                    }
-                });
+        Employee employee = new Employee("",
+                nameEditText.getText().toString(),
+                specialityEditText.getText().toString(),
+                cmndEditText.getText().toString(),
+                dateOfBirthEditText.getText().toString(),
+                phoneNumberEditText.getText().toString(),
+                emailEditText.getText().toString());
+        EmployeeRepository.getInstance().addEmployee(employee);
+        finish();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         new android.support.v7.app.AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
                     @Override

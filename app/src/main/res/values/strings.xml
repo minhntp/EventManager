@@ -19,6 +19,9 @@
     <string name="navigation_drawer_open">Quản lí sự kiện</string>
     <string name="navigation_drawer_close">Quản lí sự kiện</string>
 
+    <string name="channel_name">Quản lí sự kiện</string>
+    <string name="channel_description">Nhắc nhở khi có sự kiện</string>
+
     <string-array name="sections_titles">
         <item>Tiêu đề</item>
         <item>Thời gian</item>
@@ -27,6 +30,4 @@
         <item>Ghi chú</item>
         <item>Lịch trình</item>
     </string-array>
-
-    <string name="tab">    </string>
 </resources>

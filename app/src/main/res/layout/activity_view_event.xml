@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 android:text="Pullman"
-                android:textSize="@dimen/large_text"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -72,7 +72,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:text="1220 Võ Nguyên Giáp"
                     android:textSize="@dimen/content" />
 
                 <TextView
@@ -103,6 +102,17 @@
                     android:inputType="none"
                     android:textSize="@dimen/note" />
 
+                <Button
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:id="@+id/view_event_schedule_button"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Lịch trình"
+                    android:textSize="@dimen/text_button"
+                    android:textStyle="bold"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,31 +122,22 @@
                     android:textStyle="bold" />
 
                 <com.nqm.event_manager.custom_views.CustomListView
-                    android:id="@+id/view_event_reminder_listview"
+                    android:id="@+id/view_event_edit_reminder_list_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <Button
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/view_event_add_reminder_button"
+                    android:id="@+id/view_event_select_reminder_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhắc nhở"
                     android:textStyle="bold"
-                    android:textSize="@dimen/text_button"/>
+                    android:textSize="@dimen/text_button"
+                    android:layout_marginBottom="50dp"/>
             </LinearLayout>
 
-            <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:id="@+id/view_event_schedule_button"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="50dp"
-                android:text="Lịch trình"
-                android:textSize="@dimen/text_button"
-                android:textStyle="bold"/>
+
         </LinearLayout>
 
     </ScrollView>

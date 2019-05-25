@@ -83,7 +83,7 @@ public class EventListAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_event_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_event, parent, false);
         }
 
         TextView timeTextView = view.findViewById(R.id.event_time_text_view);
@@ -118,7 +118,7 @@ public class EventListAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(Date date) {
         this.date = date;
-        events = EventRepository.getInstance(null).getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
+        events = EventRepository.getInstance().getEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
         eventIds = new ArrayList<>(events.keySet());
         sortEvents();
         super.notifyDataSetChanged();

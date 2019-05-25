@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,20 +17,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.fragments.ManageEmployeeFragment;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
-public class ViewEmployeeActivity extends AppCompatActivity {
+public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLoadComplete {
 
+    public static IOnDataLoadComplete thisListener;
     Activity context;
-
     Employee employee;
     String employeeId;
-
     TextView nameTextView, specialityTextView, phoneNumberTextView, dateOfBirthTextView,
             emailTextView, cmndTextView;
     ImageButton callButton, messageButton, emailButton;
-
     Toolbar toolbar;
 
     @Override
@@ -58,27 +57,15 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         if (id == R.id.view_employee_action_delete) {
             Log.d("debug", "deleting " + employee.getId());
             new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
                     .setMessage("Bạn có chắc chắn không?")
                     .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            Intent intent = new Intent();
-//                            intent.putExtra("delete?", true);
-//                            intent.putExtra("employeeId", employee.getId());
-//                            setResult(RESULT_OK, intent);
-                            EmployeeRepository.getInstance(null).deleteEmployeeByEmployeeId(employee.getId(), new EmployeeRepository.MyDeleteEmployeeCallback() {
-                                @Override
-                                public void onCallback(boolean deleteSucceed) {
-                                    if (deleteSucceed) {
-                                        Toast.makeText(context, "Xóa nhân viên thành công", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(context, "Xóa nhân viên thất bại", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            finish();
+                            EmployeeRepository.getInstance().setListener(ManageEmployeeFragment.thisListener);
+                            EmployeeRepository.getInstance().deleteEmployeeByEmployeeId(employee.getId());
+                            context.finish();
                         }
 
                     })
@@ -119,6 +106,8 @@ public class ViewEmployeeActivity extends AppCompatActivity {
 
     private void init() {
         context = this;
+        thisListener = this;
+        EmployeeRepository.getInstance().setListener(this);
 
         toolbar = findViewById(R.id.view_employee_toolbar);
         setSupportActionBar(toolbar);
@@ -133,7 +122,7 @@ public class ViewEmployeeActivity extends AppCompatActivity {
     }
 
     private void fillInformation() {
-        if(employee != null) {
+        if (employee != null) {
             nameTextView.setText(employee.getHoTen());
             specialityTextView.setText(employee.getChuyenMon());
             phoneNumberTextView.setText(employee.getSdt());
@@ -147,7 +136,7 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!employee.getSdt().isEmpty()) {
+                if (!employee.getSdt().isEmpty()) {
                     context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", employee.getSdt(), null)));
                 } else {
                     Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
@@ -158,7 +147,7 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         messageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!employee.getSdt().isEmpty()) {
+                if (!employee.getSdt().isEmpty()) {
                     context.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.fromParts("smsto", employee.getSdt(), null)));
                 } else {
                     Toast.makeText(context, "Không có số điện thoại", Toast.LENGTH_SHORT).show();
@@ -169,7 +158,7 @@ public class ViewEmployeeActivity extends AppCompatActivity {
         emailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!employee.getEmail().isEmpty()) {
+                if (!employee.getEmail().isEmpty()) {
                     Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                     String mailto = "mailto:";
                     mailto += employee.getEmail();
@@ -195,6 +184,11 @@ public class ViewEmployeeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        EmployeeRepository.getInstance().setListener(this);
+    }
+
+    @Override
+    public void notifyOnLoadComplete() {
         employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
         fillInformation();
     }

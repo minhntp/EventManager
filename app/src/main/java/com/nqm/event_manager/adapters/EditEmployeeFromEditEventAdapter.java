@@ -17,14 +17,14 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AddEmployeeFromEditEventAdapter extends BaseAdapter {
+public class EditEmployeeFromEditEventAdapter extends BaseAdapter {
     private final Activity context;
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, Employee> allEmployees;
     private String eventId;
 
-    public AddEmployeeFromEditEventAdapter(Activity context, String eventId,
-                                           ArrayList<String> selectedEmployeesIds) {
+    public EditEmployeeFromEditEventAdapter(Activity context, String eventId,
+                                            ArrayList<String> selectedEmployeesIds) {
         this.context = context;
         this.eventId = eventId;
         this.selectedEmployeesIds = selectedEmployeesIds;
@@ -49,13 +49,13 @@ public class AddEmployeeFromEditEventAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_add_employee_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_add_employee, parent, false);
         }
 
         //Connect views
-        TextView hoTenTextView = (TextView) view.findViewById(R.id.delete_employee_list_item_employee_name);
-        TextView chuyenMonTextView = (TextView) view.findViewById(R.id.delete_employee_list_item_employee_speciality);
-        ImageButton deleteEmployeeButton = (ImageButton) view.findViewById(R.id.delete_employee_list_item_delete_button);
+        TextView hoTenTextView = view.findViewById(R.id.delete_employee_list_item_employee_name);
+        TextView chuyenMonTextView = view.findViewById(R.id.delete_employee_list_item_employee_speciality);
+        ImageButton deleteEmployeeButton = view.findViewById(R.id.delete_employee_list_item_delete_button);
 
         //Fill information
         hoTenTextView.setText(allEmployees.get(selectedEmployeesIds.get(position)).getHoTen());

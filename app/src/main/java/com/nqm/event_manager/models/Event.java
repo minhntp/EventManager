@@ -1,10 +1,5 @@
 package com.nqm.event_manager.models;
 
-import com.nqm.event_manager.repositories.EventRepository;
-import com.nqm.event_manager.utils.CalendarUtil;
-
-import java.util.Comparator;
-
 public class Event {
     private String id;
     private String ten;

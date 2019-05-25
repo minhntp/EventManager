@@ -19,19 +19,16 @@ import java.util.Date;
 
 public class CustomCalendarGridAdapter extends BaseAdapter {
     private final Context context;
-    private LayoutInflater layoutInflater;
-
-    private TextView numberOfEventsTextView, dayTextView;
     LinearLayout cellLayout;
-
+    int offSet;
+    IOnCustomCalendarViewClicked listener;
+    private LayoutInflater layoutInflater;
+    private TextView numberOfEventsTextView, dayTextView;
     private Date currentDate;
     private Date selectedDate;
     private Date viewDate;
-    int offSet;
     private ArrayList<CellData> cellDataArrayList;
     private Calendar calendar = Calendar.getInstance();
-
-    IOnCustomCalendarViewClicked listener;
 
     // Days in Current Month
     public CustomCalendarGridAdapter(Context context, Date selectedDate, Date viewDate) {
@@ -65,7 +62,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_custom_calendar_grid_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.grid_item_custom_calendar, parent, false);
         }
 
         //Connect views
@@ -153,7 +150,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             int numberOfEvents = 0;
             if (day > 0 && day <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                 calendar.set(Calendar.DAY_OF_MONTH, day);
-                numberOfEvents = EventRepository.getInstance(null)
+                numberOfEvents = EventRepository.getInstance()
                         .getNumberOfEventsThroughDate(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
             } else {
                 day = 0;
@@ -165,21 +162,15 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     private boolean isSelectedDay(int day) {
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        if (CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
-                CalendarUtil.sdfDayMonthYear.format(selectedDate))) {
-            return true;
-        }
-        return false;
+        return CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
+                CalendarUtil.sdfDayMonthYear.format(selectedDate));
     }
 
     private boolean isCurrentDay(int day) {
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, day);
-        if (CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
-                CalendarUtil.sdfDayMonthYear.format(currentDate))) {
-            return true;
-        }
-        return false;
+        return CalendarUtil.sdfDayMonthYear.format(calendar.getTime()).equals(
+                CalendarUtil.sdfDayMonthYear.format(currentDate));
     }
 
 
@@ -196,13 +187,13 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         updateData();
     }
 
+    public Date getViewDate() {
+        return viewDate;
+    }
+
     public void setViewDate(Date viewDate) {
         this.viewDate = viewDate;
         updateData();
-    }
-
-    public Date getViewDate() {
-        return viewDate;
     }
 
     @Override

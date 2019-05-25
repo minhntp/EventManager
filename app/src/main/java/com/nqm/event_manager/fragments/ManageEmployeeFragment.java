@@ -1,6 +1,5 @@
 package com.nqm.event_manager.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,27 +12,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
 import com.nqm.event_manager.activities.ViewEmployeeActivity;
 import com.nqm.event_manager.adapters.ViewEmployeeListAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnAddEmployeeViewClicked;
-import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnManageEmployeeViewClicked;
 import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.utils.Constants;
-import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 
 public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeViewClicked {
 
+    public static IOnDataLoadComplete thisListener;
     CustomListView employeeListView;
     ViewEmployeeListAdapter employeeAdapter;
     ArrayList<String> resultEmployeesIds;
@@ -58,8 +51,12 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        thisListener = this;
+        EmployeeRepository.getInstance().setListener(this);
+
         connectViews(view);
-        EmployeeRepository.getInstance(this);
+
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(searchString);
         employeeAdapter = new ViewEmployeeListAdapter(getActivity(), resultEmployeesIds);
@@ -115,13 +112,15 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
 
     @Override
     public void notifyOnLoadComplete() {
-
+        resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
+        employeeAdapter.notifyDataSetChanged(resultEmployeesIds);
     }
 
     @Override
     public void onResume() {
+        EmployeeRepository.getInstance().setListener(this);
         searchString = "";
-        resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(searchString);
+        resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
         employeeAdapter.notifyDataSetChanged(resultEmployeesIds);
         super.onResume();
     }

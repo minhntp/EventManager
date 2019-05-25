@@ -24,16 +24,19 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_margin="15dp"
+            android:layout_marginTop = "10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
             tools:context="com.nqm.event_manager.activities.RootActivity$EventDetailsActivity">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tên sự kiện"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/event_edit_title_edit_text"
@@ -41,14 +44,12 @@
                 android:layout_height="wrap_content"
                 android:nextFocusLeft="@id/event_edit_title_edit_text"
                 android:nextFocusUp="@id/event_edit_title_edit_text"
-                android:textSize="@dimen/large_text"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -169,7 +170,8 @@
                 <Button
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:id="@+id/event_edit_add_employee_button"
-                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
                     android:textSize="@dimen/text_button"
@@ -194,13 +196,38 @@
             <Button
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/edit_event_schedule_button"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="50dp"
+                android:layout_gravity="center"
                 android:text="Lịch trình"
                 android:textStyle="bold"
                 android:textSize="@dimen/text_button" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Nhắc nhở"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/edit_event_reminder_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="60dp"/>
+
+            <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/edit_event_add_reminder_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thêm nhắc nhở"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_button"
+                android:layout_marginBottom="50dp"/>
         </LinearLayout>
     </ScrollView>
 

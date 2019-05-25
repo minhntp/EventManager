@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,21 +20,18 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.SalaryUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 
 public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
-implements IOnCalculateSalaryItemClicked {
+        implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete {
 
     Context context;
 
@@ -49,7 +45,8 @@ implements IOnCalculateSalaryItemClicked {
     Calendar calendar = Calendar.getInstance();
     View currentView;
 
-    ArrayList<String> resultSalariesIds;
+    ArrayList<Salary> resultSalaries;
+    int resultEventsSize;
 
     CalculateSalaryAdapter calculateSalaryAdapter;
 
@@ -90,27 +87,28 @@ implements IOnCalculateSalaryItemClicked {
     }
 
     private void init() {
+        context = this;
+
         toolbar = findViewById(R.id.calculate_salary_single_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.calculate_salary_single_employee_label);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        SalaryRepository.getInstance().setListener(this);
+
         selectedEmployeeId = getIntent().getStringExtra("employeeId");
-        nameTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(selectedEmployeeId).getHoTen());
-        specialityTextView.setText(EmployeeRepository.getInstance(null).getAllEmployees().get(selectedEmployeeId).getChuyenMon());
+        nameTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getHoTen());
+        specialityTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getChuyenMon());
 
-        startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-        endDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-        startDateEditText.setText(startDate);
-        endDateEditText.setText(endDate);
+        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
-        resultSalariesIds = new ArrayList<>();
-        calculateSalaryAdapter = new CalculateSalaryAdapter(this, resultSalariesIds);
+        resultSalaries = new ArrayList<>();
+        resultEventsSize = 0;
+        calculateSalaryAdapter = new CalculateSalaryAdapter(this, resultSalaries);
         calculateSalaryAdapter.setListener(this);
         resultListView.setAdapter(calculateSalaryAdapter);
-
-        context = this;
     }
 
     private void addEvents() {
@@ -149,16 +147,10 @@ implements IOnCalculateSalaryItemClicked {
                 int d = calendar.get(Calendar.DAY_OF_MONTH);
                 int m = calendar.get(Calendar.MONTH);
                 int y = calendar.get(Calendar.YEAR);
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context,
                         dateSetListener, y, m, d);
-                if (!endDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        datePickerDialog.getDatePicker().setMaxDate(CalendarUtil.sdfDayMonthYear
-                                .parse(endDateEditText.getText().toString()).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });
@@ -178,16 +170,10 @@ implements IOnCalculateSalaryItemClicked {
                 int d = calendar.get(Calendar.DAY_OF_MONTH);
                 int m = calendar.get(Calendar.MONTH);
                 int y = calendar.get(Calendar.YEAR);
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context,
                         dateSetListener, y, m, d);
-                if (!startDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        datePickerDialog.getDatePicker().setMinDate(CalendarUtil.sdfDayMonthYear
-                                .parse(startDateEditText.getText().toString()).getTime());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
         });
@@ -195,19 +181,8 @@ implements IOnCalculateSalaryItemClicked {
         calculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (startDateEditText.getText().toString().isEmpty()) {
-                    startDateEditText.setError("Xin mời nhập");
-                    return;
-                } else {
-                    startDateEditText.setError(null);
-                }
-                if (endDateEditText.getText().toString().isEmpty()) {
-                    endDateEditText.setError("");
-                    return;
-                } else {
-                    endDateEditText.setError(null);
-                }
-
+                startDate = startDateEditText.getText().toString();
+                endDate = endDateEditText.getText().toString();
                 getResultSalaries();
                 showResult();
             }
@@ -218,7 +193,7 @@ implements IOnCalculateSalaryItemClicked {
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
                         .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.ic_error)
                         .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 saveChanges(false);
@@ -227,8 +202,8 @@ implements IOnCalculateSalaryItemClicked {
                         .setNegativeButton("Không", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //Undo changes by reloading data
                                 sumTextView.requestFocus();
-                                Log.d("debug", "no button clicked");
                                 calculateSalaryAdapter.notifyDataSetChanged();
                             }
                         }).show();
@@ -240,7 +215,7 @@ implements IOnCalculateSalaryItemClicked {
             public void onClick(View v) {
                 new AlertDialog.Builder(context)
                         .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.ic_error)
                         .setPositiveButton("Có", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 saveChanges(true);
@@ -251,7 +226,6 @@ implements IOnCalculateSalaryItemClicked {
                             public void onClick(DialogInterface dialog, int which) {
                                 //Undo changes by reloading data
                                 sumTextView.requestFocus();
-                                Log.d("debug", "no button clicked");
                                 calculateSalaryAdapter.notifyDataSetChanged();
                             }
                         }).show();
@@ -260,125 +234,68 @@ implements IOnCalculateSalaryItemClicked {
     }
 
     private void getResultSalaries() {
-        resultSalariesIds = SalaryRepository.getInstance(null)
-                .getSalariesIdsByStartDateAndEndDateAndEmployeeId(startDate, endDate, selectedEmployeeId);
+        resultSalaries = SalaryRepository.getInstance()
+                .getSalariesByStartDateAndEndDateAndEmployeeId(startDate, endDate, selectedEmployeeId);
 
-        ArrayList<Salary> resultSalaries = new ArrayList<>();
         ArrayList<String> resultEventIds = new ArrayList<>();
-        for (String salaryId : resultSalariesIds) {
-            Salary salary = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId);
-            resultSalaries.add(salary);
-            if (!resultEventIds.contains(salary.getEventId())) {
-                resultEventIds.add(salary.getEventId());
+        for (Salary s : resultSalaries) {
+            if (!resultEventIds.contains(s.getEventId())) {
+                resultEventIds.add(s.getEventId());
             }
         }
+        resultEventsSize = resultEventIds.size();
 
         SalaryUtil.sortSalariesByEventStartDate(resultSalaries);
-
-        resultSalariesIds.clear();
-        for (Salary s : resultSalaries) {
-            resultSalariesIds.add(s.getSalaryId());
-        }
-        numberOfEventsTextView.setText(resultEventIds.size() + " sự kiện có bản lương");
     }
 
     public void showResult() {
+        numberOfEventsTextView.setText(resultEventsSize + " sự kiện có bản lương");
+
+        calculateSalaryAdapter.notifyDataSetChanged(resultSalaries);
+
+        boolean allSalariesPaid = true;
         int sum, paid = 0, unpaid = 0;
-        for (String salaryId : resultSalariesIds) {
-            Salary salary = SalaryRepository.getInstance(null).getAllSalaries().get(salaryId);
-            if (salary.isPaid()) {
-                paid += salary.getSalary();
+
+        for (Salary s : resultSalaries) {
+            if (s.isPaid()) {
+                paid += s.getSalary();
             } else {
-                unpaid += salary.getSalary();
+                unpaid += s.getSalary();
+                allSalariesPaid = false;
             }
         }
         sum = paid + unpaid;
-//        calculateSalaryAdapter.notifyDataSetChanged(selectedSalariesIds);
-        calculateSalaryAdapter.notifyDataSetChanged(resultSalariesIds);
 
         sumEditText.setText("" + sum);
         paidEditText.setText("" + paid);
         unpaidEditText.setText("" + unpaid);
 
-        if (unpaid == 0) {
-            saveButton.setEnabled(false);
-            payAllButton.setEnabled(false);
-        } else {
-            saveButton.setEnabled(true);
-            payAllButton.setEnabled(true);
-        }
+        saveButton.setEnabled(!allSalariesPaid);
+        payAllButton.setEnabled(!allSalariesPaid);
     }
 
     private void saveChanges(boolean payAll) {
-        // Update salaries to database based on selectedSalariesIds & resultListView
-        ArrayList<Integer> changedSelectedSalariesAmount = new ArrayList<>();
-        ArrayList<Boolean> changedSelectedSalariesPaidStatus = new ArrayList<>();
-        int sum = 0, paid = 0, unpaid = 0;
-
         for (int i = 0; i < resultListView.getChildCount(); i++) {
             EditText salaryEditText = resultListView.getChildAt(i)
                     .findViewById(R.id.calculate_salaries_list_item_salary_edit_text);
             CheckBox isPaidCheckBox = resultListView.getChildAt(i)
                     .findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
 
-            int amount;
             if (salaryEditText.getText().toString().equals("")) {
-                amount = 0;
+                resultSalaries.get(i).setSalary(0);
             } else {
-                amount = Integer.parseInt(salaryEditText.getText().toString());
+                resultSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
             }
 
-            boolean isPaid;
-            if (payAll) {
-                if (!isPaidCheckBox.isChecked()) {
-                    isPaidCheckBox.setChecked(true);
-                }
-                isPaid = true;
+            if (isPaidCheckBox.isChecked() || payAll) {
+                resultSalaries.get(i).setPaid(true);
             } else {
-                isPaid = isPaidCheckBox.isChecked();
-            }
-
-            if (isPaidCheckBox.isChecked()) {
-                isPaidCheckBox.setEnabled(false);
-                salaryEditText.setEnabled(false);
-            } else {
-                isPaidCheckBox.setEnabled(true);
-                salaryEditText.setEnabled(true);
-            }
-
-            changedSelectedSalariesAmount.add(amount);
-            changedSelectedSalariesPaidStatus.add(isPaid);
-
-            if (isPaid) {
-                paid += amount;
-            } else {
-                unpaid += amount;
+                resultSalaries.get(i).setPaid(false);
             }
         }
-        sum = paid + unpaid;
 
-        sumEditText.setText("" + sum);
-        paidEditText.setText("" + paid);
-        unpaidEditText.setText("" + unpaid);
-
-        sumTextView.requestFocus();
-
-        if (unpaid == 0) {
-            saveButton.setEnabled(false);
-            payAllButton.setEnabled(false);
-        } else {
-            saveButton.setEnabled(true);
-            payAllButton.setEnabled(true);
-        }
-
-        SalaryRepository.getInstance(null).updateSalaries(resultSalariesIds,
-                changedSelectedSalariesAmount, changedSelectedSalariesPaidStatus,
-                new SalaryRepository.MyUpdateSalariesCallback() {
-                    @Override
-                    public void onCallback(boolean updateSucceed) {
-                        // Completed updating salaries
-                    }
-                });
+        SalaryRepository.getInstance().updateSalaries(resultSalaries);
+        showResult();
     }
 
     @Override
@@ -399,5 +316,10 @@ implements IOnCalculateSalaryItemClicked {
         Intent intent = new Intent(this, ViewEventActivity.class);
         intent.putExtra("eventId", eventId);
         startActivity(intent);
+    }
+
+    @Override
+    public void notifyOnLoadComplete() {
+
     }
 }

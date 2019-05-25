@@ -52,7 +52,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/button_layout"
-        android:layout_below="@id/add_schedule_button_layout" />
+        android:layout_below="@id/add_schedule_button_layout"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"/>
 
     <LinearLayout
         android:id="@+id/button_layout"
@@ -68,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Lưu"
+            android:text="OK"
             android:textSize="@dimen/text_button"
             android:textStyle="bold" />
     </LinearLayout>

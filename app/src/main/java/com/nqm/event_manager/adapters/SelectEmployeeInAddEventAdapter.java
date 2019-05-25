@@ -9,13 +9,14 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SelectEmployeeInAddEventAdapter extends BaseAdapter {
+public class SelectEmployeeInAddEventAdapter extends BaseAdapter implements IOnDataLoadComplete {
 
     private final Activity context;
     private ArrayList<String> selectedEmployeesIds;
@@ -25,8 +26,9 @@ public class SelectEmployeeInAddEventAdapter extends BaseAdapter {
     public SelectEmployeeInAddEventAdapter(Activity context, ArrayList<String> selectedEmployeesIds) {
         this.context = context;
         this.selectedEmployeesIds = selectedEmployeesIds;
-        this.allEmployees = EmployeeRepository.getInstance(null).getAllEmployees();
+        this.allEmployees = EmployeeRepository.getInstance().getAllEmployees();
         allEmployeesIds = allEmployees.keySet().toArray(new String[allEmployees.size()]);
+        EmployeeRepository.getInstance().setListener(this);
     }
 
     @Override
@@ -47,7 +49,7 @@ public class SelectEmployeeInAddEventAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_select_employee_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_select_employee, parent, false);
         }
 
         //Connect views
@@ -77,12 +79,15 @@ public class SelectEmployeeInAddEventAdapter extends BaseAdapter {
         this.allEmployeesIds = allEmployeesIds;
     }
 
-    public HashMap<String, Employee> getAllEmployees() {
-        return allEmployees;
-    }
-
     public void notifyDataSetChanged(ArrayList<String> selectedEmployeesIds) {
         this.selectedEmployeesIds = selectedEmployeesIds;
         super.notifyDataSetChanged();
     }
+
+    @Override
+    public void notifyOnLoadComplete() {
+        allEmployees = EmployeeRepository.getInstance().getAllEmployees();
+        allEmployeesIds = allEmployees.keySet().toArray(new String[allEmployees.size()]);
+    }
+
 }

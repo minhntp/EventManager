@@ -25,6 +25,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:focusable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
@@ -41,7 +42,8 @@
                 android:layout_height="wrap_content"
                 android:nextFocusLeft="@id/title_edit_text"
                 android:nextFocusUp="@id/title_edit_text"
-                android:textSize="@dimen/content" />
+                android:textSize="20dp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -159,7 +161,7 @@
             <Button
                 android:id="@+id/add_employee_button"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chọn nhân sự"
                 android:textSize="@dimen/text_button"
@@ -187,10 +189,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="50dp"
                 android:text="Lịch trình"
                 android:textSize="@dimen/text_button"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Nhắc nhở"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/add_event_reminder_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="60dp"/>
+
+            <Button
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/add_event_add_reminder_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thêm nhắc nhở"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_button"
+                android:layout_marginBottom="50dp"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

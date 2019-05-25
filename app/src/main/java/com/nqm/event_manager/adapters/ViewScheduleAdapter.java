@@ -9,12 +9,9 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.ScheduleUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class ViewScheduleAdapter extends BaseAdapter {
 
@@ -45,7 +42,7 @@ public class ViewScheduleAdapter extends BaseAdapter {
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_view_schedule_list_item, viewGroup, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_view_schedule, viewGroup, false);
         }
 
         final TextView scheduleTimeTextView = view.findViewById(R.id.view_schedule_time_text_view);

@@ -9,10 +9,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.models.Employee;
-import com.nqm.event_manager.repositories.EmployeeRepository;
-
-import java.util.ArrayList;
 
 public class SendEventSectionAdapter extends BaseAdapter {
     Activity context;
@@ -41,7 +37,7 @@ public class SendEventSectionAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_send_event_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_send_event, parent, false);
         }
 
         //Connect views

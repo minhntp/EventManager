@@ -52,7 +52,7 @@ public class SelectEmployeeInEditEventAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.layout_select_employee_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_select_employee, parent, false);
         }
 
         TextView hoTenTextView = view.findViewById(R.id.select_ho_ten_text_view);

@@ -4,24 +4,26 @@
     android:layout_height="match_parent"
     android:layout_margin="5dp">
     <TextView
-        android:id="@+id/add_schedule_dialog_title_text_view"
+        android:id="@+id/select_reminder_dialog_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
-        android:text="Chọn Nhân sự"
+        android:text="Chọn Thời gian nhắc nhở"
         android:textAlignment="center"
         android:textSize="20dp"
         android:textStyle="bold" />
 
     <com.nqm.event_manager.custom_views.CustomListView
-        android:id="@+id/select_employee_list_view"
+        android:id="@+id/select_reminder_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
         android:layout_above="@id/button_layout"
-        android:layout_below="@id/add_schedule_dialog_title_text_view"/>
-    <!--</ScrollView>-->
+        android:layout_below="@id/select_reminder_dialog_title_text_view"/>
+
     <LinearLayout
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
@@ -32,7 +34,7 @@
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:id="@+id/cancel_button"
+            android:id="@+id/select_reminder_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -42,7 +44,7 @@
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:id="@+id/ok_button"
+            android:id="@+id/select_reminder_ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
