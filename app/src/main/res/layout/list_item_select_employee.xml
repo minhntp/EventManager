@@ -12,7 +12,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/employee_profile_list_item"
+            android:id="@+id/select_employee_profile_image_view"
             android:layout_width="60dp"
             android:layout_height="60dp" />
 
@@ -22,7 +22,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/select_ho_ten_text_view"
+                android:id="@+id/select_employee_name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:ellipsize="end"
@@ -32,7 +32,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/select_chuyen_mon_text_view"
+                android:id="@+id/select_employee_speciality_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:ellipsize="end"
@@ -49,7 +49,7 @@
         android:layout_alignParentRight="true">
 
         <CheckBox
-            android:id="@+id/add_employee_checkbox"
+            android:id="@+id/select_employee_select_checkbox"
             android:layout_width="30dp"
             android:layout_height="match_parent" />
     </LinearLayout>

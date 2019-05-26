@@ -21,8 +21,8 @@
         android:layout_below="@id/add_schedule_dialog_title_text_view"
         android:layoutDirection="rtl"/>
 
-    <com.nqm.event_manager.custom_views.CustomListView
-        android:id="@+id/select_employee_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/select_employee_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/button_layout"
@@ -34,18 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:weightSum="2">
-
-        <Button
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:id="@+id/cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Hủy"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
-
+        android:weightSum="1">
         <Button
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/ok_button"

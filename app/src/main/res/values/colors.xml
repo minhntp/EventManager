@@ -8,4 +8,6 @@
     <color name="numberOfEvents">#666</color>
     <color name="textBlack">#000</color>
     <color name="buttonBackground">#00FFFFFF</color>
+    <color name="conflictBackground">#9FFF0000</color>
+    <color name="normalBackground">#00FFFFFF</color>
 </resources>

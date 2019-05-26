@@ -25,15 +25,16 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.adapters.EditEmployeeFromAddEventAdapter;
+import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
 import com.nqm.event_manager.adapters.EditScheduleRecyclerAdapter;
-import com.nqm.event_manager.adapters.SelectEmployeeInAddEventAdapter;
+import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
@@ -48,28 +49,36 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked,
-        IOnSelectEmployeeViewClicked {
+        IOnSelectEmployeeViewClicked, IOnEditEmployeeViewClicked {
     Activity context;
 
     Toolbar toolbar;
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
             locationEditText, noteEditText;
     TextView startDowTextView, endDowTextView;
-    Button addEmployeeButton, scheduleButton;
-    CustomListView editEmployeeListView;
+    Button selectEmployeeButton, scheduleButton, conflictButton;
 
     DatePickerDialog.OnDateSetListener dateSetListener;
     TimePickerDialog.OnTimeSetListener timeSetListener;
     View currentView;
 
     ArrayList<String> selectedEmployeesIds;
+    HashMap<String, Boolean> conflictOfSelectedEmployees;
+    EditEmployeeAddEventAdapter editEmployeeAdapter;
+    RecyclerView editEmployeeRecylerView;
+
+    ArrayList<Employee> employees;
+    Dialog selectEmployeeDialog;
+    Button selectEmployeeOkButton;
+    SearchView selectEmployeeSearchView;
+    RecyclerView selectEmployeeRecyclerView;
+    SelectEmployeeAddEventAdapter selectEmployeeAdapter;
+
+
     ArrayList<Schedule> schedules;
-    ArrayList<Reminder> selectedReminders;
-
-    EditEmployeeFromAddEventAdapter editEmployeeAdapter;
-
     WindowManager.LayoutParams lWindowParams;
     EditScheduleRecyclerAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
@@ -79,14 +88,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     AddScheduleSwipeAndDragCallback addScheduleSwipeAndDragCallback;
     ItemTouchHelper touchHelper;
 
-    ListView selectEmployeeListView;
-    SelectEmployeeInAddEventAdapter selectEmployeeAdapter;
-
+    ArrayList<Reminder> selectedReminders;
     CustomListView reminderListView;
     Button addReminderButton;
     EditReminderAdapter editReminderAdapter;
-
-    String searchString = "";
 
     Calendar calendar = Calendar.getInstance();
 
@@ -121,35 +126,28 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titleEditText = findViewById(R.id.title_edit_text);
-        startDateEditText = findViewById(R.id.start_date_edit_text);
-        startTimeEditText = findViewById(R.id.start_time_edit_text);
-        endDateEditText = findViewById(R.id.end_date_edit_text);
-        endTimeEditText = findViewById(R.id.end_time_edit_text);
-        locationEditText = findViewById(R.id.location_edit_text);
-        noteEditText = findViewById(R.id.note_edit_text);
+        titleEditText = findViewById(R.id.add_event_title_edit_text);
+        startDateEditText = findViewById(R.id.add_event_start_date_edit_text);
+        startTimeEditText = findViewById(R.id.add_event_start_time_edit_text);
+        endDateEditText = findViewById(R.id.add_event_end_date_edit_text);
+        endTimeEditText = findViewById(R.id.add_event_end_time_edit_text);
+        locationEditText = findViewById(R.id.add_event_location_edit_text);
+        noteEditText = findViewById(R.id.add_event_note_edit_text);
 
-        startDowTextView = findViewById(R.id.start_dow_textview);
-        endDowTextView = findViewById(R.id.end_dow_textview);
+        startDowTextView = findViewById(R.id.add_event_start_dow_textview);
+        endDowTextView = findViewById(R.id.add_event_end_dow_textview);
 
-        addEmployeeButton = findViewById(R.id.add_employee_button);
+        conflictButton = findViewById(R.id.add_event_conflict_button);
+        selectEmployeeButton = findViewById(R.id.add_event_select_employee_button);
         scheduleButton = findViewById(R.id.add_event_schedule_button);
         addReminderButton = findViewById(R.id.add_event_add_reminder_button);
 
-        editEmployeeListView = findViewById(R.id.employees_list_view);
+        editEmployeeRecylerView = findViewById(R.id.add_event_edit_employee_recycler_view);
         reminderListView = findViewById(R.id.add_event_reminder_list_view);
     }
 
     private void init() {
         context = this;
-
-        //initial data for main view
-        selectedEmployeesIds = new ArrayList<>();
-        schedules = new ArrayList<>();
-        selectedReminders = new ArrayList<>();
-
-        editEmployeeAdapter = new EditEmployeeFromAddEventAdapter(this, selectedEmployeesIds);
-        editEmployeeListView.setAdapter(editEmployeeAdapter);
 
         //Set start date, end date edit texts from selected date
         String selectedDate = getIntent().getStringExtra("selectedDate");
@@ -164,13 +162,25 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             e.printStackTrace();
         }
 
-        initAddScheduleDialog();
+        selectedEmployeesIds = new ArrayList<>();
+        conflictOfSelectedEmployees = new HashMap<>();
+        editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictOfSelectedEmployees);
+        editEmployeeAdapter.setListener(this);
+        editEmployeeRecylerView.setAdapter(editEmployeeAdapter);
+        editEmployeeRecylerView.setLayoutManager(new LinearLayoutManager(this));
 
+        initAddScheduleDialog();
+        initSelectEmployeeDialog();
+
+        selectedReminders = new ArrayList<>();
         editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
         reminderListView.setAdapter(editReminderAdapter);
     }
 
     private void initAddScheduleDialog() {
+        //data
+        schedules = new ArrayList<>();
+
         //initial dialog
         addScheduleDialog = new Dialog(this);
         addScheduleDialog.setContentView(R.layout.dialog_add_schedule);
@@ -232,60 +242,57 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
 
     }
 
-    private void addEventToDatabase() {
-        if (!titleEditText.getText().toString().isEmpty()) {
+    private void initSelectEmployeeDialog() {
+        selectEmployeeDialog = new Dialog(this);
+        selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
+        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-            Event event = new Event("",
-                    titleEditText.getText().toString(),
-                    startDateEditText.getText().toString(),
-                    endDateEditText.getText().toString(),
-                    startTimeEditText.getText().toString(),
-                    endTimeEditText.getText().toString(),
-                    locationEditText.getText().toString(),
-                    noteEditText.getText().toString());
+        //Connect views
+        selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
+        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.ok_button);
 
-            final ArrayList<Salary> salaries = new ArrayList<>();
-            for (int i = 0; i < editEmployeeListView.getChildCount(); i++) {
-                Salary tempSalary = new Salary("",
-                        "",
-                        selectedEmployeesIds.get(i),
-                        0,
-                        false);
-                salaries.add(tempSalary);
+        employees = EmployeeRepository.getInstance().getEmployeesBySearchString("");
+        selectEmployeeAdapter = new SelectEmployeeAddEventAdapter(selectedEmployeesIds,
+                employees);
+        selectEmployeeAdapter.setListener(this);
+        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
+        selectEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //SEARCH employees
+        selectEmployeeSearchView = selectEmployeeDialog.findViewById(R.id.select_employee_search_view);
+        selectEmployeeSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
             }
 
-            EventRepository.getInstance().setListener(ManageEventFragment.thisListener);
-            for (Reminder r : selectedReminders) {
-                Calendar calendar = Calendar.getInstance();
-                Calendar calendarTime = Calendar.getInstance();
-                try {
-                    calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-                    calendarTime.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-                    calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
-                    calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
-                r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
+                employees.clear();
+                employees.addAll(resultEmployees);
+                selectEmployeeAdapter.notifyDataSetChanged();
+                return true;
             }
-            EventRepository.getInstance().addEventToDatabase(event, salaries, schedules, selectedReminders);
-            context.finish();
+        });
 
-        } else {
-            if (titleEditText.getText().toString().isEmpty()) {
-                titleEditText.setError("Xin mời nhập");
-            } else {
-                titleEditText.setError(null);
+        //Add events
+        selectEmployeeOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editEmployeeAdapter.notifyDataSetChanged();
+                selectEmployeeDialog.dismiss();
             }
-        }
+        });
     }
 
     private void addEvents() {
-        addEmployeeButton.setOnClickListener(new View.OnClickListener() {
+        selectEmployeeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openSelectEmployeeDialog();
+                showSelectEmployeeDialog();
             }
         });
 
@@ -466,6 +473,13 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             }
         });
 
+        conflictButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkForConflict();
+            }
+        });
+
         scheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -481,6 +495,12 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         });
     }
 
+    private void checkForConflict() {
+        for (String employeeId : selectedEmployeesIds) {
+
+        }
+    }
+
     private void showAddScheduleDialog() {
         if (!isFinishing()) {
             addScheduleDialog.show();
@@ -488,65 +508,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         }
     }
 
-    private void openSelectEmployeeDialog() {
-        final Dialog selectEmployeeDialog = new Dialog(this);
-        selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
-        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        //Connect views
-        selectEmployeeListView = selectEmployeeDialog.findViewById(R.id.select_employee_list_view);
-        Button cancelButton = selectEmployeeDialog.findViewById(R.id.cancel_button);
-        Button okButton = selectEmployeeDialog.findViewById(R.id.ok_button);
-
-        selectEmployeeAdapter = new SelectEmployeeInAddEventAdapter(this, selectedEmployeesIds,
-                EmployeeRepository.getInstance().getEmployeesBySearchString(searchString));
-        selectEmployeeAdapter.setListener(this);
-        selectEmployeeListView.setAdapter(selectEmployeeAdapter);
-
-        SearchView searchView = selectEmployeeDialog.findViewById(R.id.select_employee_search_view);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                searchString = newText;
-                ArrayList<Employee> employees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
-                selectEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds, employees);
-                return true;
-            }
-        });
-
-        //Add events
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                CheckBox tempCheckbox;
-//                for (int i = 0; i < selectEmployeeListView.getChildCount(); i++) {
-//                    tempCheckbox = selectEmployeeListView.getChildAt(i).findViewById(R.id.add_employee_checkbox);
-//                    if (tempCheckbox.isChecked() &&
-//                            !selectedEmployeesIds.contains(selectEmployeeAdapter.getAllEmployeesIds()[i])) {
-//                        selectedEmployeesIds.add(selectEmployeeAdapter.getAllEmployeesIds()[i]);
-//                    }
-//                    if (!tempCheckbox.isChecked()) {
-//                        selectedEmployeesIds.remove(selectEmployeeAdapter.getAllEmployeesIds()[i]);
-//                    }
-//                }
-                selectedEmployeesIds = selectEmployeeAdapter.getSelectedEmployeesIds();
-                editEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds);
-                selectEmployeeDialog.dismiss();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectEmployeeDialog.dismiss();
-            }
-        });
+    private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
             selectEmployeeDialog.show();
         }
@@ -589,6 +551,55 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         });
         if (!isFinishing()) {
             selectReminderDialog.show();
+        }
+    }
+
+    private void addEventToDatabase() {
+        if (!titleEditText.getText().toString().isEmpty()) {
+
+            Event event = new Event("",
+                    titleEditText.getText().toString(),
+                    startDateEditText.getText().toString(),
+                    endDateEditText.getText().toString(),
+                    startTimeEditText.getText().toString(),
+                    endTimeEditText.getText().toString(),
+                    locationEditText.getText().toString(),
+                    noteEditText.getText().toString());
+
+            final ArrayList<Salary> salaries = new ArrayList<>();
+            for (String employeeId : selectedEmployeesIds) {
+                Salary tempSalary = new Salary("",
+                        "",
+                        employeeId,
+                        0,
+                        false);
+                salaries.add(tempSalary);
+            }
+
+            EventRepository.getInstance().setListener(ManageEventFragment.thisListener);
+            for (Reminder r : selectedReminders) {
+                Calendar calendar = Calendar.getInstance();
+                Calendar calendarTime = Calendar.getInstance();
+                try {
+                    calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+                    calendarTime.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+                    calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
+                    calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
+                r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+            }
+            EventRepository.getInstance().addEventToDatabase(event, salaries, schedules, selectedReminders);
+            context.finish();
+
+        } else {
+            if (titleEditText.getText().toString().isEmpty()) {
+                titleEditText.setError("Xin mời nhập");
+            } else {
+                titleEditText.setError(null);
+            }
         }
     }
 
@@ -653,11 +664,23 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     public void onCheckBoxClicked(String employeeId, boolean isChecked) {
         if (isChecked) {
             selectedEmployeesIds.add(employeeId);
+            conflictOfSelectedEmployees.put(employeeId, false);
         } else {
             selectedEmployeesIds.remove(employeeId);
+            conflictOfSelectedEmployees.remove(employeeId);
         }
+    }
 
-        selectEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds,
-                EmployeeRepository.getInstance().getEmployeesBySearchString(searchString));
+    @Override
+    public void onDeleteButtonClicked(String employeeId) {
+        selectedEmployeesIds.remove(employeeId);
+        conflictOfSelectedEmployees.remove(employeeId);
+        editEmployeeAdapter.notifyDataSetChanged();
+        selectEmployeeAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onListItemClicked(String employeeId) {
+
     }
 }

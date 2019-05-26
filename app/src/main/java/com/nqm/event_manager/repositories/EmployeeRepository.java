@@ -262,13 +262,5 @@ public class EmployeeRepository {
     }
 
     //----------------------------------------------------------------------------------------------
-    public ArrayList<String> getConflictEvents(String employeeId, String startDateTime, String endDateTime) {
-        ArrayList<Salary> salaries = SalaryRepository.getInstance()
-                .getSalariesByStartTimeAndEndTimeAndEmployeeId(startDateTime, endDateTime, employeeId);
-        ArrayList<String> eventsIds = new ArrayList<>();
-        for (Salary s : salaries) {
-            eventsIds.add(s.getEventId());
-        }
-        return eventsIds;
-    }
+
 }

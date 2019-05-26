@@ -82,7 +82,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
-    ListView selectEmployeeListView;
+    RecyclerView selectEmployeeRecyclerView;
     SelectEmployeeInEditEventAdapter selectEmployeeAdapter;
     String searchString = "";
 
@@ -501,14 +501,13 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        selectEmployeeListView = selectEmployeeDialog.findViewById(R.id.select_employee_list_view);
-        Button cancelButton = selectEmployeeDialog.findViewById(R.id.cancel_button);
+        selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
         Button okButton = selectEmployeeDialog.findViewById(R.id.ok_button);
 
         selectEmployeeAdapter = new SelectEmployeeInEditEventAdapter(this, eventId, selectedEmployeesIds,
                 EmployeeRepository.getInstance().getEmployeesBySearchString(searchString));
         selectEmployeeAdapter.setListener(this);
-        selectEmployeeListView.setAdapter(selectEmployeeAdapter);
+//        selectEmployeeListView.setAdapter(selectEmployeeAdapter);
 
         SearchView searchView = selectEmployeeDialog.findViewById(R.id.select_employee_search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -533,12 +532,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
             public void onClick(View view) {
                 selectedEmployeesIds = selectEmployeeAdapter.getSelectedEmployeesIds();
                 editEmployeeAdapter.notifyDataSetChanged(selectedEmployeesIds);
-                selectEmployeeDialog.dismiss();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
                 selectEmployeeDialog.dismiss();
             }
         });

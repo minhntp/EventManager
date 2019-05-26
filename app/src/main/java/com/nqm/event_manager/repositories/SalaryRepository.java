@@ -218,6 +218,7 @@ public class SalaryRepository {
                 });
     }
 
+    //CALCULATE SALARIES FOR ALL EMPLOYEES
     public ArrayList<Salary> getSalariesByStartDateAndEndDate(String startDate, String endDate) {
         ArrayList<Salary> salaries = new ArrayList<>();
         for (Salary s : allSalaries.values()) {
@@ -240,6 +241,7 @@ public class SalaryRepository {
         return salaries;
     }
 
+    //CALCULATE SALARIES FOR ONE EMPLOYEE
     public ArrayList<Salary> getSalariesByStartDateAndEndDateAndEmployeeId(String startDate,
                                                                            String endDate,
                                                                            String employeeId) {
@@ -263,18 +265,22 @@ public class SalaryRepository {
         return salaries;
     }
 
-    public ArrayList<Salary> getSalariesByStartTimeAndEndTimeAndEmployeeId(String startTime,
-                                                                           String endTime,
-                                                                           String employeeId) {
+    //SEARCH FOR CONFLICT: RESULT salaries.size() > 0 -> CONFLICT
+    public ArrayList<Salary> getSalariesByStartTimeEndTimeEmployeeId(String startTime, String endTime,
+                                                                     String employeeId, String eventId) {
         ArrayList<Salary> salaries = new ArrayList<>();
-        for (Salary s : allSalaries.values()) {
-            if (s.getEmployeeId().equals(employeeId)) {
-                try {
-                    Calendar startCalendar = Calendar.getInstance();
-                    startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
-                    Calendar endCalendar = Calendar.getInstance();
-                    endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
+        try {
+            Calendar startCalendar = Calendar.getInstance();
+            startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
+            Calendar endCalendar = Calendar.getInstance();
+            endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
 
+//            Log.d("debug", "startTime = " + CalendarUtil.sdfDayMonthYearTime.format(startCalendar.getTime())
+//                    + "\n" + "endTime = " + CalendarUtil.sdfDayMonthYearTime.format(endCalendar.getTime()));
+            Log.d("debug", "employeeId = " + employeeId + ", eventId = " + eventId);
+            for (Salary s : allSalaries.values()) {
+//                Log.d("debug", "s.employeeId = " + s.getEmployeeId() + ", s.eventId = " + s.getEventId());
+                if (s.getEmployeeId().equals(employeeId) && !s.getEventId().equals(eventId)) {
                     Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
                     Calendar tempCalendar = Calendar.getInstance();
 
@@ -294,16 +300,20 @@ public class SalaryRepository {
                     salaryEndCalendar.set(Calendar.SECOND, 0);
                     salaryEndCalendar.set(Calendar.MILLISECOND, 0);
 
-                    if((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
+                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
+                            .format(salaryStartCalendar.getTime()) + "\nevent endTime = " +
+                            CalendarUtil.sdfDayMonthYearTime.format(salaryEndCalendar.getTime()));
+
+                    if ((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
                             salaryStartCalendar.compareTo(endCalendar) <= 0) ||
-                    (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
-                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
+                            (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
+                                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
                         salaries.add(s);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return salaries;
     }

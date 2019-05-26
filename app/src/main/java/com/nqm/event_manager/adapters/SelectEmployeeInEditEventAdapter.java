@@ -62,9 +62,9 @@ public class SelectEmployeeInEditEventAdapter extends BaseAdapter {
             view = LayoutInflater.from(context).inflate(R.layout.list_item_select_employee, parent, false);
         }
 
-        TextView hoTenTextView = view.findViewById(R.id.select_ho_ten_text_view);
-        TextView chuyenMonTextView = view.findViewById(R.id.select_chuyen_mon_text_view);
-        final CheckBox addEmployeeCheckBox = view.findViewById(R.id.add_employee_checkbox);
+        TextView hoTenTextView = view.findViewById(R.id.select_employee_name_text_view);
+        TextView chuyenMonTextView = view.findViewById(R.id.select_employee_speciality_text_view);
+        final CheckBox addEmployeeCheckBox = view.findViewById(R.id.select_employee_select_checkbox);
 
         hoTenTextView.setText(getItem(position).getHoTen());
         chuyenMonTextView.setText(getItem(position).getChuyenMon());

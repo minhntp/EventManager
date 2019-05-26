@@ -40,7 +40,7 @@ public class EditScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_add_schedule, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_edit_schedule, parent, false);
         return new AddScheduleItemViewHolder(view);
     }
 

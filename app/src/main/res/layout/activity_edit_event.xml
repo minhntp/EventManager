@@ -39,11 +39,11 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/event_edit_title_edit_text"
+                android:id="@+id/edit_event_title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nextFocusLeft="@id/event_edit_title_edit_text"
-                android:nextFocusUp="@id/event_edit_title_edit_text"
+                android:nextFocusLeft="@id/edit_event_title_edit_text"
+                android:nextFocusUp="@id/edit_event_title_edit_text"
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
@@ -68,7 +68,7 @@
                     android:weightSum="6">
 
                     <TextView
-                        android:id="@+id/event_edit_start_dow_textview"
+                        android:id="@+id/edit_event_start_dow_text_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -76,7 +76,7 @@
                         android:textSize="@dimen/normal_text" />
 
                     <EditText
-                        android:id="@+id/event_edit_start_date_edit_text"
+                        android:id="@+id/edit_event_start_date_edit_text"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
@@ -86,7 +86,7 @@
                         android:textSize="@dimen/content" />
 
                     <EditText
-                        android:id="@+id/event_edit_start_time_edit_text"
+                        android:id="@+id/edit_event_start_time_edit_text"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
@@ -110,7 +110,7 @@
                     android:weightSum="6">
 
                     <TextView
-                        android:id="@+id/event_edit_end_dow_textview"
+                        android:id="@+id/edit_event_end_dow_text_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -118,7 +118,7 @@
                         android:textSize="@dimen/normal_text" />
 
                     <EditText
-                        android:id="@+id/event_edit_end_date_edit_text"
+                        android:id="@+id/edit_event_end_date_edit_text"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
@@ -128,7 +128,7 @@
                         android:textSize="@dimen/content" />
 
                     <EditText
-                        android:id="@+id/event_edit_end_time_edit_text"
+                        android:id="@+id/edit_event_end_time_edit_text"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="2"
@@ -147,7 +147,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/event_edit_location_edit_text"
+                    android:id="@+id/edit_event_location_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
@@ -162,14 +162,14 @@
                     android:textSize="@dimen/title"
                     android:textStyle="bold" />
 
-                <com.nqm.event_manager.custom_views.CustomListView
-                    android:id="@+id/event_edit_employee_list_view"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/edit_event_employee_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></com.nqm.event_manager.custom_views.CustomListView>
+                    android:layout_height="wrap_content"/>
 
                 <Button
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/event_edit_add_employee_button"
+                    android:id="@+id/edit_event_add_employee_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
@@ -185,7 +185,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/event_edit_note_edit_text"
+                    android:id="@+id/edit_event_note_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
