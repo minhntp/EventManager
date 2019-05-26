@@ -1,12 +1,15 @@
 package com.nqm.event_manager.repositories;
 
 import android.content.Context;
+import android.support.annotation.LongDef;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -275,45 +278,44 @@ public class SalaryRepository {
             Calendar endCalendar = Calendar.getInstance();
             endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
 
-//            Log.d("debug", "startTime = " + CalendarUtil.sdfDayMonthYearTime.format(startCalendar.getTime())
-//                    + "\n" + "endTime = " + CalendarUtil.sdfDayMonthYearTime.format(endCalendar.getTime()));
-            Log.d("debug", "employeeId = " + employeeId + ", eventId = " + eventId);
+            Calendar tempCalendar = Calendar.getInstance();
+
             for (Salary s : allSalaries.values()) {
-//                Log.d("debug", "s.employeeId = " + s.getEmployeeId() + ", s.eventId = " + s.getEventId());
                 if (s.getEmployeeId().equals(employeeId) && !s.getEventId().equals(eventId)) {
-                    Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
-                    Calendar tempCalendar = Calendar.getInstance();
+                    Log.d("debug", "condition met to compare time");
 
-                    Calendar salaryStartCalendar = Calendar.getInstance();
-                    salaryStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
-                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
-                    salaryStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                    salaryStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                    salaryStartCalendar.set(Calendar.SECOND, 0);
-                    salaryStartCalendar.set(Calendar.MILLISECOND, 0);
-
-                    Calendar salaryEndCalendar = Calendar.getInstance();
-                    salaryEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
-                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
-                    salaryEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                    salaryEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                    salaryEndCalendar.set(Calendar.SECOND, 0);
-                    salaryEndCalendar.set(Calendar.MILLISECOND, 0);
-
-                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
-                            .format(salaryStartCalendar.getTime()) + "\nevent endTime = " +
-                            CalendarUtil.sdfDayMonthYearTime.format(salaryEndCalendar.getTime()));
-
-                    if ((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
-                            salaryStartCalendar.compareTo(endCalendar) <= 0) ||
-                            (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
-                                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
-                        salaries.add(s);
-                    }
+//                    Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
+//                    Calendar salaryStartCalendar = Calendar.getInstance();
+//
+//                    salaryStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
+//                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
+//                    salaryStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+//                    salaryStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+//                    salaryStartCalendar.set(Calendar.SECOND, 0);
+//                    salaryStartCalendar.set(Calendar.MILLISECOND, 0);
+//
+//                    Calendar salaryEndCalendar = Calendar.getInstance();
+//                    salaryEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
+//                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
+//                    salaryEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+//                    salaryEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+//                    salaryEndCalendar.set(Calendar.SECOND, 0);
+//                    salaryEndCalendar.set(Calendar.MILLISECOND, 0);
+//
+//                    if ((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
+//                            salaryStartCalendar.compareTo(endCalendar) <= 0) ||
+//                            (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
+//                                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
+//                        salaries.add(s);
+//                    }
+//                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
+//                            .format(salaryStartCalendar.getTime()) + "\nevent endTime = " +
+//                            CalendarUtil.sdfDayMonthYearTime.format(salaryEndCalendar.getTime()));
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d("debug", "exception");
         }
         return salaries;
     }

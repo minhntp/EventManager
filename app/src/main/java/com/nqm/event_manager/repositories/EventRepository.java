@@ -1,7 +1,10 @@
 package com.nqm.event_manager.repositories;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -35,6 +38,7 @@ public class EventRepository {
     private HashMap<String, Event> allEvents;
 
     //-------------------------------------------------------------------------------------------
+    private ArrayList<String> resultEventsIds;
 
     private EventRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
@@ -56,6 +60,7 @@ public class EventRepository {
         allEvents = new HashMap<>();
         addListener();
     }
+    //-------------------------------------------------------------------------------------------
 
     static public EventRepository getInstance(IOnDataLoadComplete listener) {
         if (instance == null) {
@@ -68,7 +73,6 @@ public class EventRepository {
         }
         return instance;
     }
-    //-------------------------------------------------------------------------------------------
 
     static public EventRepository getInstance() {
         if (instance == null) {
@@ -110,6 +114,8 @@ public class EventRepository {
         this.listener = listener;
     }
 
+    //-------------------------------------------------------------------------------------------
+
     private void addListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EVENT_COLLECTION)
@@ -138,8 +144,6 @@ public class EventRepository {
                     }
                 });
     }
-
-    //-------------------------------------------------------------------------------------------
 
     public HashMap<String, Event> getAllEvents() {
         return allEvents;
@@ -376,54 +380,63 @@ public class EventRepository {
         return calendarDate.getTime();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+
+    private void setResultEventsIds(ArrayList<String> resultEventsIds) {
+        this.resultEventsIds = resultEventsIds;
+    }
+
     public ArrayList<String> getConflictEventsIds(String startTime, String endTime, String employeeId,
                                                   String eventId) {
-//        ArrayList<Salary> conflictSalaries = SalaryRepository.getInstance()
-//                .getSalariesByStartTimeEndTimeEmployeeId(startTime, endTime, employeeId, eventId);
-////        Log.d("debug", "conflict salaries size = " + conflictSalaries.size());
-//        ArrayList<String> eventsIds = new ArrayList<>();
-//        for (Salary s : conflictSalaries) {
-//            if (!eventsIds.contains(s.getEventId())) {
-//                eventsIds.add(s.getEventId());
-//            }
-//        }
         ArrayList<String> conflictEventsIds = new ArrayList<>();
+
+        queryEventsIdsByEmployeeId(employeeId, new MyQueryCallback() {
+            @Override
+            public void onCallback(ArrayList<String> resultEventsIds) {
+                setResultEventsIds(resultEventsIds);
+            }
+        });
+
         try {
             Calendar startCalendar = Calendar.getInstance();
             startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
             Calendar endCalendar = Calendar.getInstance();
             endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
 
-            Log.d("debug", "startTime = " + CalendarUtil.sdfDayMonthYearTime.format(startCalendar.getTime())
-                    + "\n" + "endTime = " + CalendarUtil.sdfDayMonthYearTime.format(endCalendar.getTime()));
-            for (Event e : getAllEvents().values()) {
-                Calendar tempCalendar = Calendar.getInstance();
-                Calendar eventStartCalendar = Calendar.getInstance();
-                Calendar eventEndCalendar = Calendar.getInstance();
+            for (String id : resultEventsIds) {
+                if (!id.equals(eventId)) {
+                    Log.d("debug", "condition meet");
+                    Event e = allEvents.get(id);
 
-                eventStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
-                tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
-                eventStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                eventStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                eventStartCalendar.set(Calendar.SECOND, 0);
-                eventStartCalendar.set(Calendar.MILLISECOND, 0);
+                    Calendar tempCalendar = Calendar.getInstance();
+                    Calendar eventStartCalendar = Calendar.getInstance();
+                    Calendar eventEndCalendar = Calendar.getInstance();
 
-                eventEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
-                tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
-                eventEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                eventEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                eventEndCalendar.set(Calendar.SECOND, 0);
-                eventEndCalendar.set(Calendar.MILLISECOND, 0);
+                    eventStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
+                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
+                    eventStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                    eventStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                    eventStartCalendar.set(Calendar.SECOND, 0);
+                    eventStartCalendar.set(Calendar.MILLISECOND, 0);
 
-                Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
-                        .format(eventStartCalendar.getTime()) + "\nevent endTime = " +
-                        CalendarUtil.sdfDayMonthYearTime.format(eventEndCalendar.getTime()));
+                    eventEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
+                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
+                    eventEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                    eventEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                    eventEndCalendar.set(Calendar.SECOND, 0);
+                    eventEndCalendar.set(Calendar.MILLISECOND, 0);
 
-                if ((eventStartCalendar.compareTo(startCalendar) >= 0 &&
-                        eventStartCalendar.compareTo(endCalendar) <= 0) ||
-                        (eventEndCalendar.compareTo(startCalendar) >= 0 &&
-                                eventEndCalendar.compareTo(endCalendar) <= 0)) {
-                    conflictEventsIds.add(e.getId());
+//                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
+//                            .format(eventStartCalendar.getTime()) + "\nevent endTime = " +
+//                            CalendarUtil.sdfDayMonthYearTime.format(eventEndCalendar.getTime()));
+
+                    if ((eventStartCalendar.compareTo(startCalendar) >= 0 && eventStartCalendar.compareTo(endCalendar) <= 0) ||
+                            (eventEndCalendar.compareTo(startCalendar) >= 0 && eventEndCalendar.compareTo(endCalendar) <= 0)) {
+                        if (!conflictEventsIds.contains(id)) {
+                            conflictEventsIds.add(id);
+                        }
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -432,11 +445,34 @@ public class EventRepository {
         return conflictEventsIds;
     }
 
-    private interface MyEventCallback {
-        void onCallback(HashMap<String, Event> eventList);
+    private void queryEventsIdsByEmployeeId(String employeeId, final MyQueryCallback callback) {
+        DatabaseAccess.getInstance().getDatabase().collection(Constants.SALARY_COLLECTION)
+                .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, employeeId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        ArrayList<String> queryResultEventsIds = new ArrayList<>();
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> data = document.getData();
+                                String id = (String) data.get(Constants.SALARY_EVENT_ID);
+                                if (!queryResultEventsIds.contains(id)) {
+                                    queryResultEventsIds.add(id);
+                                }
+                            }
+                            Log.d("debug", "query events size = " + queryResultEventsIds.size());
+                            callback.onCallback(queryResultEventsIds);
+                        } else {
+                            Log.d("debug", "task failed");
+                        }
+                    }
+                });
     }
 
     //----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
+
     public void sortEventsByStartDateTime(ArrayList<Event> events) {
         Collections.sort(events, new Comparator<Event>() {
             @Override
@@ -456,5 +492,13 @@ public class EventRepository {
                 return compareResult;
             }
         });
+    }
+
+    private interface MyEventCallback {
+        void onCallback(HashMap<String, Event> eventList);
+    }
+
+    private interface MyQueryCallback {
+        void onCallback(ArrayList<String> resultEventsIds);
     }
 }

@@ -122,22 +122,22 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        titleEditText = findViewById(R.id.event_edit_title_edit_text);
-        startDateEditText = findViewById(R.id.event_edit_start_date_edit_text);
-        startTimeEditText = findViewById(R.id.event_edit_start_time_edit_text);
-        endDateEditText = findViewById(R.id.event_edit_end_date_edit_text);
-        endTimeEditText = findViewById(R.id.event_edit_end_time_edit_text);
+        titleEditText = findViewById(R.id.edit_event_title_edit_text);
+        startDateEditText = findViewById(R.id.edit_event_start_date_edit_text);
+        startTimeEditText = findViewById(R.id.edit_event_start_time_edit_text);
+        endDateEditText = findViewById(R.id.edit_event_end_date_edit_text);
+        endTimeEditText = findViewById(R.id.edit_event_end_time_edit_text);
 
-        startDowTextView = findViewById(R.id.event_edit_start_dow_textview);
-        endDowTextView = findViewById(R.id.event_edit_end_dow_textview);
+        startDowTextView = findViewById(R.id.edit_event_start_dow_text_view);
+        endDowTextView = findViewById(R.id.edit_event_end_dow_text_view);
 
-        locationEditText = findViewById(R.id.event_edit_location_edit_text);
-        noteEditText = findViewById(R.id.event_edit_note_edit_text);
+        locationEditText = findViewById(R.id.edit_event_location_edit_text);
+        noteEditText = findViewById(R.id.edit_event_note_edit_text);
 
-        addEmployeesButton = findViewById(R.id.event_edit_add_employee_button);
+        addEmployeesButton = findViewById(R.id.edit_event_add_employee_button);
         scheduleButton = findViewById(R.id.edit_event_schedule_button);
 
-        employeeListView = findViewById(R.id.event_edit_employee_list_view);
+        employeeListView = findViewById(R.id.edit_event_employee_recycler_view);
 
         editReminderListView = findViewById(R.id.edit_event_reminder_list_view);
         selectReminderButton = findViewById(R.id.edit_event_add_reminder_button);

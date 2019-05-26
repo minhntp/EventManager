@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,7 @@ import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
@@ -496,8 +498,40 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     }
 
     private void checkForConflict() {
-        for (String employeeId : selectedEmployeesIds) {
+        Log.d("debug", "here0");
+        boolean hasConflict = false;
+        try {
+            Calendar calendar = Calendar.getInstance();
+            Calendar tempCalendar = Calendar.getInstance();
 
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+            tempCalendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+            String startTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
+            tempCalendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+            String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+
+            Log.d("debug", "here1");
+            for (String employeeId : selectedEmployeesIds) {
+                Log.d("debug", "here2");
+                ArrayList<String> conflictEventsIds = EventRepository.getInstance()
+                        .getConflictEventsIds(startTime, endTime, employeeId, "");
+                Log.d("debug", "confict size = " + conflictEventsIds.size());
+                if (conflictEventsIds.size() > 0) {
+                    conflictOfSelectedEmployees.put(employeeId, true);
+                    hasConflict = true;
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (hasConflict) {
+            editEmployeeAdapter.notifyDataSetChanged();
         }
     }
 
