@@ -94,7 +94,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         ScheduleRepository.getInstance().setListener(this);
         ReminderRepository.getInstance().setListener(this);
 
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
 //        Log.d("debug", "eventId got in ViewEvent: " + eventId);
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
 

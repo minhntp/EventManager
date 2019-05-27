@@ -19,6 +19,7 @@ import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
+import com.nqm.event_manager.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -308,6 +309,19 @@ public class EventRepository {
         batch.commit();
     }
 
+    public ArrayList<String> getEventsIdsBySearchString(String searchString) {
+        ArrayList<String> eventsIds = new ArrayList<>();
+        for (Event e : allEvents.values()) {
+            if (StringUtil.normalizeString(e.getTen()).contains(StringUtil.normalizeString(searchString)) ||
+                    StringUtil.normalizeString(e.getDiaDiem()).contains(StringUtil.normalizeString(searchString)) ||
+                    StringUtil.normalizeString(e.getGhiChu()).contains(StringUtil.normalizeString(searchString))) {
+                eventsIds.add(e.getId());
+            }
+        }
+        sortEventsIdsByStartDateTime(eventsIds);
+        return eventsIds;
+    }
+
     public HashMap<String, Event> getEventsByDate(String date) {
         Log.d("debug", "EventRepository: getting event on date: " + date);
         HashMap<String, Event> events = new HashMap<>();
@@ -467,6 +481,29 @@ public class EventRepository {
             @Override
             public int compare(Event e1, Event e2) {
                 int compareResult = 0;
+                try {
+                    if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
+                        compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
+                                CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
+                    } else {
+                        compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
+                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return compareResult;
+            }
+        });
+    }
+
+    public void sortEventsIdsByStartDateTime(ArrayList<String> eventsIds) {
+        Collections.sort(eventsIds, new Comparator<String>() {
+            @Override
+            public int compare(String id1, String id2) {
+                int compareResult = 0;
+                Event e1 = allEvents.get(id1);
+                Event e2 = allEvents.get(id2);
                 try {
                     if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
                         compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(

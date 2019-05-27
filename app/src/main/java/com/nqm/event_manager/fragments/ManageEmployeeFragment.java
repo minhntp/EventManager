@@ -82,7 +82,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
             public boolean onQueryTextChange(String newText) {
                 //set adapter search string = newText
                 //notifyOnDataSetChanged()
-                resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(newText);
+                resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(newText);
                 employeeAdapter.notifyDataSetChanged(resultEmployeesIds);
                 return true;
             }

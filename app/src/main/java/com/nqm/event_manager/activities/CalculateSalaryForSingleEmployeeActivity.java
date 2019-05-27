@@ -23,7 +23,9 @@ import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
+import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
@@ -58,6 +60,11 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate_salary_for_single_employee);
+
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
 
         connectViews();
         init();
@@ -100,8 +107,10 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         nameTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getHoTen());
         specialityTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getChuyenMon());
 
-        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+        startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
+        endDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
+        startDateEditText.setText(startDate);
+        endDateEditText.setText(endDate);
 
         resultSalaries = new ArrayList<>();
         resultEventsSize = 0;
@@ -299,9 +308,13 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        super.onResume();
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
         getResultSalaries();
         showResult();
+        super.onResume();
     }
 
     @Override

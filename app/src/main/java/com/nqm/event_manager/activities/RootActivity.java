@@ -23,6 +23,7 @@ import com.nqm.event_manager.fragments.CalculateSalaryFragment;
 import com.nqm.event_manager.fragments.EventListFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
+import com.nqm.event_manager.fragments.MoreSettingsFragment;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -94,6 +95,27 @@ public class RootActivity extends AppCompatActivity
         transaction.commit();
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_event) {
+            openManageEventFragment();
+        } else if (id == R.id.nav_employee) {
+            openManageEmployeeFragment();
+        } else if (id == R.id.nav_calculate_salaries) {
+            openCalculateSalaryFragment();
+        } else if (id == R.id.nav_settings) {
+            openSettingsActivity();
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     public void openManageEventFragment() {
 
         // Replace root view to default fragment
@@ -124,34 +146,17 @@ public class RootActivity extends AppCompatActivity
         ReplaceFragment(newFragment);
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_event) {
-            openManageEventFragment();
-        } else if (id == R.id.nav_employee) {
-            openManageEmployeeFragment();
-        } else if (id == R.id.nav_calculate_salaries) {
-            openCalculateSalaryFragment();
-        } else if (id == R.id.nav_about) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    private void openSettingsActivity() {
+        toolbar.setTitle(R.string.more_settings_fragment_label);
+        Fragment newFragment = new MoreSettingsFragment();
+        ReplaceFragment(newFragment);
     }
 
-    public static class EventDetailsActivity extends AppCompatActivity {
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_view_event);
-        }
-    }
+//    public static class EventDetailsActivity extends AppCompatActivity {
+//        @Override
+//        protected void onCreate(Bundle savedInstanceState) {
+//            super.onCreate(savedInstanceState);
+//            setContentView(R.layout.activity_view_event);
+//        }
+//    }
 }

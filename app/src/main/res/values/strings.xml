@@ -1,19 +1,24 @@
 <resources>
     <string name="app_name">Quản lí sự kiện</string>
+
     <string name="add_event_activity_label">Thêm sự kiện</string>
     <string name="edit_salary_activity_label">Sửa lương</string>
     <string name="edit_event_activity_label">Chỉnh sửa sự kiện</string>
     <string name="view_event_activity_label">Chi tiết sự kiện</string>
     <string name="send_event_info_activity_label">Gửi thông tin sự kiện</string>
+    <string name="search_event_activity_label">Tìm kiếm sự kiện</string>
+    <string name="calculate_salary_single_employee_label">Tính lương cho nhân viên</string>
+    <string name="add_employee_single_label">Thêm nhân viên</string>
+    <string name="edit_employee_single_label">Sửa thông tin nhân viên</string>
+    <string name="view_employee_single_label">Chi tiết nhân viên</string>
+
     <string name="manage_event_fragment_label">Quản lí sự kiện</string>
     <string name="manage_employee_fragment_label">Quản lí nhân viên</string>
     <string name="calculate_salary_fragment_label">Tính lương</string>
     <string name="event_list_fragment_label">Danh sách sự kiện</string>
-    <string name="calculate_salary_single_employee_label">Tính lương cho nhân viên</string>
-    <string name="view_employee_single_label">Chi tiết nhân viên</string>
-    <string name="add_employee_single_label">Thêm nhân viên</string>
-    <string name="edit_employee_single_label">Sửa thông tin nhân viên</string>
-    <string name="greeting">Tính lương</string>
+    <string name="more_settings_fragment_label">Cài đặt thêm</string>
+
+    <string name="greeting">Xin chào</string>
     <string name="user_name">Nguyễn Quang Minh</string>
 
     <string name="navigation_drawer_open">Quản lí sự kiện</string>
@@ -30,4 +35,7 @@
         <item>Ghi chú</item>
         <item>Lịch trình</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

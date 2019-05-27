@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,7 +27,7 @@ import android.widget.Toast;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeEditEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
-import com.nqm.event_manager.adapters.EditScheduleRecyclerAdapter;
+import com.nqm.event_manager.adapters.EditScheduleAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeEditEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
@@ -79,7 +78,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
     EditEmployeeEditEventAdapter editEmployeeAdapter;
 
     WindowManager.LayoutParams lWindowParams;
-    EditScheduleRecyclerAdapter addScheduleAdapter;
+    EditScheduleAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
     Button saveSchedulesButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
@@ -232,7 +231,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
         titleTextView = addScheduleDialog.findViewById(R.id.add_schedule_dialog_title_text_view);
 
         addScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        addScheduleAdapter = new EditScheduleRecyclerAdapter();
+        addScheduleAdapter = new EditScheduleAdapter();
         addScheduleSwipeAndDragCallback = new AddScheduleSwipeAndDragCallback(addScheduleAdapter);
         touchHelper = new ItemTouchHelper(addScheduleSwipeAndDragCallback);
         addScheduleAdapter.setTouchHelper(touchHelper);
@@ -288,7 +287,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnAddSchedu
 
         employees = EmployeeRepository.getInstance().getEmployeesBySearchString("");
         selectEmployeeAdapter = new SelectEmployeeEditEventAdapter(selectedEmployeesIds,
-                employees);
+                employees, eventId);
         selectEmployeeAdapter.setListener(this);
         selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
         selectEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));

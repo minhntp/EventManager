@@ -28,7 +28,7 @@ import android.widget.Toast;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
-import com.nqm.event_manager.adapters.EditScheduleRecyclerAdapter;
+import com.nqm.event_manager.adapters.EditScheduleAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
@@ -84,7 +84,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
 
     ArrayList<Schedule> schedules;
     WindowManager.LayoutParams lWindowParams;
-    EditScheduleRecyclerAdapter addScheduleAdapter;
+    EditScheduleAdapter addScheduleAdapter;
     RecyclerView addScheduleRecyclerView;
     Button saveSchedulesButton, addScheduleButton, sortScheduleButton;
     Dialog addScheduleDialog;
@@ -212,7 +212,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
 
         //init add schedule recycler view
         addScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        addScheduleAdapter = new EditScheduleRecyclerAdapter();
+        addScheduleAdapter = new EditScheduleAdapter();
         addScheduleSwipeAndDragCallback = new AddScheduleSwipeAndDragCallback(addScheduleAdapter);
         touchHelper = new ItemTouchHelper(addScheduleSwipeAndDragCallback);
         addScheduleAdapter.setTouchHelper(touchHelper);

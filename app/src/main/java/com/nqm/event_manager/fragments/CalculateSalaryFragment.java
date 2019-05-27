@@ -385,6 +385,9 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
         EmployeeRepository.getInstance().setListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
+        getResultSalaries();
+        updateEmployeesSpinner();
+        showResult();
         super.onResume();
     }
 

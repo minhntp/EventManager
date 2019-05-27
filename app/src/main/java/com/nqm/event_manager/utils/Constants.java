@@ -49,4 +49,7 @@ public class Constants {
     public static String INTENT_START_TIME = "startTime";
     public static String INTENT_END_TIME = "endTime";
 
+    public static String DEFAULT_REMINDER_COLLECTION = "nhacnhomacdinh";
+
+
 }

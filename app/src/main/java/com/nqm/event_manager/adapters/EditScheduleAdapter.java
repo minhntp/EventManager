@@ -21,7 +21,7 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EditScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+public class EditScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements AddScheduleSwipeAndDragCallback.ActionCompletionContract {
 
     IOnAddScheduleViewClicked listener;

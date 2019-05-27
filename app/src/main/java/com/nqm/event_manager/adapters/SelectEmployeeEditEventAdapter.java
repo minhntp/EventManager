@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
 import com.nqm.event_manager.models.Employee;
+import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
 
@@ -48,10 +49,13 @@ public class SelectEmployeeEditEventAdapter extends
     private ArrayList<String> selectedEmployeesIds;
     private ArrayList<Employee> employees;
     private IOnSelectEmployeeViewClicked listener;
+    private String eventId;
 
-    public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees) {
+    public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees,
+                                          String eventId) {
         this.selectedEmployeesIds = selectedEmployeesIds;
         this.employees = employees;
+        this.eventId = eventId;
     }
 
     public void setListener(IOnSelectEmployeeViewClicked listener) {
@@ -72,16 +76,27 @@ public class SelectEmployeeEditEventAdapter extends
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Employee employee = employees.get(i);
+        final Employee employee = employees.get(i);
 
         TextView nameTextView = viewHolder.nameTextView;
         TextView specialityTextView = viewHolder.specialityTextView;
-        CheckBox selectCheckBox = viewHolder.selectCheckBox;
+        final CheckBox selectCheckBox = viewHolder.selectCheckBox;
 
         nameTextView.setText(employee.getHoTen());
         specialityTextView.setText(employee.getChuyenMon());
 
-        selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+        SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, new SalaryRepository.MyIsPaidSalaryCallback() {
+            @Override
+            public void onCallback(boolean isPaid) {
+                if (isPaid) {
+                    selectCheckBox.setVisibility(View.INVISIBLE);
+                } else {
+                    selectCheckBox.setVisibility(View.VISIBLE);
+                    selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+                }
+            }
+        });
+
     }
 
     @Override

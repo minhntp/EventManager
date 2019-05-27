@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEventActivity;
 import com.nqm.event_manager.activities.RootActivity;
+import com.nqm.event_manager.activities.SearchEventActivity;
 import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.EventListAdapter;
 import com.nqm.event_manager.custom_views.CustomCalendarView;
@@ -82,7 +83,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.manage_event_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -96,21 +97,19 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //Mở cửa sổ thêm sự kiện
         if (id == R.id.action_add_event) {
             Intent intent = new Intent(getActivity(), AddEventActivity.class);
             intent.putExtra("selectedDate", CalendarUtil.sdfDayMonthYear.format(selectedDate));
             startActivity(intent);
             return true;
         }
-        //Xem sự kiện theo danh sách dọc
+
         if (id == R.id.action_list_view) {
             RootActivity activity = (RootActivity) getActivity();
             activity.openEventListFragment();
             return true;
         }
 
-        //Đi đến ngày hôm nay
         if (id == R.id.action_today) {
             calendarView.setViewDate(Calendar.getInstance().getTime());
             calendarView.updateView();
@@ -119,6 +118,11 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         if (id == R.id.action_selected_day) {
             calendarView.setViewDate(selectedDate);
             calendarView.updateView();
+        }
+
+        if (id == R.id.action_search) {
+            Intent intent = new Intent(getActivity(), SearchEventActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
