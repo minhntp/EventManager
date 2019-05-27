@@ -44,4 +44,9 @@ public class Constants {
     public static String BOOT_COMPLETED = "hoantat";
     public static String BOOT_TIME = "thoigian";
 
+    public static String INTENT_EMPLOYEE_ID = "employeeId";
+    public static String INTENT_EVENT_ID = "eventId";
+    public static String INTENT_START_TIME = "startTime";
+    public static String INTENT_END_TIME = "endTime";
+
 }

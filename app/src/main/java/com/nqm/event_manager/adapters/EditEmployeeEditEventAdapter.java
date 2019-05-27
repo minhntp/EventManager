@@ -16,12 +16,13 @@ import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class EditEmployeeAddEventAdapter extends
-        RecyclerView.Adapter<EditEmployeeAddEventAdapter.ViewHolder> {
+public class EditEmployeeEditEventAdapter extends
+        RecyclerView.Adapter<EditEmployeeEditEventAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -70,9 +71,11 @@ public class EditEmployeeAddEventAdapter extends
     IOnEditEmployeeViewClicked listener;
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, ArrayList<String>> conflictsMap;
+    private String eventId;
 
-    public EditEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds,
+    public EditEmployeeEditEventAdapter(String eventId, ArrayList<String> selectedEmployeesIds,
                                        HashMap<String, ArrayList<String>> conflictsMap) {
+        this.eventId = eventId;
         this.selectedEmployeesIds = selectedEmployeesIds;
         this.conflictsMap = conflictsMap;
     }
@@ -100,6 +103,7 @@ public class EditEmployeeAddEventAdapter extends
         ImageView profileImageView = viewHolder.profileImageView;
         TextView nameTextView = viewHolder.nameTextView;
         TextView specialityTextView = viewHolder.specialityTextView;
+        final ImageButton deleteButton = viewHolder.deleteButton;
 
         if (conflictsMap.get(employee.getId()) != null && conflictsMap.get(employee.getId()).size() > 0) {
             profileImageView.setBackgroundColor(EventManager.getAppContext().getColor(R.color.conflictBackground));
@@ -110,8 +114,20 @@ public class EditEmployeeAddEventAdapter extends
             nameTextView.setBackgroundColor(Color.TRANSPARENT);
             specialityTextView.setBackgroundColor(Color.TRANSPARENT);
         }
+
         nameTextView.setText(employee.getHoTen());
         specialityTextView.setText(employee.getChuyenMon());
+
+        SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, new SalaryRepository.MyIsPaidSalaryCallback() {
+            @Override
+            public void onCallback(boolean isPaid) {
+                if (isPaid) {
+                    deleteButton.setVisibility(View.INVISIBLE);
+                } else {
+                    deleteButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override

@@ -193,7 +193,6 @@ public class EventRepository {
             HashMap<String, String> reminderData = new HashMap<>();
             reminderData.put(Constants.REMINDER_EVENT_ID, eventDocRef.getId());
             reminderData.put(Constants.REMINDER_MINUTE, "" + reminder.getMinute());
-            reminderData.put(Constants.REMINDER_TEXT, reminder.getText());
             reminderData.put(Constants.REMINDER_TIME, reminder.getTime());
             batch.set(reminderDocRef, reminderData);
         }
@@ -301,7 +300,6 @@ public class EventRepository {
             Map<String, Object> reminderData = new HashMap<>();
             reminderData.put(Constants.REMINDER_EVENT_ID, changedEvent.getId());
             reminderData.put(Constants.REMINDER_MINUTE, "" + reminder.getMinute());
-            reminderData.put(Constants.REMINDER_TEXT, reminder.getText());
             reminderData.put(Constants.REMINDER_TIME, reminder.getTime());
 
             batch.set(reminderDocRef, reminderData);
@@ -383,66 +381,57 @@ public class EventRepository {
     //----------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------
 
-    private void setResultEventsIds(ArrayList<String> resultEventsIds) {
-        this.resultEventsIds = resultEventsIds;
-    }
-
-    public ArrayList<String> getConflictEventsIds(String startTime, String endTime, String employeeId,
-                                                  String eventId) {
-        ArrayList<String> conflictEventsIds = new ArrayList<>();
-
+    public void getConflictEventsIds(final String startTime, final String endTime,
+                                     String employeeId, final String eventId,
+                                     final MyConflictEventCallback conflictCallback) {
         queryEventsIdsByEmployeeId(employeeId, new MyQueryCallback() {
             @Override
             public void onCallback(ArrayList<String> resultEventsIds) {
-                setResultEventsIds(resultEventsIds);
-            }
-        });
+                try {
+                    Calendar startCalendar = Calendar.getInstance();
+                    startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
+                    Calendar endCalendar = Calendar.getInstance();
+                    endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
+                    ArrayList<String> conflictEventsIds = new ArrayList<>();
+                    for (String id : resultEventsIds) {
+                        if (!id.equals(eventId)) {
+                            Event e = allEvents.get(id);
 
-        try {
-            Calendar startCalendar = Calendar.getInstance();
-            startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
-            Calendar endCalendar = Calendar.getInstance();
-            endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
+                            Calendar tempCalendar = Calendar.getInstance();
+                            Calendar eventStartCalendar = Calendar.getInstance();
+                            Calendar eventEndCalendar = Calendar.getInstance();
 
-            for (String id : resultEventsIds) {
-                if (!id.equals(eventId)) {
-                    Log.d("debug", "condition meet");
-                    Event e = allEvents.get(id);
+                            eventStartCalendar.setTime(CalendarUtil.sdfDayMonthYear.parse(e.getNgayBatDau()));
+                            tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
+                            eventStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                            eventStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                            eventStartCalendar.set(Calendar.SECOND, 0);
+                            eventStartCalendar.set(Calendar.MILLISECOND, 0);
 
-                    Calendar tempCalendar = Calendar.getInstance();
-                    Calendar eventStartCalendar = Calendar.getInstance();
-                    Calendar eventEndCalendar = Calendar.getInstance();
+                            eventEndCalendar.setTime(CalendarUtil.sdfDayMonthYear.parse(e.getNgayKetThuc()));
+                            tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
+                            eventEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+                            eventEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+                            eventEndCalendar.set(Calendar.SECOND, 0);
+                            eventEndCalendar.set(Calendar.MILLISECOND, 0);
 
-                    eventStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
-                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
-                    eventStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                    eventStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                    eventStartCalendar.set(Calendar.SECOND, 0);
-                    eventStartCalendar.set(Calendar.MILLISECOND, 0);
-
-                    eventEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
-                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
-                    eventEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-                    eventEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-                    eventEndCalendar.set(Calendar.SECOND, 0);
-                    eventEndCalendar.set(Calendar.MILLISECOND, 0);
-
-//                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
-//                            .format(eventStartCalendar.getTime()) + "\nevent endTime = " +
-//                            CalendarUtil.sdfDayMonthYearTime.format(eventEndCalendar.getTime()));
-
-                    if ((eventStartCalendar.compareTo(startCalendar) >= 0 && eventStartCalendar.compareTo(endCalendar) <= 0) ||
-                            (eventEndCalendar.compareTo(startCalendar) >= 0 && eventEndCalendar.compareTo(endCalendar) <= 0)) {
-                        if (!conflictEventsIds.contains(id)) {
-                            conflictEventsIds.add(id);
+                            if ((eventStartCalendar.compareTo(startCalendar) >= 0 && eventStartCalendar.compareTo(endCalendar) <= 0) ||
+                                    (eventEndCalendar.compareTo(startCalendar) >= 0 && eventEndCalendar.compareTo(endCalendar) <= 0)) {
+                                if (!conflictEventsIds.contains(id)) {
+                                    conflictEventsIds.add(id);
+                                }
+                            }
                         }
                     }
+                    Log.d("debug", "here5" +
+                            "");
+                    conflictCallback.onCallback(conflictEventsIds);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Log.d("debug", "exception");
                 }
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return conflictEventsIds;
+        });
     }
 
     private void queryEventsIdsByEmployeeId(String employeeId, final MyQueryCallback callback) {
@@ -500,5 +489,9 @@ public class EventRepository {
 
     private interface MyQueryCallback {
         void onCallback(ArrayList<String> resultEventsIds);
+    }
+
+    public interface MyConflictEventCallback {
+        void onCallback(ArrayList<String> conflictEventsIds);
     }
 }

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,18 +13,17 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
@@ -36,7 +36,9 @@ import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
@@ -44,7 +46,6 @@ import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
-import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
@@ -54,7 +55,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked,
-        IOnSelectEmployeeViewClicked, IOnEditEmployeeViewClicked {
+        IOnSelectEmployeeViewClicked, IOnEditEmployeeViewClicked, IOnSelectReminderViewClicked,
+        IOnEditReminderViewClicked {
     Activity context;
 
     Toolbar toolbar;
@@ -68,9 +70,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     View currentView;
 
     ArrayList<String> selectedEmployeesIds;
-    HashMap<String, Boolean> conflictOfSelectedEmployees;
+    HashMap<String, ArrayList<String>> conflictsMap;
     EditEmployeeAddEventAdapter editEmployeeAdapter;
-    RecyclerView editEmployeeRecylerView;
+    RecyclerView editEmployeeRecyclerView;
 
     ArrayList<Employee> employees;
     Dialog selectEmployeeDialog;
@@ -92,8 +94,15 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
 
     ArrayList<Reminder> selectedReminders;
     CustomListView reminderListView;
-    Button addReminderButton;
+    Button selectReminderButton;
     EditReminderAdapter editReminderAdapter;
+
+    Dialog selectReminderDialog;
+    ListView selectReminderListView;
+    Button selectReminderOkButton;
+    SelectReminderAdapter selectReminderAdapter;
+
+    String startTime, endTime;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -142,9 +151,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         conflictButton = findViewById(R.id.add_event_conflict_button);
         selectEmployeeButton = findViewById(R.id.add_event_select_employee_button);
         scheduleButton = findViewById(R.id.add_event_schedule_button);
-        addReminderButton = findViewById(R.id.add_event_add_reminder_button);
+        selectReminderButton = findViewById(R.id.add_event_add_reminder_button);
 
-        editEmployeeRecylerView = findViewById(R.id.add_event_edit_employee_recycler_view);
+        editEmployeeRecyclerView = findViewById(R.id.add_event_edit_employee_recycler_view);
         reminderListView = findViewById(R.id.add_event_reminder_list_view);
     }
 
@@ -165,18 +174,21 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         }
 
         selectedEmployeesIds = new ArrayList<>();
-        conflictOfSelectedEmployees = new HashMap<>();
-        editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictOfSelectedEmployees);
+        conflictsMap = new HashMap<>();
+        editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
-        editEmployeeRecylerView.setAdapter(editEmployeeAdapter);
-        editEmployeeRecylerView.setLayoutManager(new LinearLayoutManager(this));
+        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
+        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         initAddScheduleDialog();
         initSelectEmployeeDialog();
 
         selectedReminders = new ArrayList<>();
         editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
+        editReminderAdapter.setListener(this);
         reminderListView.setAdapter(editReminderAdapter);
+
+        initSelectReminderDialog();
     }
 
     private void initAddScheduleDialog() {
@@ -286,6 +298,28 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             public void onClick(View view) {
                 editEmployeeAdapter.notifyDataSetChanged();
                 selectEmployeeDialog.dismiss();
+            }
+        });
+    }
+
+    private void initSelectReminderDialog() {
+        selectReminderDialog = new Dialog(this);
+        selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
+
+        //Connect views
+        selectReminderListView = selectReminderDialog.findViewById(R.id.select_reminder_list_view);
+        selectReminderOkButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
+
+        selectReminderAdapter = new SelectReminderAdapter(this, selectedReminders);
+        selectReminderAdapter.setListener(this);
+        selectReminderListView.setAdapter(selectReminderAdapter);
+
+        //Add events
+        selectReminderOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editReminderAdapter.notifyDataSetChanged();
+                selectReminderDialog.dismiss();
             }
         });
     }
@@ -478,7 +512,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         conflictButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkForConflict();
+                if (selectedEmployeesIds.size() > 0) {
+                    conflictButton.setEnabled(false);
+                    startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
+                    endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
+                    checkForConflict();
+                } else {
+                    Toast.makeText(context, "Xin mời chọn nhân sự trước", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -489,17 +530,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             }
         });
 
-        addReminderButton.setOnClickListener(new View.OnClickListener() {
+        selectReminderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddReminderDialog();
+                selectReminderAdapter.notifyDataSetChanged();
+                showAddReminderDialog();
             }
         });
     }
 
     private void checkForConflict() {
-        Log.d("debug", "here0");
-        boolean hasConflict = false;
         try {
             Calendar calendar = Calendar.getInstance();
             Calendar tempCalendar = Calendar.getInstance();
@@ -516,22 +556,24 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
             calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
             String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
 
-            Log.d("debug", "here1");
-            for (String employeeId : selectedEmployeesIds) {
-                Log.d("debug", "here2");
-                ArrayList<String> conflictEventsIds = EventRepository.getInstance()
-                        .getConflictEventsIds(startTime, endTime, employeeId, "");
-                Log.d("debug", "confict size = " + conflictEventsIds.size());
-                if (conflictEventsIds.size() > 0) {
-                    conflictOfSelectedEmployees.put(employeeId, true);
-                    hasConflict = true;
-                }
+            for (int i = 0; i < selectedEmployeesIds.size(); i++) {
+                final int tempI = i;
+                EventRepository.getInstance().getConflictEventsIds(startTime, endTime, selectedEmployeesIds.get(i), "",
+                        new EventRepository.MyConflictEventCallback() {
+                            @Override
+                            public void onCallback(ArrayList<String> conflictEventsIds) {
+//                                Log.d("debug", "confict size = " + conflictEventsIds.size());
+                                conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
+                                if (tempI == selectedEmployeesIds.size() - 1) {
+                                    editEmployeeAdapter.notifyDataSetChanged();
+                                    conflictButton.setEnabled(true);
+                                }
+                            }
+                        });
+
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-        if (hasConflict) {
-            editEmployeeAdapter.notifyDataSetChanged();
         }
     }
 
@@ -545,46 +587,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
             selectEmployeeDialog.show();
+            selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
         }
     }
 
-    private void openAddReminderDialog() {
-        final Dialog selectReminderDialog = new Dialog(this);
-        selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
-
-        //Connect views
-        final ListView selectReminderListView = selectReminderDialog.findViewById(R.id.select_reminder_list_view);
-        Button cancelButton = selectReminderDialog.findViewById(R.id.select_reminder_cancel_button);
-        Button okButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
-
-        final SelectReminderAdapter selectReminderAdapter;
-        selectReminderAdapter = new SelectReminderAdapter(this, selectedReminders);
-        selectReminderListView.setAdapter(selectReminderAdapter);
-
-        //Add events
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedReminders.clear();
-                for (int i = 0; i < selectReminderListView.getChildCount(); i++) {
-                    CheckBox tempCheckbox = selectReminderListView.getChildAt(i)
-                            .findViewById(R.id.select_reminder_item_select_check_box);
-                    if (tempCheckbox.isChecked()) {
-                        selectedReminders.add(selectReminderAdapter.getItem(i));
-                    }
-                }
-                editReminderAdapter.notifyDataSetChanged(selectedReminders);
-                selectReminderDialog.dismiss();
-            }
-        });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    selectReminderDialog.dismiss();
-            }
-        });
+    private void showAddReminderDialog() {
         if (!isFinishing()) {
             selectReminderDialog.show();
+            selectReminderDialog.getWindow().setAttributes(lWindowParams);
         }
     }
 
@@ -698,23 +708,59 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
     public void onCheckBoxClicked(String employeeId, boolean isChecked) {
         if (isChecked) {
             selectedEmployeesIds.add(employeeId);
-            conflictOfSelectedEmployees.put(employeeId, false);
+            conflictsMap.put(employeeId, null);
         } else {
             selectedEmployeesIds.remove(employeeId);
-            conflictOfSelectedEmployees.remove(employeeId);
+            conflictsMap.remove(employeeId);
         }
     }
 
     @Override
     public void onDeleteButtonClicked(String employeeId) {
         selectedEmployeesIds.remove(employeeId);
-        conflictOfSelectedEmployees.remove(employeeId);
+        conflictsMap.remove(employeeId);
         editEmployeeAdapter.notifyDataSetChanged();
         selectEmployeeAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onListItemClicked(String employeeId) {
+        if (conflictsMap.get(employeeId) != null && conflictsMap.get(employeeId).size() > 0) {
+            //Show conflict activity
+            Intent conflictIntent = new Intent(this, ShowConflictActivity.class);
+            conflictIntent.putExtra("employeeId", employeeId);
+            conflictIntent.putExtra("startTime", startTime);
+            conflictIntent.putExtra("endTime", endTime);
+            conflictIntent.putExtra("conflictEventsIds", conflictsMap.get(employeeId));
+            startActivity(conflictIntent);
+        } else {
+            //Do nothing
+        }
+    }
 
+    @Override
+    public void onReminderClearButtonClicked(int minute) {
+        for (Reminder r : selectedReminders) {
+            if (r.getMinute() == minute) {
+                selectedReminders.remove(r);
+                editReminderAdapter.notifyDataSetChanged();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onSelectReminderCheckBoxClicked(int minute, boolean isChecked) {
+        if (isChecked) {
+            selectedReminders.add(new Reminder("", "", minute, ""));
+        } else {
+            for (Reminder r : selectedReminders) {
+                if (r.getMinute() == minute) {
+                    selectedReminders.remove(r);
+                    editReminderAdapter.notifyDataSetChanged();
+                    return;
+                }
+            }
+        }
     }
 }

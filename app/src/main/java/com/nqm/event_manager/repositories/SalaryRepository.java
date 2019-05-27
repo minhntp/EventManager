@@ -221,6 +221,34 @@ public class SalaryRepository {
                 });
     }
 
+    public void isSalaryPaid(String employeeId, String eventId, final MyIsPaidSalaryCallback callback) {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.SALARY_COLLECTION)
+                .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, employeeId)
+                .whereEqualTo(Constants.SALARY_EVENT_ID, eventId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().size() == 0) {
+                                callback.onCallback(false);
+                                return;
+                            } else {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Map<String, Object> data = document.getData();
+                                    boolean isPaid = Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID));
+                                    callback.onCallback(isPaid);
+                                }
+                            }
+                        } else {
+                            Log.d("debug", "is paid salary query task failed");
+                            callback.onCallback(false);
+                        }
+                    }
+                });
+    }
+
     //CALCULATE SALARIES FOR ALL EMPLOYEES
     public ArrayList<Salary> getSalariesByStartDateAndEndDate(String startDate, String endDate) {
         ArrayList<Salary> salaries = new ArrayList<>();
@@ -283,34 +311,6 @@ public class SalaryRepository {
             for (Salary s : allSalaries.values()) {
                 if (s.getEmployeeId().equals(employeeId) && !s.getEventId().equals(eventId)) {
                     Log.d("debug", "condition met to compare time");
-
-//                    Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
-//                    Calendar salaryStartCalendar = Calendar.getInstance();
-//
-//                    salaryStartCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayBatDau()));
-//                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioBatDau()));
-//                    salaryStartCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-//                    salaryStartCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-//                    salaryStartCalendar.set(Calendar.SECOND, 0);
-//                    salaryStartCalendar.set(Calendar.MILLISECOND, 0);
-//
-//                    Calendar salaryEndCalendar = Calendar.getInstance();
-//                    salaryEndCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(e.getNgayKetThuc()));
-//                    tempCalendar.setTime(CalendarUtil.sdfTime.parse(e.getGioKetThuc()));
-//                    salaryEndCalendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-//                    salaryEndCalendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-//                    salaryEndCalendar.set(Calendar.SECOND, 0);
-//                    salaryEndCalendar.set(Calendar.MILLISECOND, 0);
-//
-//                    if ((salaryStartCalendar.compareTo(startCalendar) >= 0 &&
-//                            salaryStartCalendar.compareTo(endCalendar) <= 0) ||
-//                            (salaryEndCalendar.compareTo(startCalendar) >= 0 &&
-//                                    salaryEndCalendar.compareTo(endCalendar) <= 0)) {
-//                        salaries.add(s);
-//                    }
-//                    Log.d("debug", "event startTime = " + CalendarUtil.sdfDayMonthYearTime
-//                            .format(salaryStartCalendar.getTime()) + "\nevent endTime = " +
-//                            CalendarUtil.sdfDayMonthYearTime.format(salaryEndCalendar.getTime()));
                 }
             }
         } catch (Exception e) {
@@ -322,6 +322,10 @@ public class SalaryRepository {
 
     private interface MySalaryCallback {
         void onCallback(HashMap<String, Salary> salaryList);
+    }
+
+    public interface MyIsPaidSalaryCallback {
+        void onCallback(boolean isPaid);
     }
 
     //----------------------------------------------------------------------------------------------

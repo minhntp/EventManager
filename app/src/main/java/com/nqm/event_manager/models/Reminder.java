@@ -3,18 +3,16 @@ package com.nqm.event_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Reminder {
+public class Reminder implements Comparable<Reminder> {
     String id;
     String eventId;
     int minute;
-    String text;
     String time;
 
-    public Reminder(String id, String eventId, int minute, String text, String time) {
+    public Reminder(String id, String eventId, int minute, String time) {
         this.id = id;
         this.eventId = eventId;
         this.minute = minute;
-        this.text = text;
         this.time = time;
     }
 
@@ -50,11 +48,8 @@ public class Reminder {
         this.time = time;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    @Override
+    public int compareTo(Reminder o) {
+        return minute - o.getMinute();
     }
 }

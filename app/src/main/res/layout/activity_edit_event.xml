@@ -12,7 +12,7 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@color/textPrimaryColor"/>
+        app:titleTextColor="@color/textPrimaryColor" />
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -20,14 +20,12 @@
         android:layout_height="match_parent"
         android:layout_below="@id/edit_event_toolbar">
 
-        <LinearLayout
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_height="wrap_content"
+        <LinearLayout xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_marginTop = "10dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="5dp"
-            android:focusableInTouchMode="true"
             android:orientation="vertical"
             tools:context="com.nqm.event_manager.activities.RootActivity$EventDetailsActivity">
 
@@ -42,8 +40,6 @@
                 android:id="@+id/edit_event_title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nextFocusLeft="@id/edit_event_title_edit_text"
-                android:nextFocusUp="@id/edit_event_title_edit_text"
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
@@ -154,13 +150,29 @@
                     android:text="1220 Võ Nguyên Giáp"
                     android:textSize="@dimen/content" />
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Nhân sự"
-                    android:textSize="@dimen/title"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="Nhân sự"
+                        android:textSize="@dimen/title"
+                        android:textStyle="bold"
+                        android:layout_centerInParent="true"/>
+
+                    <Button
+                        android:id="@+id/edit_event_conflict_button"
+                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="Xung đột"
+                        android:textSize="@dimen/text_button"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/edit_event_employee_recycler_view"
@@ -168,8 +180,8 @@
                     android:layout_height="wrap_content"/>
 
                 <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:id="@+id/edit_event_add_employee_button"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
@@ -193,15 +205,15 @@
             </LinearLayout>
 
             <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/edit_event_schedule_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="10dp"
                 android:text="Lịch trình"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_button" />
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -216,17 +228,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="60dp"/>
+                android:layout_marginRight="60dp" />
 
             <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:id="@+id/edit_event_add_reminder_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
                 android:text="Thêm nhắc nhở"
-                android:textStyle="bold"
                 android:textSize="@dimen/text_button"
-                android:layout_marginBottom="50dp"/>
+                android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
 

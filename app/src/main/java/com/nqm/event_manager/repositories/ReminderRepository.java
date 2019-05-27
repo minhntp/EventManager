@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
@@ -75,9 +76,8 @@ public class ReminderRepository {
                                         minute = Integer.parseInt(minuteString);
                                     }
                                 }
-                                String text = (String) data.get(Constants.REMINDER_TEXT);
                                 String time = (String) data.get(Constants.REMINDER_TIME);
-                                Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, text, time);
+                                Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, time);
                                 reminders.put(tempReminder.getId(), tempReminder);
                             }
                         }
@@ -181,9 +181,8 @@ public class ReminderRepository {
                                 Map<String, Object> data = doc.getData();
                                 String eventId = (String) data.get(Constants.REMINDER_EVENT_ID);
                                 int minute = Integer.parseInt((String) data.get(Constants.REMINDER_MINUTE));
-                                String text = (String) data.get(Constants.REMINDER_TEXT);
                                 String time = (String) data.get(Constants.REMINDER_TIME);
-                                Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, text, time);
+                                Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, time);
                                 reminderList.put(tempReminder.getId(), tempReminder);
                             }
                         }
@@ -202,7 +201,6 @@ public class ReminderRepository {
         HashMap<String, String> data = new HashMap<>();
         data.put(Constants.REMINDER_EVENT_ID, reminder.getEventId());
         data.put(Constants.REMINDER_MINUTE, "" + reminder.getMinute());
-        data.put(Constants.REMINDER_TEXT, reminder.getText());
         data.put(Constants.REMINDER_TIME, reminder.getTime());
 
         DatabaseAccess.getInstance().getDatabase()
@@ -218,7 +216,6 @@ public class ReminderRepository {
             Map<String, Object> reminderData = new HashMap<>();
             reminderData.put(Constants.REMINDER_EVENT_ID, eventId);
             reminderData.put(Constants.REMINDER_MINUTE, "" + reminder.getMinute());
-            reminderData.put(Constants.REMINDER_TEXT, reminder.getText());
             reminderData.put(Constants.REMINDER_TIME, reminder.getTime());
 
             batch.set(reminderDocRef, reminderData);
@@ -253,6 +250,16 @@ public class ReminderRepository {
         return reminders;
     }
 
+    public HashMap <Integer, Reminder> getRemindersInHashMapByEventId(String eventId) {
+        HashMap <Integer, Reminder> reminders = new HashMap<>();
+        for (Reminder reminder : allReminders.values()) {
+            if (reminder.getEventId().equals(eventId)) {
+                reminders.put(reminder.getMinute(), reminder);
+            }
+        }
+        return reminders;
+    }
+
     public ArrayList<Integer> getRemindersMinutesByEventId(String eventId) {
         ArrayList<Integer> remindersMinutes = new ArrayList<>();
         for (Reminder reminder : allReminders.values()) {
@@ -279,16 +286,31 @@ public class ReminderRepository {
 
     public static ArrayList<Reminder> defaultReminders = new ArrayList<Reminder>() {
         {
-            add(new Reminder("", "", 0, "Thời điểm diễn ra", ""));
-            add(new Reminder("", "", 10, "10 phút", ""));
-            add(new Reminder("", "", 20, "20 phút", ""));
-            add(new Reminder("", "", 30, "30 phút", ""));
-            add(new Reminder("", "", 60, "1 giờ", ""));
-            add(new Reminder("", "", 120, "2 giờ", ""));
-            add(new Reminder("", "", 240, "4 giờ", ""));
-            add(new Reminder("", "", 480, "8 giờ", ""));
-            add(new Reminder("", "", 1440, "1 ngày", ""));
-            add(new Reminder("", "", 2880, "2 ngày", ""));
+            add(new Reminder("", "", 0,  ""));
+            add(new Reminder("", "", 10,  ""));
+            add(new Reminder("", "", 20,  ""));
+            add(new Reminder("", "", 30,  ""));
+            add(new Reminder("", "", 60, ""));
+            add(new Reminder("", "", 120,""));
+            add(new Reminder("", "", 240,""));
+            add(new Reminder("", "", 480,""));
+            add(new Reminder("", "", 1440, ""));
+            add(new Reminder("", "", 2880, ""));
+        }
+    };
+
+    public static HashMap<Integer, String> defaultRemindersMap = new HashMap<Integer, String>() {
+        {
+            put(0, "Thời điểm diễn ra");
+            put(10, "10 phút");
+            put(20, "20 phút");
+            put(30, "30 phút");
+            put(60, "1 giờ");
+            put(120, "2 giờ");
+            put(240, "3 giờ");
+            put(480, "4 giờ");
+            put(1440, "1 ngày");
+            put(2880, "2 ngày");
         }
     };
 
@@ -300,5 +322,10 @@ public class ReminderRepository {
                 return r1.getMinute() - r2.getMinute();
             }
         });
+    }
+
+    public static void sortReminder(HashMap<Integer, Reminder> reminders) {
+        TreeMap<Integer, Reminder> sortedTreeMap = new TreeMap<>(reminders);
+        reminders.putAll(sortedTreeMap);
     }
 }

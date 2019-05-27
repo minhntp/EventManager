@@ -1,6 +1,7 @@
 package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.repositories.ReminderRepository;
 
@@ -16,9 +18,10 @@ import java.util.ArrayList;
 
 public class SelectReminderAdapter extends BaseAdapter {
 
-    Activity context;
-    ArrayList<Reminder> selectedReminders;
-    ArrayList<Integer> selectedRemindersMinutes;
+    private Activity context;
+    private ArrayList<Reminder> selectedReminders;
+    private ArrayList<Integer> selectedRemindersMinutes;
+    IOnSelectReminderViewClicked listener;
 
     public SelectReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {
         this.context = context;
@@ -27,6 +30,11 @@ public class SelectReminderAdapter extends BaseAdapter {
         for (Reminder r : selectedReminders) {
             selectedRemindersMinutes.add(r.getMinute());
         }
+    }
+
+
+    public void setListener(IOnSelectReminderViewClicked listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -45,15 +53,15 @@ public class SelectReminderAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.list_item_select_reminder, parent, false);
         }
 
         TextView timeTextView = view.findViewById(R.id.select_reminder_item_time_text_view);
-        CheckBox selectCheckBox = view.findViewById(R.id.select_reminder_item_select_check_box);
+        final CheckBox selectCheckBox = view.findViewById(R.id.select_reminder_item_select_check_box);
 
-        timeTextView.setText(getItem(position).getText());
+        timeTextView.setText(ReminderRepository.defaultRemindersMap.get(getItem(position).getMinute()));
 
         if (selectedRemindersMinutes.contains(getItem(position).getMinute())) {
             selectCheckBox.setChecked(true);
@@ -61,15 +69,22 @@ public class SelectReminderAdapter extends BaseAdapter {
             selectCheckBox.setChecked(false);
         }
 
+        selectCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onSelectReminderCheckBoxClicked(getItem(position).getMinute(), selectCheckBox.isChecked());
+            }
+        });
+
         return view;
     }
 
-    public void notifyDataSetChanged(ArrayList<Reminder> selectedReminders) {
-        this.selectedReminders = selectedReminders;
+    public void notifyDataSetChanged() {
         selectedRemindersMinutes.clear();
         for (Reminder r : selectedReminders) {
             selectedRemindersMinutes.add(r.getMinute());
         }
+        Log.d("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
         super.notifyDataSetChanged();
     }
 }

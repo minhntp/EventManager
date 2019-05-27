@@ -5,14 +5,13 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:name=".application.EventManager"
         android:allowBackup="true"
         android:icon="@drawable/ic_event_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".application.EventManager">
-        <activity android:name=".ShowConflictActivity"/>
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activities.RootActivity"
             android:label="@string/app_name"
@@ -60,6 +59,7 @@
             android:name=".activities.EditEventActivity"
             android:label="@string/edit_event_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".activities.ShowConflictActivity" />
 
         <receiver android:name=".broadcast_receivers.ReminderNotificationReceiver" />
         <receiver android:name=".broadcast_receivers.SetRemindersOnBootReceiver">

@@ -1,67 +1,69 @@
 package com.nqm.event_manager.adapters;
 
-import android.app.Activity;
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.repositories.EventRepository;
 
 import java.util.ArrayList;
 
-public class ShowConflictEventAdapter extends BaseAdapter {
+public class ShowConflictEventAdapter extends RecyclerView.Adapter<ShowConflictEventAdapter.ViewHolder> {
 
-    private Activity context;
-    private ArrayList<Event> events;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView timeTextView;
+        public TextView titleTextView;
+        public TextView locationTextView;
 
-    public ShowConflictEventAdapter(Activity context, ArrayList<Event> events) {
-        this.context = context;
-        this.events = events;
-        EventRepository.getInstance().sortEventsByStartDateTime(this.events);
-    }
-
-    @Override
-    public int getCount() {
-        return events.size();
-    }
-
-    @Override
-    public Event getItem(int position) {
-        return events.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View view, ViewGroup parent) {
-        if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.list_item_conflict_event, parent, false);
+        public ViewHolder(View itemView) {
+            super(itemView);
+            timeTextView = itemView.findViewById(R.id.conflict_event_list_item_time_text_view);
+            titleTextView = itemView.findViewById(R.id.conflict_event_list_item_title_text_view);
+            locationTextView = itemView.findViewById(R.id.conflict_event_list_item_location_text_view);
         }
-
-        TextView timeTextView = view.findViewById(R.id.conflit_event_list_item_time_text_view);
-        TextView titleTextView = view.findViewById(R.id.conflit_event_list_item_title_text_view);
-        TextView locationTextView = view.findViewById(R.id.conflit_event_list_item_location_text_view);
-
-        String time = getItem(position).getNgayBatDau() + " - " + getItem(position).getGioBatDau() + "\n" +
-                getItem(position).getNgayKetThuc() + " - " + getItem(position).getGioKetThuc();
-        timeTextView.setText(time);
-        titleTextView.setText(getItem(position).getTen());
-        locationTextView.setText(getItem(position).getDiaDiem());
-
-        return view;
     }
 
-    public void notifyDataSetChanged(ArrayList<Event> events) {
-        this.events = events;
-        EventRepository.getInstance().sortEventsByStartDateTime(events);
-        super.notifyDataSetChanged();
+    private ArrayList<String> conflictEventsIds;
+
+    public ShowConflictEventAdapter(ArrayList<String> conflictEventsIds) {
+        this.conflictEventsIds = conflictEventsIds;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        Context context = viewGroup.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        View eventView = inflater.inflate(R.layout.list_item_conflict_event, viewGroup, false);
+        ViewHolder viewHolder = new ViewHolder(eventView);
+
+        return viewHolder;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        Event event = EventRepository.getInstance().getAllEvents().get(conflictEventsIds.get(i));
+
+        TextView timeTextView = viewHolder.timeTextView;
+        TextView titleTextView = viewHolder.titleTextView;
+        TextView locationTextView = viewHolder.locationTextView;
+
+        String time = event.getNgayBatDau() + " - " + event.getGioBatDau() + "\n" +
+                event.getNgayKetThuc() + " - " + event.getGioKetThuc();
+        timeTextView.setText(time);
+        titleTextView.setText(event.getTen());
+        locationTextView.setText(event.getDiaDiem());
+    }
+
+    @Override
+    public int getItemCount() {
+        return conflictEventsIds.size();
     }
 }

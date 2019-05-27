@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.repositories.ReminderRepository;
 
@@ -19,7 +19,7 @@ public class EditReminderAdapter extends BaseAdapter {
 
     Activity context;
     ArrayList<Reminder> selectedReminders;
-    IOnReminderViewClicked listener;
+    IOnEditReminderViewClicked listener;
 
     public EditReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {
         this.context = context;
@@ -27,7 +27,7 @@ public class EditReminderAdapter extends BaseAdapter {
         ReminderRepository.sortReminder(selectedReminders);
     }
 
-    public void setListener(IOnReminderViewClicked listener) {
+    public void setListener(IOnEditReminderViewClicked listener) {
         this.listener = listener;
     }
 
@@ -55,22 +55,19 @@ public class EditReminderAdapter extends BaseAdapter {
         TextView timeTextView = view.findViewById(R.id.edit_reminder_item_time_text_view);
         ImageButton clearButton = view.findViewById(R.id.edit_reminder_item_delete_image_button);
 
-        timeTextView.setText(getItem(position).getText());
+        timeTextView.setText(ReminderRepository.defaultRemindersMap.get(getItem(position).getMinute()));
 
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedReminders.remove(position);
-                notifyDataSetChanged();
-                listener.onReminderClearButtonClicked();
+                listener.onReminderClearButtonClicked(getItem(position).getMinute());
             }
         });
 
         return view;
     }
 
-    public void notifyDataSetChanged(ArrayList<Reminder> selectedReminders) {
-        this.selectedReminders = selectedReminders;
+    public void notifyDataSetChanged() {
         ReminderRepository.sortReminder(selectedReminders);
         super.notifyDataSetChanged();
     }

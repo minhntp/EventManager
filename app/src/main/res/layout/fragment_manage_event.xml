@@ -12,17 +12,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--<CalendarView-->
-                <!--android:id="@+id/calendar_view"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:firstDayOfWeek="2"></CalendarView>-->
             <com.nqm.event_manager.custom_views.CustomCalendarView
                 android:id="@+id/event_fragment_calendar_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"/>
+                android:layout_marginRight="5dp" />
 
         </LinearLayout>
 
@@ -39,13 +34,17 @@
                 android:textSize="@dimen/normal_text"
                 android:textStyle="bold" />
 
-            <com.nqm.event_manager.custom_views.CustomListView
-                android:id="@+id/events_list_view"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="50dp"/>
+                android:layout_height="wrap_content">
+                <com.nqm.event_manager.custom_views.CustomListView
+                    android:id="@+id/events_list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="50dp" />
+            </ScrollView>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
