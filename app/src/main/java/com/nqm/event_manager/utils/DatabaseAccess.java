@@ -8,6 +8,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
+import com.nqm.event_manager.repositories.TaskRepository;
 
 public class DatabaseAccess {
 
@@ -36,6 +37,7 @@ public class DatabaseAccess {
         ReminderRepository.getInstance().setListener(listener);
         SalaryRepository.getInstance().setListener(listener);
         ScheduleRepository.getInstance().setListener(listener);
+        TaskRepository.getInstance().setListener(listener);
     }
 
 }

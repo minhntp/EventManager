@@ -157,11 +157,11 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:layout_marginTop="5dp"
                         android:text="Nhân sự"
                         android:textSize="@dimen/title"
-                        android:textStyle="bold"
-                        android:layout_centerInParent="true"/>
+                        android:textStyle="bold" />
 
                     <Button
                         android:id="@+id/edit_event_conflict_button"
@@ -171,13 +171,14 @@
                         android:layout_alignParentRight="true"
                         android:text="Xung đột"
                         android:textSize="@dimen/text_button"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/edit_event_employee_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
+
 
                 <Button
                     android:id="@+id/edit_event_add_employee_button"
@@ -186,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
                     android:textSize="@dimen/text_button"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -203,6 +204,16 @@
                     android:inputType="none"
                     android:textSize="@dimen/note" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/edit_event_task_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Công việc"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/edit_event_schedule_button"

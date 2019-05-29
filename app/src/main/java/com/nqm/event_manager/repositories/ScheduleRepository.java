@@ -34,39 +34,12 @@ public class ScheduleRepository {
         addListener();
     }
 
-    private ScheduleRepository(final IOnDataLoadComplete listener) {
-        this.listener = listener;
-        addListener(new ScheduleRepository.MyScheduleCallback() {
-            @Override
-            public void onCallback(HashMap<String, Schedule> scheduleList) {
-                if (scheduleList != null) {
-                    allSchedules = scheduleList;
-                    if (ScheduleRepository.this.listener != null) {
-                        ScheduleRepository.this.listener.notifyOnLoadComplete();
-                    }
-                }
-            }
-        });
-        if (allSchedules == null) {
-            allSchedules = new HashMap<>();
-        }
-    }
-
     static public ScheduleRepository getInstance() {
         if (instance == null) {
             instance = new ScheduleRepository();
         }
         return instance;
     }
-
-    static public ScheduleRepository getInstance(IOnDataLoadComplete listener) {
-        if (instance == null) {
-            instance = new ScheduleRepository(listener);
-        }
-        return instance;
-    }
-
-    //------------------------------------------------------------------------------------
 
     private void addListener() {
         DatabaseAccess.getInstance().getDatabase()
@@ -104,6 +77,33 @@ public class ScheduleRepository {
         this.listener = listener;
     }
 
+    //------------------------------------------------------------------------------------
+
+    private ScheduleRepository(final IOnDataLoadComplete listener) {
+        this.listener = listener;
+        addListener(new ScheduleRepository.MyScheduleCallback() {
+            @Override
+            public void onCallback(HashMap<String, Schedule> scheduleList) {
+                if (scheduleList != null) {
+                    allSchedules = scheduleList;
+                    if (ScheduleRepository.this.listener != null) {
+                        ScheduleRepository.this.listener.notifyOnLoadComplete();
+                    }
+                }
+            }
+        });
+        if (allSchedules == null) {
+            allSchedules = new HashMap<>();
+        }
+    }
+
+    static public ScheduleRepository getInstance(IOnDataLoadComplete listener) {
+        if (instance == null) {
+            instance = new ScheduleRepository(listener);
+        }
+        return instance;
+    }
+
     private void addListener(final ScheduleRepository.MyScheduleCallback callback) {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SCHEDULE_COLLECTION)
@@ -134,6 +134,7 @@ public class ScheduleRepository {
                     }
                 });
     }
+
 
     //------------------------------------------------------------------------------------
 

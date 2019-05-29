@@ -1,81 +1,121 @@
 package com.nqm.event_manager.adapters;
 
-import android.app.Activity;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.custom_views.AddScheduleItemViewHolder;
-import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
-import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
+import com.nqm.event_manager.interfaces.IOnItemDraggedOrSwiped;
 import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EditScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements AddScheduleSwipeAndDragCallback.ActionCompletionContract {
+public class EditScheduleAdapter extends RecyclerView.Adapter<EditScheduleAdapter.ViewHolder>
+        implements IOnItemDraggedOrSwiped {
 
-    IOnAddScheduleViewClicked listener;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        EditText timeEditText;
+        EditText contentEditText;
+        ImageView reorderImageView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            timeEditText = itemView.findViewById(R.id.add_schedule_time_edit_text);
+            contentEditText = itemView.findViewById(R.id.add_schedule_content_edit_text);
+            reorderImageView = itemView.findViewById(R.id.add_schedule_reorder);
+
+            contentEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    schedules.get(getAdapterPosition()).setContent(s.toString());
+                }
+            });
+
+            timeEditText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int hourOfDay = 18;
+                    int minute = 0;
+                    calendar = Calendar.getInstance();
+                    if (!(schedules.get(getAdapterPosition()).getTime().isEmpty())) {
+                        try {
+                            calendar.setTime(CalendarUtil.sdfTime.parse(schedules.get(getAdapterPosition()).getTime()));
+                            hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                            minute = calendar.get(Calendar.MINUTE);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                            calendar.set(Calendar.HOUR_OF_DAY, hour);
+                            calendar.set(Calendar.MINUTE, minute);
+                            schedules.get(getAdapterPosition()).setTime(CalendarUtil.sdfTime.format(calendar.getTime()));
+                            notifyItemChanged(getAdapterPosition());
+                        }
+                    }, hourOfDay, minute, false).show();
+                }
+            });
+        }
+    }
+
     ArrayList<Schedule> schedules;
     ItemTouchHelper itemTouchHelper;
     Calendar calendar = Calendar.getInstance();
-    Activity context;
+    Context context;
 
-    public void setContext(Activity context) {
-        this.context = context;
-    }
-
-    public void setListener(IOnAddScheduleViewClicked listener) {
-        this.listener = listener;
+    public EditScheduleAdapter(ArrayList<Schedule> schedules) {
+        this.schedules = schedules;
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_edit_schedule, parent, false);
-        return new AddScheduleItemViewHolder(view);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (context == null) {
+            context = parent.getContext();
+        }
+
+        View scheduleView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_edit_schedule, parent, false);
+        return new ViewHolder(scheduleView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, final int position) {
-        ((AddScheduleItemViewHolder) viewHolder).getTimeEditText().setText(schedules.get(position).getTime());
-        ((AddScheduleItemViewHolder) viewHolder).getContentEditText().setText(schedules.get(position).getContent());
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+        Schedule s = schedules.get(i);
 
-        ((AddScheduleItemViewHolder) viewHolder).getTimeEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int hourOfDay = 18;
-                int minute = 0;
-                calendar = Calendar.getInstance();
-                if (!(schedules.get(position).getTime().isEmpty())) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfTime.parse(schedules.get(position).getTime()));
-                        hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-                        minute = calendar.get(Calendar.MINUTE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        calendar.set(Calendar.HOUR_OF_DAY, hour);
-                        calendar.set(Calendar.MINUTE, minute);
-                        listener.onTimeEditTextSet(position, CalendarUtil.sdfTime.format(calendar.getTime()));
-                    }
-                }, hourOfDay, minute, false).show();
-            }
-        });
+        EditText timeEditText = viewHolder.timeEditText;
+        EditText contentEditText = viewHolder.contentEditText;
+        ImageView reorderImageView = viewHolder.reorderImageView;
 
-        ((AddScheduleItemViewHolder) viewHolder).getReorderImageView().setOnTouchListener(new View.OnTouchListener() {
+        timeEditText.setText(s.getTime());
+        contentEditText.setText(s.getContent());
+
+        reorderImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
@@ -86,39 +126,27 @@ public class EditScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
     }
 
-    public ArrayList<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public void setSchedules(ArrayList<Schedule> schedules) {
-//        ScheduleUtil.sortSchedulesByOrder(schedules);
-        this.schedules = schedules;
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
         return schedules.size();
     }
 
-    public void setTouchHelper(ItemTouchHelper itemTouchHelper) {
+    public void setItemTouchHelper(ItemTouchHelper itemTouchHelper) {
         this.itemTouchHelper = itemTouchHelper;
     }
 
     @Override
-    public void onViewMoved(int oldPosition, int newPosition) {
-        Schedule targetSchedule = schedules.get(oldPosition);
-        Schedule schedule = new Schedule(targetSchedule);
+    public void onViewDragged(int oldPosition, int newPosition) {
+        Schedule tempSchedule = schedules.get(oldPosition);
         schedules.remove(oldPosition);
-        schedules.add(newPosition, schedule);
+        schedules.add(newPosition, tempSchedule);
         notifyItemMoved(oldPosition, newPosition);
-        listener.onAddScheduleItemMoved();
+
     }
 
     @Override
     public void onViewSwiped(int position) {
         schedules.remove(position);
         notifyItemRemoved(position);
-        listener.onAddScheduleItemRemoved();
     }
 }

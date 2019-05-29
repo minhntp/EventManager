@@ -65,7 +65,7 @@
         android:weightSum="1">
 
         <Button
-            android:id="@+id/ok_button"
+            android:id="@+id/add_schedule_ok_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

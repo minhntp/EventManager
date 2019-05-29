@@ -11,6 +11,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.ShowConflictEventAdapter;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -32,11 +33,11 @@ public class ShowConflictActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_conflict);
 
         //GET INFO FROM INTENT
-        employeeId = getIntent().getStringExtra("employeeId");
+        employeeId = getIntent().getStringExtra(Constants.INTENT_EMPLOYEE_ID);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
-        startTime = getIntent().getStringExtra("startTime");
-        endTime = getIntent().getStringExtra("endTime");
-        conflictEventsIds = (ArrayList<String>) getIntent().getSerializableExtra("conflictEventsIds");
+        startTime = getIntent().getStringExtra(Constants.INTENT_START_TIME);
+        endTime = getIntent().getStringExtra(Constants.INTENT_END_TIME);
+        conflictEventsIds = (ArrayList<String>) getIntent().getSerializableExtra(Constants.INTENT_CONFLICT_EVENTS_IDS);
 
         connectViews();
         init();

@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -16,6 +15,7 @@ import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
+import com.nqm.event_manager.models.Task;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -150,7 +150,7 @@ public class EventRepository {
         return allEvents;
     }
 
-    public void addEventToDatabase(Event event, ArrayList<Salary> salaries,
+    public void addEventToDatabase(Event event, ArrayList<Salary> salaries, ArrayList<Task> tasks,
                                    ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
@@ -175,6 +175,19 @@ public class EventRepository {
             salaryData.put(Constants.SALARY_SALARY, "" + salary.getSalary());
             salaryData.put(Constants.SALARY_PAID, Boolean.toString(salary.isPaid()));
             batch.set(salaryDocRef, salaryData);
+        }
+
+        for (Task task : tasks) {
+            DocumentReference taskDocRef = DatabaseAccess.getInstance().getDatabase()
+                    .collection(Constants.TASK_COLLECTION).document();
+            HashMap<String, String> taskData = new HashMap<>();
+            taskData.put(Constants.TASK_EVENT_ID, eventDocRef.getId());
+            taskData.put(Constants.TASK_DATE, task.getDate());
+            taskData.put(Constants.TASK_TIME, task.getTime());
+            taskData.put(Constants.TASK_CONTENT, task.getContent());
+            taskData.put(Constants.TASK_IS_DONE, "" + task.isDone());
+            taskData.put(Constants.TASK_ORDER, Integer.toString(task.getOrder()));
+            batch.set(taskDocRef, taskData);
         }
 
         for (Schedule schedule : schedules) {
@@ -234,8 +247,8 @@ public class EventRepository {
     }
 
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
-                                      ArrayList<String> addEmployeesIds, ArrayList<Schedule> addSchedules,
-                                      ArrayList<Reminder> reminders) {
+                                      ArrayList<String> addEmployeesIds, ArrayList<Task> tasks,
+                                      ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -271,14 +284,14 @@ public class EventRepository {
             batch.set(addSalaryDocRef, addSalaryData);
         }
 
-        for (String deleteScheduleId : ScheduleRepository.getInstance(null)
+        for (String deleteScheduleId : ScheduleRepository.getInstance()
                 .getSchedulesIdsByEventId(changedEvent.getId())) {
             DocumentReference deleteScheduleDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SCHEDULE_COLLECTION).document(deleteScheduleId);
             batch.delete(deleteScheduleDocRef);
         }
 
-        for (Schedule addSchedule : addSchedules) {
+        for (Schedule addSchedule : schedules) {
             DocumentReference addScheduleDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SCHEDULE_COLLECTION).document();
             Map<String, Object> addScheduleData = new HashMap<>();
@@ -287,6 +300,26 @@ public class EventRepository {
             addScheduleData.put(Constants.SCHEDULE_TIME, addSchedule.getTime());
             addScheduleData.put(Constants.SCHEDULE_ORDER, Integer.toString(addSchedule.getOrder()));
             batch.set(addScheduleDocRef, addScheduleData);
+        }
+
+        for (String deleteTaskId : TaskRepository.getInstance()
+                .getTasksIdsByEventId(changedEvent.getId())) {
+            DocumentReference deleteTaskDocRef = DatabaseAccess.getInstance().getDatabase()
+                    .collection(Constants.TASK_COLLECTION).document(deleteTaskId);
+            batch.delete(deleteTaskDocRef);
+        }
+
+        for (Task t : tasks) {
+            DocumentReference addTaskDocRef = DatabaseAccess.getInstance().getDatabase()
+                        .collection(Constants.TASK_COLLECTION).document();
+            Map<String, Object> addTaskData = new HashMap<>();
+            addTaskData.put(Constants.TASK_EVENT_ID, changedEvent.getId());
+            addTaskData.put(Constants.TASK_DATE, t.getDate());
+            addTaskData.put(Constants.TASK_TIME, t.getTime());
+            addTaskData.put(Constants.TASK_CONTENT, t.getContent());
+            addTaskData.put(Constants.TASK_IS_DONE, "" + t.isDone());
+            addTaskData.put(Constants.TASK_ORDER, Integer.toString(t.getOrder()));
+            batch.set(addTaskDocRef, addTaskData);
         }
 
         for (String reminderId : ReminderRepository.getInstance().getRemindersIdsByEventId(changedEvent.getId())) {
@@ -454,7 +487,7 @@ public class EventRepository {
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
                         ArrayList<String> queryResultEventsIds = new ArrayList<>();
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {

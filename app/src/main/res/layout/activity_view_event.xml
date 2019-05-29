@@ -103,6 +103,16 @@
                     android:textSize="@dimen/note" />
 
                 <Button
+                    android:id="@+id/view_event_task_button"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Công việc"
+                    android:textSize="@dimen/text_button"
+                    android:textStyle="bold" />
+
+                <Button
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:id="@+id/view_event_schedule_button"
                     android:layout_gravity="center"

@@ -34,10 +34,17 @@ public class Constants {
     public static String SCHEDULE_CONTENT = "noidung";
     public static String SCHEDULE_ORDER = "thutu";
 
+    public static String TASK_COLLECTION = "congviec";
+    public static String TASK_EVENT_ID = "sukienid";
+    public static String TASK_DATE = "ngay";
+    public static String TASK_TIME = "gio";
+    public static String TASK_CONTENT = "noidung";
+    public static String TASK_IS_DONE = "dahoanthanh";
+    public static String TASK_ORDER = "thutu";
+
     public static String REMINDER_COLLECTION = "nhacnho";
     public static String REMINDER_EVENT_ID = "sukienid";
     public static String REMINDER_MINUTE = "phut";
-    public static String REMINDER_TEXT = "text";
     public static String REMINDER_TIME = "thoigian";
 
     public static String BOOT_COMPLETE = "khoidong";
@@ -48,6 +55,7 @@ public class Constants {
     public static String INTENT_EVENT_ID = "eventId";
     public static String INTENT_START_TIME = "startTime";
     public static String INTENT_END_TIME = "endTime";
+    public static String INTENT_CONFLICT_EVENTS_IDS = "endTime";
 
     public static String DEFAULT_REMINDER_COLLECTION = "nhacnhomacdinh";
 

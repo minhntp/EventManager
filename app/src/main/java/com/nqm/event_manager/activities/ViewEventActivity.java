@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +26,7 @@ import com.nqm.event_manager.adapters.EditReminderAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.adapters.ViewSalaryAdapter;
 import com.nqm.event_manager.adapters.ViewScheduleAdapter;
+import com.nqm.event_manager.adapters.ViewTaskAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
@@ -32,13 +37,15 @@ import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.models.Task;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
+import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
+import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +54,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         IOnDataLoadComplete, IOnEditReminderViewClicked, IOnSelectReminderViewClicked {
     Activity context;
 
-    Button viewScheduleButton;
+    Button viewScheduleButton, viewTaskButton;
     TextView titleEditText, timeEditText, locationEditText, noteEditText;
     android.support.v7.widget.Toolbar toolbar;
 
@@ -58,11 +65,19 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     ViewSalaryAdapter viewSalaryAdapter;
     CustomListView salaryListView;
 
+    Dialog viewTaskDialog;
+    ArrayList<Task> tasks;
+    ViewTaskAdapter viewTaskAdapter;
+    RecyclerView taskRecyclerView;
+    Button taskBackButton;
+    TextView taskCompletedTextView;
+    ProgressBar taskProgressBar;
+
     Dialog viewScheduleDialog;
     WindowManager.LayoutParams lWindowParams;
     ArrayList<Schedule> schedules;
     ViewScheduleAdapter viewScheduleAdapter;
-    CustomListView scheduleListView;
+    RecyclerView scheduleRecyclerView;
     Button scheduleBackButton;
 
     ArrayList<Reminder> selectedReminders;
@@ -85,17 +100,33 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         addEvents();
     }
 
+    private void connectViews() {
+        toolbar = findViewById(R.id.view_event_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Chi tiết sự kiện");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        viewTaskButton = findViewById(R.id.view_event_task_button);
+        viewScheduleButton = findViewById(R.id.view_event_schedule_button);
+
+        titleEditText = findViewById(R.id.view_event_title_text_view);
+        timeEditText = findViewById(R.id.view_event_time_text_view);
+        locationEditText = findViewById(R.id.view_event_location_text_view);
+        noteEditText = findViewById(R.id.view_event_note_text_view);
+
+        salaryListView = findViewById(R.id.view_event_salaries_listview);
+
+        editReminderListView = findViewById(R.id.view_event_edit_reminder_list_view);
+        selectReminderButton = findViewById(R.id.view_event_select_reminder_button);
+    }
+
     private void init() {
         context = this;
 
-        EmployeeRepository.getInstance().setListener(this);
-        EventRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
-        ReminderRepository.getInstance().setListener(this);
+//        DatabaseAccess.setDatabaseListener(this);
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
-//        Log.d("debug", "eventId got in ViewEvent: " + eventId);
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
 
         if (selectedEvent != null) {
@@ -107,7 +138,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         viewSalaryAdapter.setListener(this);
         salaryListView.setAdapter(viewSalaryAdapter);
 
-        initSelectScheduleDialog();
+        initViewTaskDialog();
+
+        initViewScheduleDialog();
         viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
         selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
@@ -118,7 +151,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         initSelectReminderDialog();
     }
 
-    private void initSelectScheduleDialog() {
+    private void initViewScheduleDialog() {
         schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
         viewScheduleDialog = new Dialog(this);
         viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
@@ -128,11 +161,13 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        scheduleListView = viewScheduleDialog.findViewById(R.id.view_schedule_dialog_schedule_list_view);
+        scheduleRecyclerView = viewScheduleDialog.findViewById(R.id.view_schedule_dialog_recycler_view);
         scheduleBackButton = viewScheduleDialog.findViewById(R.id.back_button);
 
-        viewScheduleAdapter = new ViewScheduleAdapter(this, schedules);
-        scheduleListView.setAdapter(viewScheduleAdapter);
+        viewScheduleAdapter = new ViewScheduleAdapter(schedules);
+        scheduleRecyclerView.setAdapter(viewScheduleAdapter);
+        scheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        scheduleRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         scheduleBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,7 +175,30 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                 viewScheduleDialog.dismiss();
             }
         });
-    };
+    }
+
+    private void initViewTaskDialog() {
+        tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+        viewTaskDialog = new Dialog(this);
+        viewTaskDialog.setContentView(R.layout.dialog_view_task);
+
+        taskCompletedTextView = viewTaskDialog.findViewById(R.id.view_task_dialog_completed_text_view);
+        taskProgressBar = viewTaskDialog.findViewById(R.id.view_task_dialog_progress_bar);
+        taskRecyclerView = viewTaskDialog.findViewById(R.id.view_task_dialog_recycler_view);
+        taskBackButton = viewTaskDialog.findViewById(R.id.view_task_dialog_back_button);
+
+        viewTaskAdapter = new ViewTaskAdapter(tasks);
+        taskRecyclerView.setAdapter(viewTaskAdapter);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        taskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        taskBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewTaskDialog.dismiss();
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -226,35 +284,26 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         noteEditText.setText(selectedEvent.getGhiChu());
     }
 
-    private void connectViews() {
-        toolbar = findViewById(R.id.view_event_toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Chi tiết sự kiện");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        viewScheduleButton = findViewById(R.id.view_event_schedule_button);
-
-        titleEditText = findViewById(R.id.view_event_title_text_view);
-        timeEditText = findViewById(R.id.view_event_time_text_view);
-        locationEditText = findViewById(R.id.view_event_location_text_view);
-        noteEditText = findViewById(R.id.view_event_note_text_view);
-
-        salaryListView = findViewById(R.id.view_event_salaries_listview);
-
-        editReminderListView = findViewById(R.id.view_event_edit_reminder_list_view);
-        selectReminderButton = findViewById(R.id.view_event_select_reminder_button);
-    }
-
     private void addEvents() {
         viewScheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+//                schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
                 if (schedules.size() > 0) {
                     showViewScheduleDialog();
                 } else {
                     Toast.makeText(context, "Sự kiện không có lịch trình nào", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        viewTaskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tasks.size() > 0) {
+                    showViewTaskDialog();
+                } else {
+                    Toast.makeText(context, "Sự kiện không có công việc nào", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -269,12 +318,24 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     }
 
     private void showViewScheduleDialog() {
-        if (schedules.size() == 0) {
-            Toast toast = Toast.makeText(this, "Không có lịch trình nào", Toast.LENGTH_SHORT);
-            toast.show();
-        } else if (!isFinishing()) {
+        if (!isFinishing()) {
             viewScheduleDialog.show();
             viewScheduleDialog.getWindow().setAttributes(lWindowParams);
+        }
+    }
+
+    private void showViewTaskDialog() {
+        if (!isFinishing()) {
+            viewTaskDialog.show();
+            viewTaskDialog.getWindow().setAttributes(lWindowParams);
+            int count = 0;
+            for (Task t : tasks) {
+                if (t.isDone()) {
+                    count++;
+                }
+            }
+            taskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+            taskProgressBar.setProgress(100 * count / tasks.size());
         }
     }
 
@@ -322,20 +383,27 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
     @Override
     protected void onResume() {
-        EmployeeRepository.getInstance().setListener(this);
-        EventRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
-        ReminderRepository.getInstance().setListener(this);
+        DatabaseAccess.setDatabaseListener(this);
 
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
 
         if (selectedEvent != null) {
-            salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
-            schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
             fillInformation();
-            viewSalaryAdapter.notifyDataSetChanged(salaries);
-            viewScheduleAdapter.notifyDataSetChanged(schedules);
+
+            salaries.clear();
+            salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
+            viewSalaryAdapter.notifyDataSetChanged();
+
+            tasks.clear();
+            tasks.addAll((TaskRepository.getInstance().getTasksInArrayListByEventId(eventId)));
+            TaskRepository.sortTasksByOrder(tasks);
+            viewTaskAdapter.notifyDataSetChanged();
+            viewTaskButton.setEnabled(!(tasks.size() == 0));
+
+            schedules.clear();
+            schedules.addAll(ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId));
+            ScheduleRepository.sortSchedulesByOrder(schedules);
+            viewScheduleAdapter.notifyDataSetChanged();
             viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
             selectedReminders.clear();
@@ -356,11 +424,22 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     public void notifyOnLoadComplete() {
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
         if (selectedEvent != null) {
-            salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
-            schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
             fillInformation();
-            viewSalaryAdapter.notifyDataSetChanged(salaries);
-            viewScheduleAdapter.notifyDataSetChanged(schedules);
+
+            salaries.clear();
+            salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
+            viewSalaryAdapter.notifyDataSetChanged();
+
+            tasks.clear();
+            tasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
+            TaskRepository.sortTasksByOrder(tasks);
+            viewTaskAdapter.notifyDataSetChanged();
+            viewTaskButton.setEnabled(!(tasks.size() == 0));
+
+            schedules.clear();
+            schedules.addAll(ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId));
+            ScheduleRepository.sortSchedulesByOrder(schedules);
+            viewScheduleAdapter.notifyDataSetChanged();
             viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
             selectedReminders.clear();

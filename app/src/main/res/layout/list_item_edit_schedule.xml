@@ -5,39 +5,30 @@
     android:orientation="horizontal"
     android:weightSum="10">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:orientation="horizontal"
-        android:weightSum="10"
         android:layout_toStartOf="@id/add_schedule_reorder">
 
         <EditText
+            android:layout_alignParentTop="true"
             android:id="@+id/add_schedule_time_edit_text"
-            android:layout_width="0dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
             android:focusable="false"
-            android:hint="Thời gian"
+            android:hint="Giờ"
+            android:textStyle="italic"
             android:inputType="none" />
 
         <EditText
+            android:layout_below="@+id/add_schedule_time_edit_text"
             android:id="@+id/add_schedule_content_edit_text"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
             android:layout_weight="7"
             android:hint="Nội dung" />
-    </LinearLayout>
-
-    <!--<ImageButton-->
-        <!--android:id="@+id/add_schedule_delete_button"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_width="30dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_toLeftOf="@id/add_schedule_reorder"-->
-        <!--android:src="@drawable/ic_delete"-->
-        <!--style="@style/ManageEmployeeButtonStyle"/>-->
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/add_schedule_reorder"

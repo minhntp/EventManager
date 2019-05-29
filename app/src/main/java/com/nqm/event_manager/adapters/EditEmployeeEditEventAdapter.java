@@ -1,5 +1,6 @@
 package com.nqm.event_manager.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -72,6 +73,7 @@ public class EditEmployeeEditEventAdapter extends
     private ArrayList<String> selectedEmployeesIds;
     private HashMap<String, ArrayList<String>> conflictsMap;
     private String eventId;
+    private Activity context;
 
     public EditEmployeeEditEventAdapter(String eventId, ArrayList<String> selectedEmployeesIds,
                                        HashMap<String, ArrayList<String>> conflictsMap) {
@@ -87,10 +89,13 @@ public class EditEmployeeEditEventAdapter extends
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        Context context = viewGroup.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+//        Context context = viewGroup.getContext();
+        if (context == null) {
+            context = (Activity) viewGroup.getContext();
+        }
 
-        View employeeView = inflater.inflate(R.layout.list_item_edit_employee, viewGroup, false);
+        View employeeView = LayoutInflater.from(context)
+                .inflate(R.layout.list_item_edit_employee, viewGroup, false);
         ViewHolder viewHolder = new ViewHolder(employeeView);
 
         return viewHolder;
