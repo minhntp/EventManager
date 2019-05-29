@@ -24,6 +24,7 @@ import com.nqm.event_manager.fragments.EventListFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
+import com.nqm.event_manager.utils.DatabaseAccess;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +38,8 @@ public class RootActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         context = this;
+
+        DatabaseAccess.setDatabaseListener(null);
 
         setContentView(R.layout.activity_main);
         initView();

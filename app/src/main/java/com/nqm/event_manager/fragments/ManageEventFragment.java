@@ -31,6 +31,7 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
+import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -64,12 +65,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         super.onViewCreated(view, savedInstanceState);
 
         thisListener = this;
-
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
-        ReminderRepository.getInstance().setListener(this);
+//        DatabaseAccess.setDatabaseListener(this);
 
         connectViews(view);
         addEvents();
@@ -170,15 +166,11 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
     @Override
     public void onResume() {
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
-        ReminderRepository.getInstance().setListener(this);
+        DatabaseAccess.setDatabaseListener(this);
 
-        Date date = calendarView.getSelectedDate();
-        mainViewEventAdapter.notifyDataSetChanged(date);
+        mainViewEventAdapter.notifyDataSetChanged(selectedDate);
         calendarView.updateView();
+
         super.onResume();
     }
 

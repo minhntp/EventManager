@@ -35,6 +35,7 @@ import com.nqm.event_manager.custom_views.AddScheduleSwipeAndDragCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnAddScheduleViewClicked;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
 import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
@@ -44,6 +45,7 @@ import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
+import com.nqm.event_manager.repositories.DefaultReminderRepository;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
@@ -56,7 +58,7 @@ import java.util.HashMap;
 
 public class AddEventActivity extends AppCompatActivity implements IOnAddScheduleViewClicked,
         IOnSelectEmployeeViewClicked, IOnEditEmployeeViewClicked, IOnSelectReminderViewClicked,
-        IOnEditReminderViewClicked {
+        IOnEditReminderViewClicked, IOnDataLoadComplete {
     Activity context;
 
     Toolbar toolbar;
@@ -184,6 +186,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
         initSelectEmployeeDialog();
 
         selectedReminders = new ArrayList<>();
+        for (int minute : DefaultReminderRepository.getInstance().getDefaultReminders()) {
+            selectedReminders.add(new Reminder("", "", minute, ""));
+        }
         editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
         editReminderAdapter.setListener(this);
         reminderListView.setAdapter(editReminderAdapter);
@@ -762,5 +767,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnAddSchedul
                 }
             }
         }
+    }
+
+    @Override
+    public void notifyOnLoadComplete() {
+
     }
 }
