@@ -24,11 +24,6 @@ import com.nqm.event_manager.custom_views.CustomCalendarView;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.repositories.EventRepository;
-import com.nqm.event_manager.repositories.ReminderRepository;
-import com.nqm.event_manager.repositories.SalaryRepository;
-import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -46,7 +41,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     CustomCalendarView calendarView;
     EventListAdapter mainViewEventAdapter;
     Date selectedDate;
-    boolean allDataLoaded = false;
 
     public ManageEventFragment() {
         // Required empty public constructor
@@ -68,13 +62,13 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 //        DatabaseAccess.setDatabaseListener(this);
 
         connectViews(view);
-        addEvents();
 
         selectedDate = calendarView.getSelectedDate();
         dayTitleTextView.setText(Constants.DAY_TITLE_MAIN_FRAGMENT + CalendarUtil.sdfDayMonthYear.format(selectedDate));
-
         mainViewEventAdapter = new EventListAdapter(getActivity(), selectedDate);
         eventsListView.setAdapter(mainViewEventAdapter);
+
+        addEvents();
     }
 
     @Override
@@ -95,14 +89,8 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
         if (id == R.id.action_add_event) {
             Intent intent = new Intent(getActivity(), AddEventActivity.class);
-            intent.putExtra("selectedDate", CalendarUtil.sdfDayMonthYear.format(selectedDate));
+            intent.putExtra(Constants.INTENT_SELECTED_DATE, CalendarUtil.sdfDayMonthYear.format(selectedDate));
             startActivity(intent);
-            return true;
-        }
-
-        if (id == R.id.action_list_view) {
-            RootActivity activity = (RootActivity) getActivity();
-            activity.openEventListFragment();
             return true;
         }
 
@@ -139,7 +127,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent viewEventIntent = new Intent(getActivity(), ViewEventActivity.class);
-                viewEventIntent.putExtra("eventId", mainViewEventAdapter.getEventIds().get(position));
+                viewEventIntent.putExtra(Constants.INTENT_EVENT_ID, mainViewEventAdapter.getEventIds().get(position));
                 startActivity(viewEventIntent);
             }
         });
@@ -148,17 +136,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     //Cập nhật danh sách sự kiện của ngày hiện tại khi mở ứng dụng
     @Override
     public void notifyOnLoadComplete() {
-        if (!allDataLoaded &&
-                EventRepository.getInstance().getAllEvents() != null &&
-                EventRepository.getInstance().getAllEvents().size() > 0 &&
-                EmployeeRepository.getInstance().getAllEmployees() != null &&
-                EmployeeRepository.getInstance().getAllEmployees().size() > 0 &&
-                ScheduleRepository.getInstance().getAllSchedules() != null &&
-                ScheduleRepository.getInstance().getAllSchedules().size() > 0 &&
-                SalaryRepository.getInstance().getAllSalaries() != null &&
-                SalaryRepository.getInstance().getAllSalaries().size() > 0) {
-            allDataLoaded = true;
-        }
         Date date = calendarView.getSelectedDate();
         mainViewEventAdapter.notifyDataSetChanged(date);
         calendarView.updateView();

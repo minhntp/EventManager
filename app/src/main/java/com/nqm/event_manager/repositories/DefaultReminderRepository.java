@@ -29,7 +29,7 @@ public class DefaultReminderRepository {
     }
 
     private DefaultReminderRepository() {
-        defaultReminders = new ArrayList<>();
+//        defaultReminders = new ArrayList<>();
         addListener();
     }
 

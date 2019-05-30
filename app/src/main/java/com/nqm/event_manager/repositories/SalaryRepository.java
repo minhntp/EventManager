@@ -41,7 +41,7 @@ public class SalaryRepository {
     //------------------------------------------------------------------------------------
 
     private SalaryRepository() {
-        allSalaries = new HashMap<>();
+//        allSalaries = new HashMap<>();
         addListener();
     }
 

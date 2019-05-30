@@ -40,4 +40,14 @@ public class DatabaseAccess {
         TaskRepository.getInstance().setListener(listener);
     }
 
+    public static boolean isAllDataLoaded() {
+        return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
+                (EmployeeRepository.getInstance().getAllEmployees() != null) &&
+                (EventRepository.getInstance().getAllEvents() != null) &&
+                (ReminderRepository.getInstance().getAllReminders() != null) &&
+                (SalaryRepository.getInstance().getAllSalaries() != null) &&
+                (ScheduleRepository.getInstance().getAllSchedules() != null) &&
+                (TaskRepository.getInstance().getAllTasks() != null));
+    }
+
 }

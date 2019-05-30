@@ -54,6 +54,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -831,10 +832,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         if (conflictsMap.get(employeeId) != null && conflictsMap.get(employeeId).size() > 0) {
             //Show conflict activity
             Intent conflictIntent = new Intent(this, ShowConflictActivity.class);
-            conflictIntent.putExtra("employeeId", employeeId);
-            conflictIntent.putExtra("startTime", startTime);
-            conflictIntent.putExtra("endTime", endTime);
-            conflictIntent.putExtra("conflictEventsIds", conflictsMap.get(employeeId));
+            conflictIntent.putExtra(Constants.INTENT_EMPLOYEE_ID, employeeId);
+            conflictIntent.putExtra(Constants.INTENT_START_TIME, startTime);
+            conflictIntent.putExtra(Constants.INTENT_END_TIME, endTime);
+            conflictIntent.putExtra(Constants.INTENT_CONFLICT_EVENTS_IDS, conflictsMap.get(employeeId));
             startActivity(conflictIntent);
         } else {
             //Do nothing

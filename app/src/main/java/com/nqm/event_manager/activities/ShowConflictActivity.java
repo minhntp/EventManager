@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,8 @@ import com.nqm.event_manager.utils.Constants;
 import java.util.ArrayList;
 
 public class ShowConflictActivity extends AppCompatActivity {
+
+    Toolbar toolbar;
 
     String startTime, endTime;
     String employeeId;
@@ -56,6 +59,12 @@ public class ShowConflictActivity extends AppCompatActivity {
     }
 
     private void init() {
+        toolbar = findViewById(R.id.show_conflict_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.show_conflict_activity_label);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         startTimeTextView.setText(startTime);
         endtimeTextView.setText(endTime);
 
@@ -65,5 +74,11 @@ public class ShowConflictActivity extends AppCompatActivity {
         conflictEventsAdapter = new ShowConflictEventAdapter(conflictEventsIds);
         conflictEventsRecyclerView.setAdapter(conflictEventsAdapter);
         conflictEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 }

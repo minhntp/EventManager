@@ -35,12 +35,14 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
 
     Calendar calendar = Calendar.getInstance();
 
+    boolean isInit = false;
+
     public CustomCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         connectViews();
-        addEvents();
         init();
+        addEvents();
     }
 
     private void connectViews() {
@@ -51,11 +53,17 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
 
         prevButton = rootView.findViewById(R.id.calendar_view_prev_button);
         nextButton = rootView.findViewById(R.id.calendar_view_next_button);
-
         monthYearTextView = rootView.findViewById(R.id.calendar_view_month_year_text_view);
-
         gridView = rootView.findViewById(R.id.calendar_view_grid);
 
+    }
+
+    private void init() {
+        gridAdapter = new CustomCalendarGridAdapter(context, calendar.getTime(), calendar.getTime());
+        gridAdapter.setListener(this);
+        gridView.setAdapter(gridAdapter);
+
+        monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(gridAdapter.getViewDate()));
     }
 
     private void addEvents() {
@@ -105,13 +113,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
         });
     }
 
-    private void init() {
-        gridAdapter = new CustomCalendarGridAdapter(context, calendar.getTime(), calendar.getTime());
-        gridAdapter.setListener(this);
-        gridView.setAdapter(gridAdapter);
 
-        monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(gridAdapter.getViewDate()));
-    }
 
     public void setListener(IOnCustomCalendarViewClicked listener) {
         this.listener = listener;

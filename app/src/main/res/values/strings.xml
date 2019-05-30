@@ -6,6 +6,7 @@
     <string name="edit_event_activity_label">Chỉnh sửa sự kiện</string>
     <string name="view_event_activity_label">Chi tiết sự kiện</string>
     <string name="send_event_info_activity_label">Gửi thông tin sự kiện</string>
+    <string name="show_conflict_activity_label">Các sự kiện bị xung đột</string>
     <string name="search_event_activity_label">Tìm kiếm sự kiện</string>
     <string name="calculate_salary_single_employee_label">Tính lương cho nhân viên</string>
     <string name="add_employee_single_label">Thêm nhân viên</string>
@@ -33,6 +34,7 @@
         <item>Địa điểm</item>
         <item>Nhân sự</item>
         <item>Ghi chú</item>
+        <item>Công việc</item>
         <item>Lịch trình</item>
     </string-array>
 

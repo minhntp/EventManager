@@ -27,7 +27,7 @@ public class EventListAdapter extends BaseAdapter {
     public EventListAdapter(Activity context, Date date) {
         this.context = context;
         this.date = date;
-        events = EventRepository.getInstance(null).getEventsArrayListThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
+        events = EventRepository.getInstance().getEventsArrayListThroughDate(CalendarUtil.sdfDayMonthYear.format(date));
         EventRepository.getInstance().sortEventsByStartDateTime(events);
     }
 

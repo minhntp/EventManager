@@ -39,8 +39,6 @@ public class EventRepository {
     private HashMap<String, Event> allEvents;
 
     //-------------------------------------------------------------------------------------------
-    private ArrayList<String> resultEventsIds;
-
     private EventRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
         addListener(new MyEventCallback() {
@@ -58,7 +56,7 @@ public class EventRepository {
     }
 
     private EventRepository() {
-        allEvents = new HashMap<>();
+//        allEvents = new HashMap<>();
         addListener();
     }
     //-------------------------------------------------------------------------------------------

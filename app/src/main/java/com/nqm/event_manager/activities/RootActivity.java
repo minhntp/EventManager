@@ -1,15 +1,10 @@
 package com.nqm.event_manager.activities;
 
-import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,26 +15,19 @@ import android.view.MenuItem;
 import com.google.firebase.FirebaseApp;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.CalculateSalaryFragment;
-import com.nqm.event_manager.fragments.EventListFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
-import com.nqm.event_manager.utils.DatabaseAccess;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     Toolbar toolbar;
 
-    public static Activity context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
-        context = this;
-
-        DatabaseAccess.setDatabaseListener(null);
 
         setContentView(R.layout.activity_main);
         initView();
@@ -127,14 +115,6 @@ public class RootActivity extends AppCompatActivity
         ReplaceFragment(newFragment);
     }
 
-    public void openEventListFragment() {
-
-        // Replace root view to default fragment
-        toolbar.setTitle(R.string.event_list_fragment_label);
-        Fragment newFragment = new EventListFragment();
-        ReplaceFragment(newFragment);
-    }
-
     private void openManageEmployeeFragment() {
         // Replace root view to default fragment
         toolbar.setTitle(R.string.manage_employee_fragment_label);
@@ -155,11 +135,4 @@ public class RootActivity extends AppCompatActivity
         ReplaceFragment(newFragment);
     }
 
-//    public static class EventDetailsActivity extends AppCompatActivity {
-//        @Override
-//        protected void onCreate(Bundle savedInstanceState) {
-//            super.onCreate(savedInstanceState);
-//            setContentView(R.layout.activity_view_event);
-//        }
-//    }
 }

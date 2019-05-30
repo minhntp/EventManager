@@ -12,7 +12,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.nqm.event_manager.activities.RootActivity;
 import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.broadcast_receivers.ReminderNotificationReceiver;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
@@ -42,7 +41,7 @@ public class ReminderRepository {
     //------------------------------------------------------------------------------------
 
     private ReminderRepository() {
-        allReminders = new HashMap<>();
+//        allReminders = new HashMap<>();
         alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
         addListener();
     }
@@ -97,7 +96,7 @@ public class ReminderRepository {
 
     private void addAlarmForAllReminders() {
         //CANCEL OLD ALARMS
-        for(int i=0;i<numberOfSetAlarms;i++) {
+        for (int i = 0; i < numberOfSetAlarms; i++) {
             Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
                     i, intent, PendingIntent.FLAG_NO_CREATE);
@@ -108,7 +107,6 @@ public class ReminderRepository {
 
         //SET NEW ALARMS
         int requestCode = 0;
-
         for (Reminder r : allReminders.values()) {
             Calendar reminderCalendar = Calendar.getInstance();
             try {
@@ -123,7 +121,16 @@ public class ReminderRepository {
 
             if (reminderCalendar.compareTo(currentCalendar) >= 0) {
                 Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
-                intent.putExtra("eventId", r.getEventId());
+                Event event = EventRepository.getInstance().getEventByEventId(r.getEventId());
+                String content = "Địa điểm: " + "\n" +
+                        "\t" + event.getDiaDiem() + "\n" +
+                        "Thời gian" + "\n" +
+                        "\t" + event.getNgayBatDau() + " - " + event.getGioBatDau() + "\n" +
+                        "\t" + event.getNgayKetThuc() + " - " + event.getGioKetThuc();
+                intent.putExtra(Constants.INTENT_EVENT_ID, event.getId());
+                intent.putExtra(Constants.INTENT_EVENT_TITLE, event.getTen());
+                intent.putExtra(Constants.INTENT_EVENT_LOCATION, event.getDiaDiem());
+                intent.putExtra(Constants.INTENT_EVENT_CONTENT, content);
 
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
                         requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -250,8 +257,8 @@ public class ReminderRepository {
         return reminders;
     }
 
-    public HashMap <Integer, Reminder> getRemindersInHashMapByEventId(String eventId) {
-        HashMap <Integer, Reminder> reminders = new HashMap<>();
+    public HashMap<Integer, Reminder> getRemindersInHashMapByEventId(String eventId) {
+        HashMap<Integer, Reminder> reminders = new HashMap<>();
         for (Reminder reminder : allReminders.values()) {
             if (reminder.getEventId().equals(eventId)) {
                 reminders.put(reminder.getMinute(), reminder);
@@ -286,14 +293,14 @@ public class ReminderRepository {
 
     public static ArrayList<Reminder> defaultReminders = new ArrayList<Reminder>() {
         {
-            add(new Reminder("", "", 0,  ""));
-            add(new Reminder("", "", 10,  ""));
-            add(new Reminder("", "", 20,  ""));
-            add(new Reminder("", "", 30,  ""));
+            add(new Reminder("", "", 0, ""));
+            add(new Reminder("", "", 10, ""));
+            add(new Reminder("", "", 20, ""));
+            add(new Reminder("", "", 30, ""));
             add(new Reminder("", "", 60, ""));
-            add(new Reminder("", "", 120,""));
-            add(new Reminder("", "", 240,""));
-            add(new Reminder("", "", 480,""));
+            add(new Reminder("", "", 120, ""));
+            add(new Reminder("", "", 240, ""));
+            add(new Reminder("", "", 480, ""));
             add(new Reminder("", "", 1440, ""));
             add(new Reminder("", "", 2880, ""));
         }
@@ -314,7 +321,6 @@ public class ReminderRepository {
         }
     };
     //----------------------------------------------------------------------------------------------
-
 
 
     //----------------------------------------------------------------------------------------------

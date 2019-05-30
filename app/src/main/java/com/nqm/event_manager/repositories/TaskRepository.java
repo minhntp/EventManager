@@ -26,7 +26,7 @@ public class TaskRepository {
     private HashMap<String, Task> allTasks;
 
     private TaskRepository() {
-        allTasks = new HashMap<>();
+//        allTasks = new HashMap<>();
         addListener();
     }
 
@@ -73,6 +73,10 @@ public class TaskRepository {
 
     public void setListener(IOnDataLoadComplete listener) {
         this.listener = listener;
+    }
+
+    public HashMap<String, Task> getAllTasks() {
+        return allTasks;
     }
 
     //----------------------------------------------------------------------------------------------

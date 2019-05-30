@@ -30,7 +30,7 @@ public class ScheduleRepository {
     //------------------------------------------------------------------------------------
 
     private ScheduleRepository() {
-        allSchedules = new HashMap<>();
+//        allSchedules = new HashMap<>();
         addListener();
     }
 

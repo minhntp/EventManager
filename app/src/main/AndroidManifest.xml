@@ -12,19 +12,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SearchEventActivity"
-            android:label = "@string/search_event_activity_label"/>
-        <activity
-            android:name=".activities.RootActivity"
-            android:label="@string/app_name"
+        <activity android:name=".activities.SplashActivity2"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden">
+            android:excludeFromRecents="true"
+            android:taskAffinity=""/>
+        <activity
+            android:name=".activities.SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.SearchEventActivity"
+            android:label="@string/search_event_activity_label" />
+        <activity
+            android:name=".activities.RootActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.VIEW" /> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".activities.SendEventInfo"
@@ -46,8 +63,6 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activities.ViewEventActivity"
-            android:excludeFromRecents="true"
-            android:taskAffinity=""
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activities.AddEventActivity"

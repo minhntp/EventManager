@@ -55,7 +55,11 @@ public class Constants {
     public static String INTENT_EVENT_ID = "eventId";
     public static String INTENT_START_TIME = "startTime";
     public static String INTENT_END_TIME = "endTime";
-    public static String INTENT_CONFLICT_EVENTS_IDS = "endTime";
+    public static String INTENT_CONFLICT_EVENTS_IDS = "conflictEventsIds";
+    public static String INTENT_EVENT_CONTENT = "content";
+    public static String INTENT_EVENT_TITLE = "title";
+    public static String INTENT_EVENT_LOCATION = "location";
+    public static String INTENT_SELECTED_DATE = "selectedDate";
 
     public static String DEFAULT_REMINDER_COLLECTION = "nhacnhomacdinh";
 

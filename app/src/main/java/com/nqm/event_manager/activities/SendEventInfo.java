@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,13 +19,17 @@ import com.nqm.event_manager.adapters.SendEventSectionAdapter;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Schedule;
+import com.nqm.event_manager.models.Task;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
+import com.nqm.event_manager.repositories.TaskRepository;
 
 import java.util.ArrayList;
 
 public class SendEventInfo extends AppCompatActivity {
+
+    Toolbar toolbar;
 
     Button selectAllEmployeesButton, deselectAllEmployeesButton, selectAllSectionsButton,
             deselectAllSectionsButton, cancelButton, sendButton;
@@ -69,6 +74,12 @@ public class SendEventInfo extends AppCompatActivity {
 
     private void init() {
         context = this;
+
+        toolbar = findViewById(R.id.send_event_info_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.send_event_info_activity_label);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
@@ -199,9 +210,27 @@ public class SendEventInfo extends AppCompatActivity {
             content += "\n";
         }
 
+
         cb = sectionListView.getChildAt(5).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            ArrayList<Schedule> schedules = ScheduleRepository.getInstance(null).getSchedulesInArrayListByEventId(eventId);
+            ArrayList<Task> tasks= TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+            TaskRepository.sortTasksByOrder(tasks);
+            content += "Công việc: " + "\n";
+            for (Task t : tasks) {
+                content += "\t" + t.getDate();
+                if (!t.getTime().isEmpty()) {
+                    content += "  " + t.getTime();
+                } else {
+                    content += "                   ";
+                }
+                content += ": " + t.getContent() + "\n";
+            }
+            content += "\n";
+        }
+
+        cb = sectionListView.getChildAt(6).findViewById(R.id.send_event_select_item_checkbox);
+        if (cb.isChecked()) {
+            ArrayList<Schedule> schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
             ScheduleRepository.sortSchedulesByOrder(schedules);
             content += "Lịch trình: " + "\n";
             for (Schedule s : schedules) {
@@ -209,8 +238,13 @@ public class SendEventInfo extends AppCompatActivity {
             }
             content += "\n";
         }
-        content = content.replaceAll("\t", "    ");
+        content = content.replaceAll("\t", "  ");
         return content;
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
+    }
 }

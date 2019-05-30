@@ -11,14 +11,12 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.activities.ViewEventActivity;
-import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.models.Event;
-import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.activities.SplashActivity2;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.Calendar;
 
-public class ReminderNotificationReceiver extends BroadcastReceiver implements IOnDataLoadComplete {
+public class ReminderNotificationReceiver extends BroadcastReceiver {
 
     public NotificationCompat.Builder notificationBuilder;
     public NotificationChannel notificationChannel;
@@ -26,8 +24,7 @@ public class ReminderNotificationReceiver extends BroadcastReceiver implements I
     public String CHANNEL_DESCRIPTION = "Nhắc nhở khi có sự kiện";
     public String NOTIFICATION_CHANNEL_ID = "event-manager-notification";
 
-    private String eventId;
-    private Event event;
+    private String eventId, eventTitle, eventLocation, content;
     private Context context;
 
     @Override
@@ -35,24 +32,20 @@ public class ReminderNotificationReceiver extends BroadcastReceiver implements I
         this.context = context;
 
         //GET DATA
-        EventRepository.getInstance().setListener(this);
-        eventId = intent.getStringExtra("eventId");
-        event = EventRepository.getInstance().getAllEvents().get(eventId);
-        if (event != null) {
-            buildAndShowNotification();
-        }
+        eventId = intent.getStringExtra(Constants.INTENT_EVENT_ID);
+        eventTitle = intent.getStringExtra(Constants.INTENT_EVENT_TITLE);
+        eventLocation = intent.getStringExtra(Constants.INTENT_EVENT_LOCATION);
+        content = intent.getStringExtra(Constants.INTENT_EVENT_CONTENT);
+
+        buildAndShowNotification();
     }
 
     private void buildAndShowNotification() {
-        String content = "Địa điểm: " + "\n" +
-                "\t" + event.getDiaDiem() + "\n" +
-                "Thời gian" + "\n" +
-                "\t" + event.getNgayBatDau() + " - " + event.getGioBatDau() + "\n" +
-                "\t" + event.getNgayKetThuc() + " - " + event.getGioKetThuc();
+
 
         //PREPARE INTENT FOR NOTIFICATION
-        Intent viewEventIntent = new Intent(context, ViewEventActivity.class);
-        viewEventIntent.putExtra("eventId", eventId);
+        Intent viewEventIntent = new Intent(context, SplashActivity2.class);
+        viewEventIntent.putExtra(Constants.INTENT_EVENT_ID, eventId);
         viewEventIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingViewEventIntent = PendingIntent.getActivity(context,
                 Calendar.getInstance().hashCode(), viewEventIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -62,8 +55,8 @@ public class ReminderNotificationReceiver extends BroadcastReceiver implements I
                 .setSmallIcon(R.drawable.ic_event_noti)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(false)
-                .setContentTitle(event.getTen())
-                .setContentText(event.getDiaDiem())
+                .setContentTitle(eventTitle)
+                .setContentText(eventLocation)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                 .setContentIntent(pendingViewEventIntent);
 
@@ -80,32 +73,5 @@ public class ReminderNotificationReceiver extends BroadcastReceiver implements I
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(eventId.hashCode(), notificationBuilder.build());
-    }
-
-//    public static boolean isAppRunningInBackground(Context context) {
-//        boolean isRunning = true;
-//
-//        try {
-//            ActivityManager activityManager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
-//            ActivityManager.RunningTaskInfo foregroundTaskInfo = activityManager.getRunningTasks(1).get(0);
-//            String forgroundTaskPackageName = foregroundTaskInfo.topActivity.getPackageName();
-//            PackageManager packageManager = context.getPackageManager();
-//            PackageInfo foregroundAppPackageInfo = packageManager.getPackageInfo(forgroundTaskPackageName, 0);
-//            String forgroundTaskAppName = foregroundAppPackageInfo.applicationInfo.loadLabel(packageManager).toString();
-//            if (!"Quản lí sự kiện".equalsIgnoreCase(forgroundTaskAppName)) {
-//                isRunning = false;
-//            }
-//        } catch (Exception e) {
-//            isRunning = false;
-//        }
-//        return isRunning;
-//    }
-
-    @Override
-    public void notifyOnLoadComplete() {
-        event = EventRepository.getInstance().getAllEvents().get(eventId);
-        if (event != null) {
-            buildAndShowNotification();
-        }
     }
 }
