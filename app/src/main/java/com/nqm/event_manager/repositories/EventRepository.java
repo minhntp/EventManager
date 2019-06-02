@@ -4,9 +4,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -27,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -150,6 +154,10 @@ public class EventRepository {
 
     public void addEventToDatabase(Event event, ArrayList<Salary> salaries, ArrayList<Task> tasks,
                                    ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        long miliStart = 0, miliEnd = 0;
+
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -167,11 +175,30 @@ public class EventRepository {
         for (Salary salary : salaries) {
             DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION).document();
-            HashMap<String, String> salaryData = new HashMap<>();
+            HashMap<String, Object> salaryData = new HashMap<>();
             salaryData.put(Constants.SALARY_EVENT_ID, eventDocRef.getId());
             salaryData.put(Constants.SALARY_EMPLOYEE_ID, salary.getEmployeeId());
             salaryData.put(Constants.SALARY_SALARY, "" + salary.getSalary());
             salaryData.put(Constants.SALARY_PAID, Boolean.toString(salary.isPaid()));
+            try {
+                c1.setTime(CalendarUtil.sdfDayMonthYear.parse(event.getNgayBatDau()));
+                c2.setTime(CalendarUtil.sdfTime.parse(event.getGioBatDau()));
+                c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                miliStart = c1.getTimeInMillis();
+
+                c1.setTime(CalendarUtil.sdfDayMonthYear.parse(event.getNgayKetThuc()));
+                c2.setTime(CalendarUtil.sdfTime.parse(event.getGioKetThuc()));
+                c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                miliEnd = c1.getTimeInMillis();
+
+                salaryData.put(Constants.SALARY_START_MILI, miliStart);
+                salaryData.put(Constants.SALARY_END_MILI, miliEnd);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
             batch.set(salaryDocRef, salaryData);
         }
 
@@ -247,6 +274,9 @@ public class EventRepository {
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
                                       ArrayList<String> addEmployeesIds, ArrayList<Task> tasks,
                                       ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        long miliStart = 0, miliEnd = 0;
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -261,6 +291,33 @@ public class EventRepository {
         eventData.put(Constants.EVENT_NOTE, changedEvent.getGhiChu());
         batch.update(eventDocRef, eventData);
 
+        for (Salary s : SalaryRepository.getInstance().getAllSalaries().values()) {
+            if (s.getEventId().equals(changedEvent.getId())) {
+                DocumentReference docRef = DatabaseAccess.getInstance().getDatabase()
+                        .collection(Constants.SALARY_COLLECTION).document(s.getSalaryId());
+                Map<String, Object> data = new HashMap<>();
+                try {
+                    c1.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayBatDau()));
+                    c2.setTime(CalendarUtil.sdfTime.parse(changedEvent.getGioBatDau()));
+                    c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                    c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                    miliStart = c1.getTimeInMillis();
+
+                    c1.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayKetThuc()));
+                    c2.setTime(CalendarUtil.sdfTime.parse(changedEvent.getGioKetThuc()));
+                    c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                    c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                    miliEnd = c1.getTimeInMillis();
+
+                    data.put(Constants.SALARY_START_MILI, miliStart);
+                    data.put(Constants.SALARY_END_MILI, miliEnd);
+                    batch.update(docRef, data);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
         for (String deleteEmployeeId : deleteEmployeesIds) {
             String deleteSalaryId = SalaryRepository.getInstance()
                     .getSalaryIdByEventIdAndEmployeeId(changedEvent.getId(), deleteEmployeeId);
@@ -272,6 +329,7 @@ public class EventRepository {
         }
 
         for (String addEmployeeId : addEmployeesIds) {
+
             DocumentReference addSalaryDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION).document();
             Map<String, Object> addSalaryData = new HashMap<>();
@@ -279,6 +337,24 @@ public class EventRepository {
             addSalaryData.put(Constants.SALARY_EMPLOYEE_ID, addEmployeeId);
             addSalaryData.put(Constants.SALARY_SALARY, "0");
             addSalaryData.put(Constants.SALARY_PAID, "false");
+            try {
+                c1.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayBatDau()));
+                c2.setTime(CalendarUtil.sdfTime.parse(changedEvent.getGioBatDau()));
+                c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                miliStart = c1.getTimeInMillis();
+
+                c1.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayKetThuc()));
+                c2.setTime(CalendarUtil.sdfTime.parse(changedEvent.getGioKetThuc()));
+                c1.set(Calendar.HOUR_OF_DAY, c2.get(Calendar.HOUR_OF_DAY));
+                c1.set(Calendar.MINUTE, c2.get(Calendar.MINUTE));
+                miliEnd = c1.getTimeInMillis();
+
+                addSalaryData.put(Constants.SALARY_START_MILI, miliStart);
+                addSalaryData.put(Constants.SALARY_END_MILI, miliEnd);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             batch.set(addSalaryDocRef, addSalaryData);
         }
 
@@ -309,7 +385,7 @@ public class EventRepository {
 
         for (Task t : tasks) {
             DocumentReference addTaskDocRef = DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.TASK_COLLECTION).document();
+                    .collection(Constants.TASK_COLLECTION).document();
             Map<String, Object> addTaskData = new HashMap<>();
             addTaskData.put(Constants.TASK_EVENT_ID, changedEvent.getId());
             addTaskData.put(Constants.TASK_DATE, t.getDate());
@@ -424,11 +500,12 @@ public class EventRepository {
     }
 
     //----------------------------------------------------------------------------------------------
+    // CONFLICT
     //----------------------------------------------------------------------------------------------
 
-    public void getConflictEventsIds(final String startTime, final String endTime,
-                                     String employeeId, final String eventId,
-                                     final MyConflictEventCallback conflictCallback) {
+    public void getConflictEventsIdsEdit(final String startTime, final String endTime,
+                                         String employeeId, final String eventId,
+                                         final MyConflictEventCallback conflictCallback) {
         queryEventsIdsByEmployeeId(employeeId, new MyQueryCallback() {
             @Override
             public void onCallback(ArrayList<String> resultEventsIds) {
@@ -477,6 +554,140 @@ public class EventRepository {
                 }
             }
         });
+    }
+
+    public void getConflictEventsIdsAdd(final long startMili, long endMili, final ArrayList<String> employeesIds,
+                                        final MyConflictEventAddCallback callback) {
+//        Map<String, ArrayList<String>> conflictMap = new HashMap<>();
+//        for (Salary s : SalaryRepository.getInstance().getAllSalaries().values()) {
+//
+//        }
+        ArrayList<com.google.android.gms.tasks.Task<QuerySnapshot>> taskList = new ArrayList<>();
+        for (String id : employeesIds) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(startMili);
+//            Log.d("debug", "start: " + CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+            calendar.setTimeInMillis(endMili);
+//            Log.d("debug", "end: " + CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+
+            taskList.add(DatabaseAccess.getInstance().getDatabase()
+                    .collection(Constants.SALARY_COLLECTION)
+                    .orderBy(Constants.SALARY_START_MILI)
+                    .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
+                    .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, id)
+                    .get());
+//
+//            taskList.add(DatabaseAccess.getInstance().getDatabase()
+//                    .collection(Constants.SALARY_COLLECTION)
+//                    .orderBy(Constants)
+//                    .whereLessThanOrEqualTo(Constants.SALARY_END_MILI, endMili)
+//                    .whereGreaterThanOrEqualTo(Constants.SALARY_END_MILI, startMili)
+//                    .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, id)
+//                    .get());
+
+        }
+
+        com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
+        allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
+            @Override
+            public void onSuccess(List<QuerySnapshot> querySnapshots) {
+//                Log.d("debug", "succeed");
+                HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
+//                Log.d("debug", "querySnapshots size = " + querySnapshots.size());
+                for (QuerySnapshot documentSnapshots : querySnapshots) {
+//                    Log.d("debug", "documentSnapshots size = " + documentSnapshots.size());
+                    for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+                        long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
+                        if (docEndMili >= startMili) {
+                            String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
+                            if (conflictMap.get(employeeId) == null) {
+                                conflictMap.put(employeeId, new ArrayList<String>());
+                            }
+                            conflictMap.get(employeeId).add((String) documentSnapshot.get(Constants.SALARY_EVENT_ID));
+                        }
+
+                    }
+                }
+//                Log.d("debug", "conflictMap size" + conflictMap.size());
+                callback.onCallback(conflictMap);
+            }
+        });
+    }
+
+    private ArrayList<String> conflictEventIdsAdd;
+
+    private void queryEventsIdsStartAdd(final long startMili, final long endMili, final MyConflictCallback callback) {
+        if (conflictEventIdsAdd == null) {
+            conflictEventIdsAdd = new ArrayList<>();
+        } else {
+            conflictEventIdsAdd.clear();
+        }
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EVENT_COLLECTION)
+                .whereLessThanOrEqualTo(Constants.EVENT_START_MILI, startMili)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                conflictEventIdsAdd.add(doc.getId());
+                            }
+                            DatabaseAccess.getInstance().getDatabase()
+                                    .collection(Constants.EVENT_COLLECTION)
+                                    .whereGreaterThanOrEqualTo(Constants.EVENT_END_MILI, startMili)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot doc : task.getResult()) {
+                                                    conflictEventIdsAdd.add(doc.getId());
+                                                }
+                                                queryEventsIdsEndAdd(endMili, new MyConflictCallback() {
+                                                    @Override
+                                                    public void onCallback() {
+                                                        callback.onCallback();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
+    private void queryEventsIdsEndAdd(final long endMili, final MyConflictCallback callback) {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.EVENT_COLLECTION)
+                .whereLessThanOrEqualTo(Constants.EVENT_START_MILI, endMili)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                conflictEventIdsAdd.add(doc.getId());
+                            }
+                            DatabaseAccess.getInstance().getDatabase()
+                                    .collection(Constants.EVENT_COLLECTION)
+                                    .whereGreaterThanOrEqualTo(Constants.EVENT_END_MILI, endMili)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot doc : task.getResult()) {
+                                                    conflictEventIdsAdd.add(doc.getId());
+                                                }
+                                                callback.onCallback();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void queryEventsIdsByEmployeeId(String employeeId, final MyQueryCallback callback) {
@@ -561,5 +772,14 @@ public class EventRepository {
 
     public interface MyConflictEventCallback {
         void onCallback(ArrayList<String> conflictEventsIds);
+    }
+
+
+    public interface MyConflictEventAddCallback {
+        void onCallback(HashMap<String, ArrayList<String>> conflictMap);
+    }
+
+    public interface MyConflictCallback {
+        void onCallback();
     }
 }

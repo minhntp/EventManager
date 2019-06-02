@@ -1,5 +1,5 @@
 package com.nqm.event_manager.interfaces;
 
-public interface IOnManageEmployeeViewClicked {
+public interface IOnManageEmployeeItemClicked {
     void onEmployeeListItemClicked(String employeeId);
 }

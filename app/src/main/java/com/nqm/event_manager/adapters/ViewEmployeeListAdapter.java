@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.CalculateSalaryForSingleEmployeeActivity;
-import com.nqm.event_manager.interfaces.IOnManageEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnManageEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class ViewEmployeeListAdapter extends BaseAdapter {
     Activity context;
     ArrayList<String> employeesIds;
-    IOnManageEmployeeViewClicked listener;
+    IOnManageEmployeeItemClicked listener;
 
     public ViewEmployeeListAdapter(Activity context, ArrayList<String> employeesIds) {
         this.context = context;
@@ -117,7 +117,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
         return view;
     }
 
-    public void setListener(IOnManageEmployeeViewClicked listener) {
+    public void setListener(IOnManageEmployeeItemClicked listener) {
         this.listener = listener;
     }
 

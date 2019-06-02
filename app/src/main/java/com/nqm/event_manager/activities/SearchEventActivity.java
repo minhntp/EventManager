@@ -8,22 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.SearchEventListAdapter;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.interfaces.IOnSearchEventViewClicked;
-import com.nqm.event_manager.models.Employee;
-import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.interfaces.IOnSearchEventItemClicked;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
-public class SearchEventActivity extends AppCompatActivity implements IOnSearchEventViewClicked,
+public class SearchEventActivity extends AppCompatActivity implements IOnSearchEventItemClicked,
         IOnDataLoadComplete {
 
     Activity context;

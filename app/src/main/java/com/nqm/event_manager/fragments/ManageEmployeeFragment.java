@@ -19,12 +19,12 @@ import com.nqm.event_manager.activities.ViewEmployeeActivity;
 import com.nqm.event_manager.adapters.ViewEmployeeListAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.interfaces.IOnManageEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnManageEmployeeItemClicked;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 
-public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeViewClicked {
+public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeItemClicked {
 
     public static IOnDataLoadComplete thisListener;
     CustomListView employeeListView;

@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.SalaryRepository;
 
@@ -48,7 +48,7 @@ public class SelectEmployeeEditEventAdapter extends
 
     private ArrayList<String> selectedEmployeesIds;
     private ArrayList<Employee> employees;
-    private IOnSelectEmployeeViewClicked listener;
+    private IOnSelectEmployeeItemClicked listener;
     private String eventId;
 
     public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees,
@@ -58,7 +58,7 @@ public class SelectEmployeeEditEventAdapter extends
         this.eventId = eventId;
     }
 
-    public void setListener(IOnSelectEmployeeViewClicked listener) {
+    public void setListener(IOnSelectEmployeeItemClicked listener) {
         this.listener = listener;
     }
 

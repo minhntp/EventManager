@@ -99,7 +99,9 @@ public class SalaryRepository {
                                         (String) data.get(Constants.SALARY_EVENT_ID),
                                         (String) data.get(Constants.SALARY_EMPLOYEE_ID),
                                         salary,
-                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)));
+                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
+                                        (long) data.get(Constants.SALARY_START_MILI),
+                                        (long) data.get(Constants.SALARY_END_MILI));
                                 salaries.put(tempSalary.getSalaryId(), tempSalary);
                             }
                         }
@@ -133,7 +135,9 @@ public class SalaryRepository {
                                         (String) data.get(Constants.SALARY_EVENT_ID),
                                         (String) data.get(Constants.SALARY_EMPLOYEE_ID),
                                         salary,
-                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)));
+                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
+                                        (long) data.get(Constants.SALARY_START_MILI),
+                                        (long) data.get(Constants.SALARY_END_MILI));
                                 salaryList.put(tempSalary.getSalaryId(), tempSalary);
                             }
                         }

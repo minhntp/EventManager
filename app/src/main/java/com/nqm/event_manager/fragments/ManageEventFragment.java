@@ -16,13 +16,12 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEventActivity;
-import com.nqm.event_manager.activities.RootActivity;
 import com.nqm.event_manager.activities.SearchEventActivity;
 import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.EventListAdapter;
-import com.nqm.event_manager.custom_views.CustomCalendarView;
+import com.nqm.event_manager.custom_views.CustomCalendarItem;
 import com.nqm.event_manager.custom_views.CustomListView;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
@@ -32,23 +31,24 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ManageEventFragment extends Fragment implements IOnDataLoadComplete,
-        IOnCustomCalendarViewClicked {
+        IOnCustomCalendarItemClicked {
 
     public static IOnDataLoadComplete thisListener;
 
     CustomListView eventsListView;
     TextView dayTitleTextView;
-    CustomCalendarView calendarView;
+    CustomCalendarItem calendarView;
     EventListAdapter mainViewEventAdapter;
     Date selectedDate;
+
+    String listTitle = "";
 
     public ManageEventFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_manage_event, container, false);
@@ -64,7 +64,9 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         connectViews(view);
 
         selectedDate = calendarView.getSelectedDate();
-        dayTitleTextView.setText(Constants.DAY_TITLE_MAIN_FRAGMENT + CalendarUtil.sdfDayMonthYear.format(selectedDate));
+        listTitle = String.format(getResources().getString(R.string.event_fragment_list_title),
+                CalendarUtil.sdfDayMonthYear.format(selectedDate));
+        dayTitleTextView.setText(listTitle);
         mainViewEventAdapter = new EventListAdapter(getActivity(), selectedDate);
         eventsListView.setAdapter(mainViewEventAdapter);
 
@@ -154,7 +156,9 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     @Override
     public void onCustomCalendarCellClicked(Date selectedDate) {
         this.selectedDate = selectedDate;
-        dayTitleTextView.setText(Constants.DAY_TITLE_MAIN_FRAGMENT + CalendarUtil.sdfDayMonthYear.format(selectedDate));
+        listTitle = String.format(getResources().getString(R.string.event_fragment_list_title),
+                CalendarUtil.sdfDayMonthYear.format(selectedDate));
+        dayTitleTextView.setText(listTitle);
         mainViewEventAdapter.notifyDataSetChanged(selectedDate);
     }
 }

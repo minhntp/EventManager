@@ -13,13 +13,13 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CustomCalendarGridAdapter;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class CustomCalendarView extends LinearLayout implements IOnCustomCalendarViewClicked {
+public class CustomCalendarItem extends LinearLayout implements IOnCustomCalendarItemClicked {
 
     ImageView prevButton;
     ImageView nextButton;
@@ -29,7 +29,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
     GridView gridView;
     CustomCalendarGridAdapter gridAdapter;
 
-    IOnCustomCalendarViewClicked listener;
+    IOnCustomCalendarItemClicked listener;
 
     Context context;
 
@@ -37,7 +37,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
 
     boolean isInit = false;
 
-    public CustomCalendarView(Context context, AttributeSet attrs) {
+    public CustomCalendarItem(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         connectViews();
@@ -127,7 +127,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
 
 
 
-    public void setListener(IOnCustomCalendarViewClicked listener) {
+    public void setListener(IOnCustomCalendarItemClicked listener) {
         this.listener = listener;
     }
 

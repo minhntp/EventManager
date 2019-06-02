@@ -1,5 +1,5 @@
 package com.nqm.event_manager.interfaces;
 
-public interface IOnSearchEventViewClicked {
+public interface IOnSearchEventItemClicked {
     void onEventItemClicked(String eventId);
 }

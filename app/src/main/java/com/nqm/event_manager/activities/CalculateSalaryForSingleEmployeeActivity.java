@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -21,12 +22,14 @@ import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,15 +100,21 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
 
         toolbar = findViewById(R.id.calculate_salary_single_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.calculate_salary_single_employee_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.calculate_salary_single_employee_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         SalaryRepository.getInstance().setListener(this);
 
-        selectedEmployeeId = getIntent().getStringExtra("employeeId");
-        nameTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getHoTen());
-        specialityTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId).getChuyenMon());
+        selectedEmployeeId = getIntent().getStringExtra(Constants.INTENT_EMPLOYEE_ID);
+        Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId);
+        if (employee != null) {
+            nameTextView.setText(employee.getHoTen());
+            specialityTextView.setText(employee.getChuyenMon());
+        }
 
         startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
         endDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
@@ -257,7 +266,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     }
 
     public void showResult() {
-        numberOfEventsTextView.setText(resultEventsSize + " sự kiện có bản lương");
+        numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events),
+                resultEventsSize));
 
         calculateSalaryAdapter.notifyDataSetChanged(resultSalaries);
 

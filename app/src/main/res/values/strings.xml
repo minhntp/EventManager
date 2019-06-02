@@ -39,5 +39,14 @@
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="task_progress">Đã hoàn thành %1$d/%2$d</string>
+    <string name="task_today">Hôm nay</string>
+    <string name="task_overdue">Quá hạn %1$d ngày</string>
+    <string name="task_still_valid">Còn %1$d ngày</string>
+
+    <string name="salary_num_of_events">%1$d có bản lương</string>
+
+    <string name="event_fragment_list_title">Sự kiện trong ngày %1$s</string>
+
+
 </resources>

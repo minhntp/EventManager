@@ -3,6 +3,7 @@ package com.nqm.event_manager.adapters;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -188,14 +189,15 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                         CalendarUtil.sdfDayMonthYear.format(Calendar.getInstance().getTime())));
                 long days = (calendarOfTask.getTime().getTime() - calendarOfCurrentTime.getTime().getTime()) / (1000 * 60 * 60 * 24);
 //            int compareResult = calendar1.getTime().compareTo(calendar2.getTime());
+                Resources res = context.getResources();
                 if (days < 0) {
-                    timeLeftTextView.setText("Quá hạn " + (-days) + " ngày");
+                    timeLeftTextView.setText(String.format(res.getString(R.string.task_overdue), -days));
                     timeLeftTextView.setTextColor(Color.RED);
                 } else if (days == 0) {
-                    timeLeftTextView.setText("Hôm nay");
+                    timeLeftTextView.setText(res.getString(R.string.task_today));
                     timeLeftTextView.setTextColor(Color.rgb(255, 102, 0));
                 } else {
-                    timeLeftTextView.setText("Còn " + (days) + " ngày");
+                    timeLeftTextView.setText(String.format(res.getString(R.string.task_still_valid), days));
                     timeLeftTextView.setTextColor(Color.GREEN);
                 }
             } catch (Exception e) {

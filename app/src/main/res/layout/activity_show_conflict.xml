@@ -15,9 +15,9 @@
         app:titleTextColor="@color/textPrimaryColor" />
 
     <LinearLayout
-        android:layout_below="@+id/show_conflict_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/show_conflict_toolbar"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:orientation="vertical">
@@ -27,15 +27,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="15dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thời gian của sự kiện hiện tại"
-                android:textSize="@dimen/title"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_time" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Thời gian của sự kiện hiện tại"
+                    android:textSize="@dimen/title"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -79,13 +93,33 @@
                     android:textSize="@dimen/content" />
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@android:color/darker_gray" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:text="Nhân viên bị xung đột"
-                android:textSize="@dimen/title"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_employee" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Nhân viên bị xung đột"
+                    android:textSize="@dimen/title"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -126,14 +160,33 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/conflict_activity_event_header"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/conflict_activity_header"
-            android:text="Các sự kiện bị xung đột"
-            android:textSize="@dimen/title"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_event" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Các sự kiện bị xung đột"
+                android:textSize="@dimen/title"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/conflict_activity_event_recycler_view"

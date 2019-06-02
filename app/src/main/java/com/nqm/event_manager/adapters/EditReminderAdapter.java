@@ -9,7 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.repositories.ReminderRepository;
 
@@ -19,7 +19,7 @@ public class EditReminderAdapter extends BaseAdapter {
 
     Activity context;
     ArrayList<Reminder> selectedReminders;
-    IOnEditReminderViewClicked listener;
+    IOnEditReminderItemClicked listener;
 
     public EditReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {
         this.context = context;
@@ -27,7 +27,7 @@ public class EditReminderAdapter extends BaseAdapter {
         ReminderRepository.sortReminder(selectedReminders);
     }
 
-    public void setListener(IOnEditReminderViewClicked listener) {
+    public void setListener(IOnEditReminderItemClicked listener) {
         this.listener = listener;
     }
 

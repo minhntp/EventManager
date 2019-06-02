@@ -1,7 +1,8 @@
 package com.nqm.event_manager.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,13 +12,14 @@ import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.ShowConflictEventAdapter;
+import com.nqm.event_manager.interfaces.IOnConflictEventItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
-public class ShowConflictActivity extends AppCompatActivity {
+public class ShowConflictActivity extends AppCompatActivity implements IOnConflictEventItemClicked {
 
     Toolbar toolbar;
 
@@ -62,9 +64,11 @@ public class ShowConflictActivity extends AppCompatActivity {
     private void init() {
         toolbar = findViewById(R.id.show_conflict_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.show_conflict_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.show_conflict_activity_label);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         startTimeTextView.setText(startTime);
         endtimeTextView.setText(endTime);
@@ -73,14 +77,28 @@ public class ShowConflictActivity extends AppCompatActivity {
         specialityTextView.setText(employee.getChuyenMon());
 
         conflictEventsAdapter = new ShowConflictEventAdapter(conflictEventsIds);
+        conflictEventsAdapter.setListener(this);
         conflictEventsRecyclerView.setAdapter(conflictEventsAdapter);
         conflictEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         conflictEventsRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     @Override
+    protected void onResume() {
+        conflictEventsAdapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onConflictEventItemClicked(String eventId) {
+        Intent viewEventIntent = new Intent(this, ViewEventActivity.class);
+        viewEventIntent.putExtra(Constants.INTENT_EVENT_ID, eventId);
+        startActivity(viewEventIntent);
     }
 }

@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 
 import java.util.ArrayList;
@@ -47,14 +47,14 @@ public class SelectEmployeeAddEventAdapter extends
 
     private ArrayList<String> selectedEmployeesIds;
     private ArrayList<Employee> employees;
-    private IOnSelectEmployeeViewClicked listener;
+    private IOnSelectEmployeeItemClicked listener;
 
     public SelectEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees) {
         this.selectedEmployeesIds = selectedEmployeesIds;
         this.employees = employees;
     }
 
-    public void setListener(IOnSelectEmployeeViewClicked listener) {
+    public void setListener(IOnSelectEmployeeItemClicked listener) {
         this.listener = listener;
     }
 

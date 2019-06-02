@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.nqm.event_manager.custom_views.CustomCalendarView
+            <com.nqm.event_manager.custom_views.CustomCalendarItem
                 android:id="@+id/event_fragment_calendar_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

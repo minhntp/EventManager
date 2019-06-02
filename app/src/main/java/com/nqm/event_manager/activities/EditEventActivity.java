@@ -7,13 +7,13 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,11 +37,11 @@ import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
-import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
-import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
-import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
@@ -60,9 +60,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class EditEventActivity extends AppCompatActivity implements IOnSelectEmployeeViewClicked,
-        IOnEditEmployeeViewClicked, IOnDataLoadComplete, IOnSelectReminderViewClicked,
-        IOnEditReminderViewClicked, IOnEditTaskItemClicked {
+public class EditEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
+        IOnEditEmployeeItemClicked, IOnDataLoadComplete, IOnSelectReminderItemClicked,
+        IOnEditReminderItemClicked, IOnEditTaskItemClicked {
     android.support.v7.widget.Toolbar toolbar;
 
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
@@ -153,9 +153,12 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void connectViews() {
         toolbar = findViewById(R.id.edit_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.edit_event_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.edit_event_activity_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         titleEditText = findViewById(R.id.edit_event_title_edit_text);
         startDateEditText = findViewById(R.id.edit_event_start_date_edit_text);
@@ -243,7 +246,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editScheduleDialog = new Dialog(this);
         editScheduleDialog.setContentView(R.layout.dialog_edit_schedule);
         lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(editScheduleDialog.getWindow().getAttributes());
+        if (editScheduleDialog.getWindow() != null) {
+            lWindowParams.copyFrom(editScheduleDialog.getWindow().getAttributes());
+        }
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -345,9 +350,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void initSelectEmployeeDialog() {
         selectEmployeeDialog = new Dialog(this);
         selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
-        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
-        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
+//        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+//        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         //Connect views
         selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
@@ -649,7 +654,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
             for (int i = 0; i < selectedEmployeesIds.size(); i++) {
                 final int tempI = i;
-                EventRepository.getInstance().getConflictEventsIds(startTime, endTime, selectedEmployeesIds.get(i), eventId,
+                EventRepository.getInstance().getConflictEventsIdsEdit(startTime, endTime, selectedEmployeesIds.get(i), eventId,
                         new EventRepository.MyConflictEventCallback() {
                             @Override
                             public void onCallback(ArrayList<String> conflictEventsIds) {
@@ -671,14 +676,18 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
             selectEmployeeDialog.show();
-            selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
+            if (selectEmployeeDialog.getWindow() != null) {
+                selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
     private void showEditTaskDialog() {
         if (!isFinishing()) {
             editTaskDialog.show();
-            editTaskDialog.getWindow().setAttributes(lWindowParams);
+            if (editTaskDialog.getWindow() != null) {
+                editTaskDialog.getWindow().setAttributes(lWindowParams);
+            }
             if (tasks.size() > 0) {
                 int count = 0;
                 for (Task t : tasks) {
@@ -688,7 +697,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
                 }
                 int progress = 100 * count / tasks.size();
                 editTaskProgressBar.setProgress(progress);
-                editTaskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+                String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+                editTaskCompletedTextView.setText(progressString);
             } else {
                 editTaskProgressBar.setProgress(0);
                 editTaskCompletedTextView.setText("");
@@ -699,14 +709,18 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void showEditScheduleDialog() {
         if (!isFinishing()) {
             editScheduleDialog.show();
-            editScheduleDialog.getWindow().setAttributes(lWindowParams);
+            if (editScheduleDialog.getWindow() != null) {
+                editScheduleDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
     private void showSelectReminderDialog() {
         if (!isFinishing()) {
             selectReminderDialog.show();
-            selectReminderDialog.getWindow().setAttributes(lWindowParams);
+            if (selectReminderDialog.getWindow() != null) {
+                selectReminderDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
@@ -747,7 +761,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             }
             int progress = 100 * count / tasks.size();
             editTaskProgressBar.setProgress(progress);
-            editTaskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            editTaskCompletedTextView.setText(progressString);
         } else {
             editTaskProgressBar.setProgress(0);
             editTaskCompletedTextView.setText("");
@@ -790,7 +805,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     @Override
     public void onListItemClicked(String employeeId) {
-        if (conflictsMap.get(employeeId) != null && conflictsMap.get(employeeId).size() > 0) {
+        ArrayList<String> conflictEventsIds = conflictsMap.get(employeeId);
+        if (conflictEventsIds != null && conflictEventsIds.size() > 0) {
             //Show conflict activity
             Intent conflictIntent = new Intent(this, ShowConflictActivity.class);
             conflictIntent.putExtra(Constants.INTENT_EMPLOYEE_ID, employeeId);
@@ -798,8 +814,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             conflictIntent.putExtra(Constants.INTENT_END_TIME, endTime);
             conflictIntent.putExtra(Constants.INTENT_CONFLICT_EVENTS_IDS, conflictsMap.get(employeeId));
             startActivity(conflictIntent);
-        } else {
-            //Do nothing
         }
     }
     //----------------------------------------------------------------------------------------------

@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Tasks;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
@@ -37,11 +39,11 @@ import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
-import com.nqm.event_manager.interfaces.IOnEditEmployeeViewClicked;
-import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
-import com.nqm.event_manager.interfaces.IOnSelectEmployeeViewClicked;
-import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
@@ -61,8 +63,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class AddEventActivity extends AppCompatActivity implements IOnSelectEmployeeViewClicked,
-        IOnEditEmployeeViewClicked, IOnSelectReminderViewClicked, IOnEditReminderViewClicked,
+public class AddEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
+        IOnEditEmployeeItemClicked, IOnSelectReminderItemClicked, IOnEditReminderItemClicked,
         IOnEditTaskItemClicked {
     Activity context;
 
@@ -121,6 +123,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     String startTime, endTime;
 
     Calendar calendar = Calendar.getInstance();
+    Calendar calendar2 = Calendar.getInstance();
+    long startMili, endMili;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +154,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     private void connectViews() {
         toolbar = findViewById(R.id.add_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         titleEditText = findViewById(R.id.add_event_title_edit_text);
         startDateEditText = findViewById(R.id.add_event_start_date_edit_text);
@@ -178,14 +184,17 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         context = this;
 
         //Set start date, end date edit texts from selected date
-        String selectedDate = getIntent().getStringExtra("selectedDate");
+        String selectedDate = getIntent().getStringExtra(Constants.INTENT_SELECTED_DATE);
         startDateEditText.setText(selectedDate);
         endDateEditText.setText(selectedDate);
         try {
             startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(selectedDate));
             endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(selectedDate));
-            startTimeEditText.setText("12:00 PM");
-            endTimeEditText.setText("01:00 PM");
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE, 0);
+            startTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
+            calendar.set(Calendar.HOUR_OF_DAY, 13);
+            endTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,7 +235,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editScheduleDialog = new Dialog(this);
         editScheduleDialog.setContentView(R.layout.dialog_edit_schedule);
         lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(editScheduleDialog.getWindow().getAttributes());
+        if (editScheduleDialog.getWindow() != null) {
+            lWindowParams.copyFrom(editScheduleDialog.getWindow().getAttributes());
+        }
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -615,28 +626,36 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     private void checkForConflict() {
         try {
-            Calendar calendar = Calendar.getInstance();
-            Calendar tempCalendar = Calendar.getInstance();
-
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-            tempCalendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-            String startTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+            calendar2.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            startMili = calendar.getTimeInMillis();
 
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-            tempCalendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
-            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-            String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+            calendar2.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            endMili = calendar.getTimeInMillis();
 
-            for (int i = 0; i < selectedEmployeesIds.size(); i++) {
+            Log.d("debug", "here1");
+
+            EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili, selectedEmployeesIds,
+                    new EventRepository.MyConflictEventAddCallback() {
+                        @Override
+                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
+                            conflictsMap.clear();
+                            conflictsMap.putAll(conflictMap);
+                            editEmployeeAdapter.notifyDataSetChanged();
+                            conflictButton.setEnabled(true);
+                        }
+                    });
+            /*for (int i = 0; i < selectedEmployeesIds.size(); i++) {
                 final int tempI = i;
-                EventRepository.getInstance().getConflictEventsIds(startTime, endTime, selectedEmployeesIds.get(i), "",
-                        new EventRepository.MyConflictEventCallback() {
+                EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili,
+                        selectedEmployeesIds.get(tempI), new EventRepository.MyConflictEventCallback() {
                             @Override
                             public void onCallback(ArrayList<String> conflictEventsIds) {
-//                                Log.d("debug", "confict size = " + conflictEventsIds.size());
                                 conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
                                 if (tempI == selectedEmployeesIds.size() - 1) {
                                     editEmployeeAdapter.notifyDataSetChanged();
@@ -644,8 +663,38 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
                                 }
                             }
                         });
-
-            }
+            }*/
+//            Calendar calendar = Calendar.getInstance();
+//            Calendar tempCalendar = Calendar.getInstance();
+//
+//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+//            tempCalendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+//            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+//            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+//            String startTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+//
+//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
+//            tempCalendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+//            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
+//            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
+//            String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+//
+//            for (int i = 0; i < selectedEmployeesIds.size(); i++) {
+//                final int tempI = i;
+//                EventRepository.getInstance().getConflictEventsIds(startTime, endTime, selectedEmployeesIds.get(i), "",
+//                        new EventRepository.MyConflictEventCallback() {
+//                            @Override
+//                            public void onCallback(ArrayList<String> conflictEventsIds) {
+////                                Log.d("debug", "confict size = " + conflictEventsIds.size());
+//                                conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
+//                                if (tempI == selectedEmployeesIds.size() - 1) {
+//                                    editEmployeeAdapter.notifyDataSetChanged();
+//                                    conflictButton.setEnabled(true);
+//                                }
+//                            }
+//                        });
+//
+//            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -654,14 +703,18 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     private void showAddScheduleDialog() {
         if (!isFinishing()) {
             editScheduleDialog.show();
-            editScheduleDialog.getWindow().setAttributes(lWindowParams);
+            if (editScheduleDialog.getWindow() != null) {
+                editScheduleDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
     private void showEditTaskDialog() {
         if (!isFinishing()) {
             editTaskDialog.show();
-            editTaskDialog.getWindow().setAttributes(lWindowParams);
+            if (editTaskDialog.getWindow() != null) {
+                editTaskDialog.getWindow().setAttributes(lWindowParams);
+            }
             if (tasks.size() > 0) {
                 count = 0;
                 for (Task t : tasks) {
@@ -671,7 +724,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
                 }
                 int progress = 100 * count / tasks.size();
                 editTaskProgressBar.setProgress(progress);
-                editTaskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+                String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+                editTaskCompletedTextView.setText(progressString);
             } else {
                 editTaskProgressBar.setProgress(0);
                 editTaskCompletedTextView.setText("");
@@ -682,14 +736,18 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
             selectEmployeeDialog.show();
-            selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
+            if (selectEmployeeDialog.getWindow() != null) {
+                selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
     private void showAddReminderDialog() {
         if (!isFinishing()) {
             selectReminderDialog.show();
-            selectReminderDialog.getWindow().setAttributes(lWindowParams);
+            if (selectReminderDialog.getWindow() != null) {
+                selectReminderDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
@@ -790,7 +848,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             }
             int progress = 100 * count / tasks.size();
             editTaskProgressBar.setProgress(progress);
-            editTaskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            editTaskCompletedTextView.setText(progressString);
         } else {
             editTaskProgressBar.setProgress(0);
             editTaskCompletedTextView.setText("");
@@ -834,16 +893,17 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     //----------------------------------------------------------------------------------------------
     @Override
     public void onListItemClicked(String employeeId) {
-        if (conflictsMap.get(employeeId) != null && conflictsMap.get(employeeId).size() > 0) {
-            //Show conflict activity
-            Intent conflictIntent = new Intent(this, ShowConflictActivity.class);
-            conflictIntent.putExtra(Constants.INTENT_EMPLOYEE_ID, employeeId);
-            conflictIntent.putExtra(Constants.INTENT_START_TIME, startTime);
-            conflictIntent.putExtra(Constants.INTENT_END_TIME, endTime);
-            conflictIntent.putExtra(Constants.INTENT_CONFLICT_EVENTS_IDS, conflictsMap.get(employeeId));
-            startActivity(conflictIntent);
-        } else {
-            //Do nothing
+        ArrayList<String> conflictEvents = conflictsMap.get(employeeId);
+        if (conflictEvents != null) {
+            if (conflictEvents.size() > 0) {
+                //Show conflict activity
+                Intent conflictIntent = new Intent(this, ShowConflictActivity.class);
+                conflictIntent.putExtra(Constants.INTENT_EMPLOYEE_ID, employeeId);
+                conflictIntent.putExtra(Constants.INTENT_START_TIME, startTime);
+                conflictIntent.putExtra(Constants.INTENT_END_TIME, endTime);
+                conflictIntent.putExtra(Constants.INTENT_CONFLICT_EVENTS_IDS, conflictEvents);
+                startActivity(conflictIntent);
+            }
         }
     }
     //----------------------------------------------------------------------------------------------

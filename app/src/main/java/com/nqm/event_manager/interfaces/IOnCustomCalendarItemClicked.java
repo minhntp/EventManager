@@ -2,6 +2,6 @@ package com.nqm.event_manager.interfaces;
 
 import java.util.Date;
 
-public interface IOnCustomCalendarViewClicked {
+public interface IOnCustomCalendarItemClicked {
     void onCustomCalendarCellClicked(Date selectedDate);
 }

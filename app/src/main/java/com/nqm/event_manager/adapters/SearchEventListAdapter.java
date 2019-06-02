@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnSearchEventViewClicked;
+import com.nqm.event_manager.interfaces.IOnSearchEventItemClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.repositories.EventRepository;
 
@@ -48,14 +48,14 @@ public class SearchEventListAdapter extends RecyclerView.Adapter<SearchEventList
         }
     }
 
-    private IOnSearchEventViewClicked listener;
+    private IOnSearchEventItemClicked listener;
     private ArrayList<String> resultEventsIds;
 
     public SearchEventListAdapter(ArrayList<String> resultEventsIds) {
         this.resultEventsIds = resultEventsIds;
     }
 
-    public void setListener(IOnSearchEventViewClicked listener) {
+    public void setListener(IOnSearchEventItemClicked listener) {
         this.listener = listener;
     }
 

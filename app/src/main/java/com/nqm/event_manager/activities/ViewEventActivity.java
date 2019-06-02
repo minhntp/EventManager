@@ -30,8 +30,8 @@ import com.nqm.event_manager.adapters.ViewTaskAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
-import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ViewEventActivity extends AppCompatActivity implements IOnViewSalaryItemClicked,
-        IOnDataLoadComplete, IOnEditReminderViewClicked, IOnSelectReminderViewClicked {
+        IOnDataLoadComplete, IOnEditReminderItemClicked, IOnSelectReminderItemClicked {
     Activity context;
 
     Button viewScheduleButton, viewTaskButton;
@@ -107,9 +107,11 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     private void connectViews() {
         toolbar = findViewById(R.id.view_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.view_event_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.view_event_activity_label);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         viewTaskButton = findViewById(R.id.view_event_task_button);
         viewScheduleButton = findViewById(R.id.view_event_schedule_button);
@@ -128,8 +130,6 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     private void init() {
         context = this;
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
-        Log.d("debug", "events size = " + EventRepository.getInstance().getAllEvents().size());
-        Log.d("debug", "eventId = " + eventId);
 //        if (selectedEvent != null) {
         fillInformation();
 //        }
@@ -166,7 +166,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
 
         lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(viewScheduleDialog.getWindow().getAttributes());
+        if (viewScheduleDialog.getWindow() !=null) {
+            lWindowParams.copyFrom(viewScheduleDialog.getWindow().getAttributes());
+        }
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -329,21 +331,26 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     private void showViewScheduleDialog() {
         if (!isFinishing()) {
             viewScheduleDialog.show();
-            viewScheduleDialog.getWindow().setAttributes(lWindowParams);
+            if (viewScheduleDialog.getWindow() != null) {
+                viewScheduleDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 
     private void showViewTaskDialog() {
         if (!isFinishing()) {
             viewTaskDialog.show();
-            viewTaskDialog.getWindow().setAttributes(lWindowParams);
+            if (viewTaskDialog.getWindow() != null) {
+                viewTaskDialog.getWindow().setAttributes(lWindowParams);
+            }
             int count = 0;
             for (Task t : tasks) {
                 if (t.isDone()) {
                     count++;
                 }
             }
-            taskCompletedTextView.setText("Đã hoàn thành " + count + "/" + tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            taskCompletedTextView.setText(progressString);
             taskProgressBar.setProgress(100 * count / tasks.size());
         }
     }

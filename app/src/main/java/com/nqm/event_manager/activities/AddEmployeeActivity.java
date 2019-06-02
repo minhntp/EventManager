@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -11,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
@@ -44,9 +44,12 @@ public class AddEmployeeActivity extends AppCompatActivity {
     private void connectViews() {
         toolbar = findViewById(R.id.add_employee_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.add_employee_single_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.add_employee_single_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         nameEditText = findViewById(R.id.add_employee_activity_name_edit_text);
         specialityEditText = findViewById(R.id.add_employee_activity_speciality_edit_text);

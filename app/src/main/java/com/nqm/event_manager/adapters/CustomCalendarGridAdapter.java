@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnCustomCalendarViewClicked;
+import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
@@ -21,7 +21,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     private final Context context;
     LinearLayout cellLayout;
     int offSet;
-    IOnCustomCalendarViewClicked listener;
+    IOnCustomCalendarItemClicked listener;
     private LayoutInflater layoutInflater;
     private TextView numberOfEventsTextView, dayTextView;
     private Date currentDate;
@@ -174,7 +174,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     }
 
 
-    public void setListener(IOnCustomCalendarViewClicked listener) {
+    public void setListener(IOnCustomCalendarItemClicked listener) {
         this.listener = listener;
     }
 

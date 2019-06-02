@@ -10,7 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.repositories.ReminderRepository;
 
@@ -21,7 +21,7 @@ public class SelectReminderAdapter extends BaseAdapter {
     private Activity context;
     private ArrayList<Reminder> selectedReminders;
     private ArrayList<Integer> selectedRemindersMinutes;
-    IOnSelectReminderViewClicked listener;
+    IOnSelectReminderItemClicked listener;
 
     public SelectReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {
         this.context = context;
@@ -33,7 +33,7 @@ public class SelectReminderAdapter extends BaseAdapter {
     }
 
 
-    public void setListener(IOnSelectReminderViewClicked listener) {
+    public void setListener(IOnSelectReminderItemClicked listener) {
         this.listener = listener;
     }
 

@@ -2,34 +2,30 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.interfaces.IOnEditReminderViewClicked;
-import com.nqm.event_manager.interfaces.IOnSelectReminderViewClicked;
+import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
+import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.repositories.DefaultReminderRepository;
 
 import java.util.ArrayList;
 
-public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderViewClicked,
-        IOnSelectReminderViewClicked {
+public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderItemClicked,
+        IOnSelectReminderItemClicked {
 
     CustomListView editReminderListView;
     EditReminderAdapter editReminderAdapter;
