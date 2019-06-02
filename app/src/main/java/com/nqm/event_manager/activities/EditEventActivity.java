@@ -122,6 +122,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     String startTime, endTime;
 
     Calendar calendar = Calendar.getInstance();
+    Calendar calendar2 = Calendar.getInstance();
+    long startMili = 0, endMili = 0;
 
     Activity context;
 
@@ -637,37 +639,30 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     private void checkForConflict() {
         try {
-            Calendar calendar = Calendar.getInstance();
-            Calendar tempCalendar = Calendar.getInstance();
-
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-            tempCalendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-            String startTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+            calendar2.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            startMili = calendar.getTimeInMillis();
 
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-            tempCalendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
-            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-            String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
+            calendar2.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            endMili = calendar.getTimeInMillis();
 
-            for (int i = 0; i < selectedEmployeesIds.size(); i++) {
-                final int tempI = i;
-                EventRepository.getInstance().getConflictEventsIdsEdit(startTime, endTime, selectedEmployeesIds.get(i), eventId,
-                        new EventRepository.MyConflictEventCallback() {
-                            @Override
-                            public void onCallback(ArrayList<String> conflictEventsIds) {
-//                                Log.d("debug", "confict size = " + conflictEventsIds.size());
-                                conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
-                                if (tempI == selectedEmployeesIds.size() - 1) {
-                                    editEmployeeAdapter.notifyDataSetChanged();
-                                    conflictButton.setEnabled(true);
-                                }
-                            }
-                        });
+            EventRepository.getInstance().getConflictEventsIdsEdit(startMili, endMili, selectedEmployeesIds,
+                    eventId, new EventRepository.MyConflictEventCallback() {
+                        @Override
+                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
+                                conflictsMap.clear();
+                                conflictsMap.putAll(conflictMap);
+                                editEmployeeAdapter.notifyDataSetChanged();
+                                conflictButton.setEnabled(true);
+                        }
+                    }
+            );
 
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

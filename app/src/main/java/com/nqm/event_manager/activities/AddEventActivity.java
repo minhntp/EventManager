@@ -638,10 +638,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
             endMili = calendar.getTimeInMillis();
 
-            Log.d("debug", "here1");
-
             EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili, selectedEmployeesIds,
-                    new EventRepository.MyConflictEventAddCallback() {
+                    new EventRepository.MyConflictEventCallback() {
                         @Override
                         public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
                             conflictsMap.clear();
@@ -650,51 +648,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
                             conflictButton.setEnabled(true);
                         }
                     });
-            /*for (int i = 0; i < selectedEmployeesIds.size(); i++) {
-                final int tempI = i;
-                EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili,
-                        selectedEmployeesIds.get(tempI), new EventRepository.MyConflictEventCallback() {
-                            @Override
-                            public void onCallback(ArrayList<String> conflictEventsIds) {
-                                conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
-                                if (tempI == selectedEmployeesIds.size() - 1) {
-                                    editEmployeeAdapter.notifyDataSetChanged();
-                                    conflictButton.setEnabled(true);
-                                }
-                            }
-                        });
-            }*/
-//            Calendar calendar = Calendar.getInstance();
-//            Calendar tempCalendar = Calendar.getInstance();
-//
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-//            tempCalendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-//            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-//            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-//            String startTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
-//
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-//            tempCalendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
-//            calendar.set(Calendar.HOUR_OF_DAY, tempCalendar.get(Calendar.HOUR_OF_DAY));
-//            calendar.set(Calendar.MINUTE, tempCalendar.get(Calendar.MINUTE));
-//            String endTime = CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime());
-//
-//            for (int i = 0; i < selectedEmployeesIds.size(); i++) {
-//                final int tempI = i;
-//                EventRepository.getInstance().getConflictEventsIds(startTime, endTime, selectedEmployeesIds.get(i), "",
-//                        new EventRepository.MyConflictEventCallback() {
-//                            @Override
-//                            public void onCallback(ArrayList<String> conflictEventsIds) {
-////                                Log.d("debug", "confict size = " + conflictEventsIds.size());
-//                                conflictsMap.put(selectedEmployeesIds.get(tempI), conflictEventsIds);
-//                                if (tempI == selectedEmployeesIds.size() - 1) {
-//                                    editEmployeeAdapter.notifyDataSetChanged();
-//                                    conflictButton.setEnabled(true);
-//                                }
-//                            }
-//                        });
-//
-//            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

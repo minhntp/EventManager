@@ -1,7 +1,6 @@
 package com.nqm.event_manager.repositories;
 
 import android.content.Context;
-import android.support.annotation.LongDef;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,6 +9,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -17,7 +17,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
@@ -29,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -253,9 +253,63 @@ public class SalaryRepository {
                 });
     }
 
+    long startMili = 0, endMili = 0;
+
     //CALCULATE SALARIES FOR ALL EMPLOYEES
-    public ArrayList<Salary> getSalariesByStartDateAndEndDate(String startDate, String endDate) {
+    public void getSalariesByStartDateEndDate(String startDate, String endDate,
+                                              final MySalaryQueryCallback callback) {
+        try {
+            final Calendar calendar = Calendar.getInstance();
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDate));
+            startMili = calendar.getTimeInMillis();
+
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDate));
+            endMili = calendar.getTimeInMillis();
+
+            DatabaseAccess.getInstance().getDatabase()
+                    .collection(Constants.SALARY_COLLECTION)
+                    .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
+                    .orderBy(Constants.SALARY_START_MILI)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            ArrayList<String> salariesIds = new ArrayList<>();
+                            ArrayList<String> eventsIds = new ArrayList<>();
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
+                                if (docEndMili >= startMili) {
+                                    salariesIds.add(documentSnapshot.getId());
+                                    String eventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
+                                    if(!eventsIds.contains(eventId)) {
+                                        eventsIds.add(eventId);
+                                    }
+                                }
+
+                            }
+                            callback.onCallback(salariesIds, eventsIds);
+                        }
+                    });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public ArrayList<Salary> getSalariesByStartDateEndDate(String startDate, String endDate) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            long startMili = 0, endMili = 0;
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDate));
+            startMili = calendar.getTimeInMillis();
+
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDate));
+            endMili = calendar.getTimeInMillis();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         ArrayList<Salary> salaries = new ArrayList<>();
+
         for (Salary s : allSalaries.values()) {
             try {
                 String thisSalaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
@@ -265,8 +319,7 @@ public class SalaryRepository {
                 Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
                 Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(thisSalaryStartDate);
                 Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(thisSalaryEndDate);
-                if ((thisSalaryStart.compareTo(start) >= 0 && thisSalaryStart.compareTo(end) <= 0) ||
-                        (thisSalaryEnd.compareTo(start) >= 0 && thisSalaryEnd.compareTo(end) <= 0)) {
+                if ((thisSalaryStart.compareTo(end) <= 0 && thisSalaryEnd.compareTo(start) >= 0)) {
                     salaries.add(s);
                 }
             } catch (Exception e) {
@@ -300,32 +353,12 @@ public class SalaryRepository {
         return salaries;
     }
 
-    //SEARCH FOR CONFLICT: RESULT salaries.size() > 0 -> CONFLICT
-    public ArrayList<Salary> getSalariesByStartTimeEndTimeEmployeeId(String startTime, String endTime,
-                                                                     String employeeId, String eventId) {
-        ArrayList<Salary> salaries = new ArrayList<>();
-        try {
-            Calendar startCalendar = Calendar.getInstance();
-            startCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(startTime));
-            Calendar endCalendar = Calendar.getInstance();
-            endCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(endTime));
-
-            Calendar tempCalendar = Calendar.getInstance();
-
-            for (Salary s : allSalaries.values()) {
-                if (s.getEmployeeId().equals(employeeId) && !s.getEventId().equals(eventId)) {
-                    Log.d("debug", "condition met to compare time");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("debug", "exception");
-        }
-        return salaries;
-    }
-
     private interface MySalaryCallback {
         void onCallback(HashMap<String, Salary> salaryList);
+    }
+
+    public interface MySalaryQueryCallback {
+        void onCallback(ArrayList<String> salariesIds, ArrayList<String> eventIds);
     }
 
     public interface MyIsPaidSalaryCallback {

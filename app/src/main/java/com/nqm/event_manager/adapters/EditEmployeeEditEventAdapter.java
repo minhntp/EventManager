@@ -109,12 +109,10 @@ public class EditEmployeeEditEventAdapter extends
                 viewHolder.profileImageView.setBackgroundColor(color);
                 viewHolder.nameTextView.setBackgroundColor(color);
                 viewHolder.specialityTextView.setBackgroundColor(color);
-                viewHolder.deleteButton.setBackgroundColor(color);
             } else {
                 viewHolder.profileImageView.setBackgroundColor(0);
                 viewHolder.nameTextView.setBackgroundColor(0);
                 viewHolder.specialityTextView.setBackgroundColor(0);
-                viewHolder.deleteButton.setBackgroundColor(0);
             }
 
             viewHolder.nameTextView.setText(employee.getHoTen());

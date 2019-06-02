@@ -28,6 +28,7 @@ import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
+import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -56,7 +57,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     ArrayList<String> employeesInfo;
     ArrayList<Salary> resultSalaries;
     ArrayList<Salary> selectedSalaries;
-    int resultEventsSize;
+    int resultEventSize;
 
     ArrayAdapter<String> employeesSpinnerAdapter;
     CalculateSalaryAdapter calculateSalaryAdapter;
@@ -296,24 +297,37 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     }
 
     private void getResultSalaries() {
-        resultSalaries = SalaryRepository.getInstance()
-                .getSalariesByStartDateAndEndDate(startDate, endDate);
-
-        ArrayList<String> resultEventIds = new ArrayList<>();
+//        SalaryRepository.getInstance().getSalariesByStartDateEndDate(startDate, endDate,
+//                new SalaryRepository.MySalaryQueryCallback() {
+//                    @Override
+//                    public void onCallback(ArrayList<String> salariesIds, ArrayList<String> eventIds) {
+//                        resultSalariesIds.clear();
+//                        resultSalariesIds.addAll(salariesIds);
+//                        resultEventsIds.clear();
+//                        resultEventsIds.addAll(eventIds);
+//                    }
+//                });
+        resultSalaries.clear();
+        resultSalaries.addAll(SalaryRepository.getInstance().getSalariesByStartDateEndDate(startDate, endDate));
+        ArrayList<String> eventsIds = new ArrayList<>();
         for (Salary s : resultSalaries) {
-            if (!resultEventIds.contains(s.getEventId())) {
-                resultEventIds.add(s.getEventId());
+            if (!eventsIds.contains(s.getEventId())) {
+                eventsIds.add(s.getEventId());
             }
         }
-
-        resultEventsSize = resultEventIds.size();
-
+        resultEventSize = eventsIds.size();
         SalaryRepository.sortSalariesByEventStartDate(resultSalaries);
     }
 
     private void updateEmployeesSpinner() {
         if (resultSalaries.size() > 0) {
-            employeesIds = EmployeeRepository.getInstance().getEmployeesIdsFromSalaries(resultSalaries);
+            employeesIds.clear();
+            for(Salary s : resultSalaries) {
+                String employeeId = s.getEmployeeId();
+                if(!employeesIds.contains(employeeId)) {
+                    employeesIds.add(employeeId);
+                }
+            }
             employeesInfo.clear();
             for (String employeeId : employeesIds) {
                 Employee e = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
@@ -326,7 +340,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     }
 
     public void showResult() {
-        numberOfEventsTextView.setText(resultEventsSize + " sự kiện có bản lương");
+        numberOfEventsTextView.setText(resultEventSize + " sự kiện có bản lương");
 
         calculateSalaryAdapter.notifyDataSetChanged(selectedSalaries);
 
