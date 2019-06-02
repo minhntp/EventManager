@@ -35,8 +35,8 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
     }
 
     private ArrayList<Task> tasks;
-    Calendar calendar1 = Calendar.getInstance();
-    Calendar calendar2 = Calendar.getInstance();
+    Calendar calendarOfTask = Calendar.getInstance();
+    Calendar calendarOfCurrentTime = Calendar.getInstance();
 
     public ViewTaskAdapter(ArrayList<Task> tasks) {
         this.tasks = tasks;
@@ -61,19 +61,19 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
 
         if (!t.isDone()) {
             try {
-                calendar1.setTime(CalendarUtil.sdfDayMonthYear.parse(t.getDate()));
-                calendar2.setTime(CalendarUtil.sdfDayMonthYear.parse(
+                calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(t.getDate()));
+                calendarOfCurrentTime.setTime(CalendarUtil.sdfDayMonthYear.parse(
                         CalendarUtil.sdfDayMonthYear.format(Calendar.getInstance().getTime())));
-                long days = (calendar1.getTime().getTime() - calendar2.getTime().getTime()) / (1000 * 60 * 60 * 24);
-//            int compareResult = calendar1.getTime().compareTo(calendar2.getTime());
-                if (days > 0) {
-                    viewHolder.timeLeftTextView.setText("Quá hạn " + days + " ngày");
+                long days = (calendarOfTask.getTime().getTime() - calendarOfCurrentTime.getTime().getTime()) / (1000 * 60 * 60 * 24);
+//            int compareResult = calendarOfTask.getTime().compareTo(calendar2.getTime());
+                if (days < 0) {
+                    viewHolder.timeLeftTextView.setText("Quá hạn " + (-days) + " ngày");
                     viewHolder.timeLeftTextView.setTextColor(Color.RED);
                 } else if (days == 0) {
                     viewHolder.timeLeftTextView.setText("Hôm nay");
                     viewHolder.timeLeftTextView.setTextColor(Color.rgb(255, 102, 0));
                 } else {
-                    viewHolder.timeLeftTextView.setText("Còn " + (-days) + " ngày");
+                    viewHolder.timeLeftTextView.setText("Còn " + days + " ngày");
                     viewHolder.timeLeftTextView.setTextColor(Color.GREEN);
                 }
             } catch (Exception e) {

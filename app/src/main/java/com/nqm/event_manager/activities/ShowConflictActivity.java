@@ -2,6 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -74,6 +75,7 @@ public class ShowConflictActivity extends AppCompatActivity {
         conflictEventsAdapter = new ShowConflictEventAdapter(conflictEventsIds);
         conflictEventsRecyclerView.setAdapter(conflictEventsAdapter);
         conflictEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        conflictEventsRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     @Override

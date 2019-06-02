@@ -198,7 +198,7 @@ public class SendEventInfo extends AppCompatActivity {
             content += "Nhân sự: " + "\n";
             for (int i = 0; i < employeesIds.size(); i++) {
                 Employee e = EmployeeRepository.getInstance(null).getAllEmployees().get(employeesIds.get(i));
-                content += "\t" + e.getHoTen() + " - " + e.getChuyenMon() + "\n";
+                content += "\t" + "+ " + e.getHoTen() + " - " + e.getChuyenMon() + "\n";
             }
             content += "\n";
         }
@@ -213,17 +213,22 @@ public class SendEventInfo extends AppCompatActivity {
 
         cb = sectionListView.getChildAt(5).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            ArrayList<Task> tasks= TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+            ArrayList<Task> tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
             TaskRepository.sortTasksByOrder(tasks);
             content += "Công việc: " + "\n";
             for (Task t : tasks) {
-                content += "\t" + t.getDate();
+                content += "\t" + "+ " + t.getDate();
                 if (!t.getTime().isEmpty()) {
                     content += "  " + t.getTime();
                 } else {
                     content += "                   ";
                 }
-                content += ": " + t.getContent() + "\n";
+                content += ": " + t.getContent();
+                if (t.isDone()) {
+                    content += " - Đã làm" + "\n";
+                } else {
+                    content += " - Chưa làm" + "\n";
+                }
             }
             content += "\n";
         }
@@ -234,11 +239,11 @@ public class SendEventInfo extends AppCompatActivity {
             ScheduleRepository.sortSchedulesByOrder(schedules);
             content += "Lịch trình: " + "\n";
             for (Schedule s : schedules) {
-                content += "\t" + s.getTime() + ": " + s.getContent() + "\n";
+                content += "\t" + "+ " + s.getTime() + ": " + s.getContent() + "\n";
             }
             content += "\n";
         }
-        content = content.replaceAll("\t", "  ");
+        content = content.replaceAll("\t", " ");
         return content;
     }
 

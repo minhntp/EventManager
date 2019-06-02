@@ -161,7 +161,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         locationEditText = findViewById(R.id.add_event_location_edit_text);
         noteEditText = findViewById(R.id.add_event_note_edit_text);
 
-        startDowTextView = findViewById(R.id.add_event_start_dow_textview);
+        startDowTextView = findViewById(R.id.add_event_start_dow_text_view);
         endDowTextView = findViewById(R.id.add_event_end_dow_textview);
 
         conflictButton = findViewById(R.id.add_event_conflict_button);
@@ -195,7 +195,12 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
         editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
-        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         initAddScheduleDialog();

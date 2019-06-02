@@ -72,6 +72,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
             public void onClick(View v) {
                 calendar.setTime(gridAdapter.getViewDate());
                 calendar.add(Calendar.MONTH, -1);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
                 gridAdapter.setViewDate(calendar.getTime());
                 gridAdapter.notifyDataSetChanged();
                 monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(gridAdapter.getViewDate()));
@@ -82,6 +83,7 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
             public void onClick(View v) {
                 calendar.setTime(gridAdapter.getViewDate());
                 calendar.add(Calendar.MONTH, 1);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
                 gridAdapter.setViewDate(calendar.getTime());
                 gridAdapter.notifyDataSetChanged();
                 monthYearTextView.setText(CalendarUtil.sdfMonthYear2.format(gridAdapter.getViewDate()));
@@ -91,10 +93,20 @@ public class CustomCalendarView extends LinearLayout implements IOnCustomCalenda
             @Override
             public void onClick(View v) {
                 calendar.setTime(gridAdapter.getViewDate());
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
+                int d = 1;
                 int m = calendar.get(Calendar.MONTH);
                 int y = calendar.get(Calendar.YEAR);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                try {
+                    if (CalendarUtil.sdfMonthYear2.format(calendar.getTime())
+                            .equals(CalendarUtil.sdfMonthYear2.format(gridAdapter.getSelectedDate()))) {
+                        calendar.setTime(gridAdapter.getSelectedDate());
+                        d = calendar.get(Calendar.DAY_OF_MONTH);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+//                int d = calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context,     new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         calendar.set(Calendar.YEAR, year);

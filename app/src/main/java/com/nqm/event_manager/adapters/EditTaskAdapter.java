@@ -74,17 +74,17 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                 public void onClick(View v) {
                     try {
                         final int position = getAdapterPosition();
-                        calendar1.setTime(CalendarUtil.sdfDayMonthYear.parse(tasks.get(position).getDate()));
-                        int d = calendar1.get(Calendar.DAY_OF_MONTH);
-                        int m = calendar1.get(Calendar.MONTH);
-                        int y = calendar1.get(Calendar.YEAR);
+                        calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(tasks.get(position).getDate()));
+                        int d = calendarOfTask.get(Calendar.DAY_OF_MONTH);
+                        int m = calendarOfTask.get(Calendar.MONTH);
+                        int y = calendarOfTask.get(Calendar.YEAR);
                         DatePickerDialog dpd = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                calendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                calendar1.set(Calendar.MONTH, month);
-                                calendar1.set(Calendar.YEAR, year);
-                                tasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendar1.getTime()));
+                                calendarOfTask.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                                calendarOfTask.set(Calendar.MONTH, month);
+                                calendarOfTask.set(Calendar.YEAR, year);
+                                tasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendarOfTask.getTime()));
                                 notifyItemChanged(position);
                             }
                         }, y, m, d);
@@ -102,12 +102,12 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                     final int position = getAdapterPosition();
                     int hourOfDay = 12;
                     int minute = 0;
-                    calendar1 = Calendar.getInstance();
+                    calendarOfTask = Calendar.getInstance();
                     if (!(tasks.get(position).getTime().isEmpty())) {
                         try {
-                            calendar1.setTime(CalendarUtil.sdfTime.parse(tasks.get(position).getTime()));
-                            hourOfDay = calendar1.get(Calendar.HOUR_OF_DAY);
-                            minute = calendar1.get(Calendar.MINUTE);
+                            calendarOfTask.setTime(CalendarUtil.sdfTime.parse(tasks.get(position).getTime()));
+                            hourOfDay = calendarOfTask.get(Calendar.HOUR_OF_DAY);
+                            minute = calendarOfTask.get(Calendar.MINUTE);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -115,9 +115,9 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                     new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                         @Override
                         public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                            calendar1.set(Calendar.HOUR_OF_DAY, hour);
-                            calendar1.set(Calendar.MINUTE, minute);
-                            tasks.get(position).setTime(CalendarUtil.sdfTime.format(calendar1.getTime()));
+                            calendarOfTask.set(Calendar.HOUR_OF_DAY, hour);
+                            calendarOfTask.set(Calendar.MINUTE, minute);
+                            tasks.get(position).setTime(CalendarUtil.sdfTime.format(calendarOfTask.getTime()));
                             notifyItemChanged(position);
                         }
                     }, hourOfDay, minute, false).show();
@@ -141,8 +141,8 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
     private ArrayList<Task> tasks;
     private ItemTouchHelper itemTouchHelper;
     private IOnEditTaskItemClicked listener;
-    private Calendar calendar1 = Calendar.getInstance();
-    private Calendar calendar2 = Calendar.getInstance();
+    private Calendar calendarOfTask = Calendar.getInstance();
+    private Calendar calendarOfCurrentTime = Calendar.getInstance();
     private Context context;
 
     public EditTaskAdapter(ArrayList<Task> tasks) {
@@ -183,19 +183,19 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
 
         if (!t.isDone()) {
             try {
-                calendar1.setTime(CalendarUtil.sdfDayMonthYear.parse(t.getDate()));
-                calendar2.setTime(CalendarUtil.sdfDayMonthYear.parse(
+                calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(t.getDate()));
+                calendarOfCurrentTime.setTime(CalendarUtil.sdfDayMonthYear.parse(
                         CalendarUtil.sdfDayMonthYear.format(Calendar.getInstance().getTime())));
-                long days = (calendar1.getTime().getTime() - calendar2.getTime().getTime()) / (1000 * 60 * 60 * 24);
+                long days = (calendarOfTask.getTime().getTime() - calendarOfCurrentTime.getTime().getTime()) / (1000 * 60 * 60 * 24);
 //            int compareResult = calendar1.getTime().compareTo(calendar2.getTime());
-                if (days > 0) {
-                    timeLeftTextView.setText("Quá hạn " + days + " ngày");
+                if (days < 0) {
+                    timeLeftTextView.setText("Quá hạn " + (-days) + " ngày");
                     timeLeftTextView.setTextColor(Color.RED);
                 } else if (days == 0) {
                     timeLeftTextView.setText("Hôm nay");
                     timeLeftTextView.setTextColor(Color.rgb(255, 102, 0));
                 } else {
-                    timeLeftTextView.setText("Còn " + (-days) + " ngày");
+                    timeLeftTextView.setText("Còn " + (days) + " ngày");
                     timeLeftTextView.setTextColor(Color.GREEN);
                 }
             } catch (Exception e) {

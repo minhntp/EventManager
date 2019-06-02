@@ -195,7 +195,12 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editEmployeeAdapter = new EditEmployeeEditEventAdapter(eventId, selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
         editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
-        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        });
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         fillInformation();

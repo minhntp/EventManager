@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,7 +60,7 @@
                     android:weightSum="6">
 
                     <TextView
-                        android:id="@+id/add_event_start_dow_textview"
+                        android:id="@+id/add_event_start_dow_text_view"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

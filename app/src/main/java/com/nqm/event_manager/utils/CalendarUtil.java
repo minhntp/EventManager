@@ -32,6 +32,8 @@ public class CalendarUtil {
                     return "T7";
                 case "Sun":
                     return "CN";
+                default:
+                    return dayOfWeekEng;
             }
         } catch (Exception e) {
             e.printStackTrace();
