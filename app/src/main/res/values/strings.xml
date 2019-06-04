@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Quản lí sự kiện</string>
+    <string name="app_name">Quản lý sự kiện</string>
 
     <string name="add_event_activity_label">Thêm sự kiện</string>
     <string name="edit_salary_activity_label">Sửa lương</string>
@@ -13,8 +13,8 @@
     <string name="edit_employee_single_label">Sửa thông tin nhân viên</string>
     <string name="view_employee_single_label">Chi tiết nhân viên</string>
 
-    <string name="manage_event_fragment_label">Quản lí sự kiện</string>
-    <string name="manage_employee_fragment_label">Quản lí nhân viên</string>
+    <string name="manage_event_fragment_label">Quản lý sự kiện</string>
+    <string name="manage_employee_fragment_label">Quản lý nhân viên</string>
     <string name="calculate_salary_fragment_label">Tính lương</string>
     <string name="event_list_fragment_label">Danh sách sự kiện</string>
     <string name="more_settings_fragment_label">Cài đặt thêm</string>
@@ -22,10 +22,10 @@
     <string name="greeting">Xin chào</string>
     <string name="user_name">Nguyễn Quang Minh</string>
 
-    <string name="navigation_drawer_open">Quản lí sự kiện</string>
-    <string name="navigation_drawer_close">Quản lí sự kiện</string>
+    <string name="navigation_drawer_open">Quản lý sự kiện</string>
+    <string name="navigation_drawer_close">Quản lý sự kiện</string>
 
-    <string name="channel_name">Quản lí sự kiện</string>
+    <string name="channel_name">Quản lý sự kiện</string>
     <string name="channel_description">Nhắc nhở khi có sự kiện</string>
 
     <string-array name="sections_titles">

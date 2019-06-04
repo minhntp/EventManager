@@ -20,7 +20,7 @@ public class ReminderNotificationReceiver extends BroadcastReceiver {
 
     public NotificationCompat.Builder notificationBuilder;
     public NotificationChannel notificationChannel;
-    public String CHANNEL_NAME = " Quản lí sự kiện";
+    public String CHANNEL_NAME = " Quản lý sự kiện";
     public String CHANNEL_DESCRIPTION = "Nhắc nhở khi có sự kiện";
     public String NOTIFICATION_CHANNEL_ID = "event-manager-notification";
 
