@@ -13,16 +13,16 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <ScrollView
-        android:layout_below="@id/calculate_salary_single_toolbar"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/calculate_salary_single_toolbar"
+        android:layout_margin="10dp">
 
         <LinearLayout
+            android:id="@+id/calculate_salary_single_above_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -67,25 +67,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Ngày bắt đầu"
-                android:textSize="@dimen/title" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <EditText
                 android:id="@+id/calculate_salary_single_start_date_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false" />
+                android:focusable="false"
+                android:textSize="17sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Ngày kết thúc"
-                android:textSize="@dimen/title" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <EditText
                 android:id="@+id/calculate_salary_single_end_date_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false" />
+                android:focusable="false"
+                android:textSize="17sp" />
 
             <Button
                 android:id="@+id/calculate_salary_single_calculate_button"
@@ -101,8 +105,6 @@
                 android:id="@+id/calculate_salary_single_number_of_events_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:textSize="@dimen/title"
                 android:textStyle="italic" />
@@ -110,14 +112,30 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="Kết quả"
-                android:textSize="@dimen/title" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/calculate_salary_single_calculate_layout"
+            android:layout_below="@id/calculate_salary_single_above_layout">
 
             <com.nqm.event_manager.custom_views.CustomListView
                 android:id="@+id/calculate_salary_single_result_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+        </android.support.v4.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/calculate_salary_single_calculate_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/calculate_salary_single_save_layout"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -133,7 +151,8 @@
                     android:focusableInTouchMode="true"
                     android:gravity="center"
                     android:text="Tổng cộng"
-                    android:textSize="@dimen/content" />
+                    android:textSize="15sp"
+                    android:textStyle="italic" />
 
                 <EditText
                     android:id="@+id/calculate_salary_single_sum_edit_text"
@@ -141,7 +160,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:enabled="false"
-                    android:textColor="#0037FF" />
+                    android:textColor="#0037FF"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -156,7 +176,8 @@
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="Đã trả"
-                    android:textSize="@dimen/content" />
+                    android:textSize="15sp"
+                    android:textStyle="italic" />
 
                 <EditText
                     android:id="@+id/calculate_salary_single_paid_edit_text"
@@ -164,7 +185,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:enabled="false"
-                    android:textColor="#AE00FF19" />
+                    android:textColor="#AE00FF19"
+                    android:textSize="17sp" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -172,7 +194,8 @@
                     android:layout_weight="3"
                     android:gravity="center"
                     android:text="Chưa trả"
-                    android:textSize="@dimen/content" />
+                    android:textSize="15sp"
+                    android:textStyle="italic" />
 
                 <EditText
                     android:id="@+id/calculate_salary_single_unpaid_edit_text"
@@ -180,39 +203,44 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:enabled="false"
-                    android:textColor="#FF0000" />
+                    android:textColor="#FF0000"
+                    android:textSize="17sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="50dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Button
-                    android:id="@+id/calculate_salary_single_save_button"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="163dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:text="Lưu thay đổi"
-                    android:textSize="@dimen/text_button"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/calculate_salary_single_pay_all_button"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/text_button"
-                    android:text="Thanh toán tất cả"
-                    android:textStyle="bold" />
-            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/calculate_salary_single_save_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/calculate_salary_single_save_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Lưu thay đổi"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/calculate_salary_single_pay_all_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Thanh toán tất cả"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>

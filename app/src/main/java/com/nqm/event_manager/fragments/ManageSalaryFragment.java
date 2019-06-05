@@ -83,7 +83,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calculate_salary, container, false);
+        return inflater.inflate(R.layout.fragment_manage_salary, container, false);
     }
 
     @Override
@@ -120,22 +120,22 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     }
 
     private void connectViews(View view) {
-        calculateButton = view.findViewById(R.id.calculate_salaries_calculate_button);
-        payAllButton = view.findViewById(R.id.calculate_salaries_pay_all_button);
-        saveButton = view.findViewById(R.id.calculate_salaries_save_button);
+        calculateButton = view.findViewById(R.id.fragment_manage_salary_calculate_button);
+        payAllButton = view.findViewById(R.id.fragment_manage_salary_pay_all_button);
+        saveButton = view.findViewById(R.id.fragment_manage_salary_save_button);
 
-        resultListView = view.findViewById(R.id.calculate_salaries_result_list_view);
+        resultListView = view.findViewById(R.id.fragment_manage_salary_result_list_view);
 
-        selectEmployeeSpinner = view.findViewById(R.id.calculate_salaries_employee_spinner);
+        selectEmployeeSpinner = view.findViewById(R.id.fragment_manage_salary_employee_spinner);
 
-        sumEditText = view.findViewById(R.id.calculate_salaries_sum_edit_text);
-        paidEditText = view.findViewById(R.id.calculate_salaries_paid_edit_text);
-        unpaidEditText = view.findViewById(R.id.calculate_salaries_unpaid_edit_text);
-        startDateEditText = view.findViewById(R.id.calculate_salaries_start_date_edit_text);
-        endDateEditText = view.findViewById(R.id.calculate_salaries_end_date_edit_text);
+        sumEditText = view.findViewById(R.id.fragment_manage_salary_sum_edit_text);
+        paidEditText = view.findViewById(R.id.fragment_manage_salary_paid_edit_text);
+        unpaidEditText = view.findViewById(R.id.fragment_manage_salary_unpaid_edit_text);
+        startDateEditText = view.findViewById(R.id.fragment_manage_salary_start_date_edit_text);
+        endDateEditText = view.findViewById(R.id.fragment_manage_salary_end_date_edit_text);
 
-        numberOfEventsTextView = view.findViewById(R.id.calculate_salaries_number_of_events_text_view);
-        sumTextView = view.findViewById(R.id.calculate_salary_sum_text_view);
+        numberOfEventsTextView = view.findViewById(R.id.fragment_manage_salary_number_of_events_text_view);
+        sumTextView = view.findViewById(R.id.fragment_manage_salary_sum_text_view);
     }
 
     private void addEvents() {

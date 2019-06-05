@@ -19,7 +19,7 @@
             android:textStyle="italic" />
 
         <EditText
-            android:id="@+id/calculate_salaries_start_date_edit_text"
+            android:id="@+id/fragment_manage_salary_start_date_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
@@ -33,14 +33,14 @@
             android:textStyle="italic" />
 
         <EditText
-            android:id="@+id/calculate_salaries_end_date_edit_text"
+            android:id="@+id/fragment_manage_salary_end_date_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
             android:textSize="17sp" />
 
         <Button
-            android:id="@+id/calculate_salaries_calculate_button"
+            android:id="@+id/fragment_manage_salary_calculate_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/calculate_salaries_number_of_events_text_view"
+            android:id="@+id/fragment_manage_salary_number_of_events_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -73,7 +73,7 @@
             android:textStyle="italic" />
 
         <Spinner
-            android:id="@+id/calculate_salaries_employee_spinner"
+            android:id="@+id/fragment_manage_salary_employee_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -94,7 +94,7 @@
             android:layout_height="match_parent">
 
             <com.nqm.event_manager.custom_views.CustomListView
-                android:id="@+id/calculate_salaries_result_list_view"
+                android:id="@+id/fragment_manage_salary_result_list_view"
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -117,7 +117,7 @@
 
 
             <TextView
-                android:id="@+id/calculate_salary_sum_text_view"
+                android:id="@+id/fragment_manage_salary_sum_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -128,7 +128,7 @@
                 android:textStyle="italic" />
 
             <EditText
-                android:id="@+id/calculate_salaries_sum_edit_text"
+                android:id="@+id/fragment_manage_salary_sum_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -153,7 +153,7 @@
                 android:textStyle="italic" />
 
             <EditText
-                android:id="@+id/calculate_salaries_paid_edit_text"
+                android:id="@+id/fragment_manage_salary_paid_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -171,7 +171,7 @@
                 android:textStyle="italic" />
 
             <EditText
-                android:id="@+id/calculate_salaries_unpaid_edit_text"
+                android:id="@+id/fragment_manage_salary_unpaid_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -189,7 +189,7 @@
         android:weightSum="2">
 
         <Button
-            android:id="@+id/calculate_salaries_save_button"
+            android:id="@+id/fragment_manage_salary_save_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -200,7 +200,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/calculate_salaries_pay_all_button"
+            android:id="@+id/fragment_manage_salary_pay_all_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
