@@ -34,7 +34,7 @@
                 android:textSize="@dimen/title"
                 android:textStyle="bold" />
 
-            <ScrollView
+            <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <com.nqm.event_manager.custom_views.CustomListView
@@ -44,7 +44,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="50dp" />
-            </ScrollView>
+            </android.support.v4.widget.NestedScrollView>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

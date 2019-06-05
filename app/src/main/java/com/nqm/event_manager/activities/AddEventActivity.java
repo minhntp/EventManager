@@ -14,7 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Tasks;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
@@ -146,7 +144,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.add_event_action_add_event) {
-            addEventToDatabase();
+            if (titleEditText.getText().toString().isEmpty()) {
+                titleEditText.setError("Xin mời nhập");
+            } else {
+                titleEditText.setError(null);
+                if (selectedEmployeesIds.size() > 0) {
+                    checkAndSave();
+                } else {
+                    addEventToDatabase();
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -203,13 +210,13 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         conflictsMap = new HashMap<>();
         editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
-        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         });
+        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         initAddScheduleDialog();
@@ -253,8 +260,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editScheduleCallback.setListener(editScheduleAdapter);
         editScheduleTouchHelper = new ItemTouchHelper(editScheduleCallback);
         editScheduleAdapter.setItemTouchHelper(editScheduleTouchHelper);
-        editScheduleRecyclerView.setAdapter(editScheduleAdapter);
         editScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editScheduleRecyclerView.setAdapter(editScheduleAdapter);
         editScheduleRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         editScheduleTouchHelper.attachToRecyclerView(editScheduleRecyclerView);
 
@@ -303,8 +310,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editTaskCallback.setListener(editTaskAdapter);
         editTaskTouchHelper = new ItemTouchHelper(editTaskCallback);
         editTaskAdapter.setItemTouchHelper(editTaskTouchHelper);
-        editTaskRecyclerView.setAdapter(editTaskAdapter);
         editTaskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editTaskRecyclerView.setAdapter(editTaskAdapter);
         editTaskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         editTaskTouchHelper.attachToRecyclerView(editTaskRecyclerView);
 
@@ -370,8 +377,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         selectEmployeeAdapter = new SelectEmployeeAddEventAdapter(selectedEmployeesIds,
                 employees);
         selectEmployeeAdapter.setListener(this);
-        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
         selectEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
         selectEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         //SEARCH employees
@@ -591,9 +598,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             @Override
             public void onClick(View v) {
                 if (selectedEmployeesIds.size() > 0) {
-                    conflictButton.setEnabled(false);
-                    startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
-                    endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
                     checkForConflict();
                 } else {
                     Toast.makeText(context, "Xin mời chọn nhân sự trước", Toast.LENGTH_SHORT).show();
@@ -625,6 +629,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     }
 
     private void checkForConflict() {
+        conflictButton.setEnabled(false);
+        startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
+        endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
         try {
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
             calendar2.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
@@ -706,61 +713,104 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     //SAVE EVENT
     //----------------------------------------------------------------------------------------------
-    private void addEventToDatabase() {
-        if (!titleEditText.getText().toString().isEmpty()) {
+    private void checkAndSave() {
+        startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
+        endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
 
-            Event event = new Event("",
-                    titleEditText.getText().toString(),
-                    startDateEditText.getText().toString(),
-                    endDateEditText.getText().toString(),
-                    startTimeEditText.getText().toString(),
-                    endTimeEditText.getText().toString(),
-                    locationEditText.getText().toString(),
-                    noteEditText.getText().toString());
+        try {
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+            calendar2.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            startMili = calendar.getTimeInMillis();
 
-            final ArrayList<Salary> salaries = new ArrayList<>();
-            for (String employeeId : selectedEmployeesIds) {
-                Salary tempSalary = new Salary("",
-                        "",
-                        employeeId,
-                        0,
-                        false);
-                salaries.add(tempSalary);
-            }
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
+            calendar2.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            endMili = calendar.getTimeInMillis();
 
-            EventRepository.getInstance().setListener(ManageEventFragment.thisListener);
-            for (Reminder r : selectedReminders) {
-                Calendar calendar = Calendar.getInstance();
-                Calendar calendarTime = Calendar.getInstance();
-                try {
-                    calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-                    calendarTime.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-                    calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
-                    calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
-                r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
-            }
-
-            for (int i = 0; i < editScheduleRecyclerView.getChildCount(); i++) {
-                schedules.get(i).setOrder(i);
-            }
-            for (int i = 0; i < editTaskRecyclerView.getChildCount(); i++) {
-                tasks.get(i).setOrder(i);
-            }
-
-            EventRepository.getInstance().addEventToDatabase(event, salaries, tasks, schedules, selectedReminders);
-            context.finish();
-
-        } else {
-            if (titleEditText.getText().toString().isEmpty()) {
-                titleEditText.setError("Xin mời nhập");
-            } else {
-                titleEditText.setError(null);
-            }
+            EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili, selectedEmployeesIds,
+                    new EventRepository.MyConflictEventCallback() {
+                        @Override
+                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
+                            conflictsMap.clear();
+                            conflictsMap.putAll(conflictMap);
+                            editEmployeeAdapter.notifyDataSetChanged();
+                            boolean isConflictExist = false;
+                            for (ArrayList<String> arr : conflictMap.values()) {
+                                if (arr != null && arr.size() > 0) {
+                                    isConflictExist = true;
+                                    break;
+                                }
+                            }
+                            if (isConflictExist) {
+                                new android.support.v7.app.AlertDialog.Builder(context)
+                                        .setIcon(R.drawable.ic_error)
+                                        .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
+                                        .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                addEventToDatabase();
+                                            }
+                                        })
+                                        .setNegativeButton("Hủy", null)
+                                        .show();
+                            } else {
+                                addEventToDatabase();
+                            }
+                        }
+                    });
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
+    }
+
+    private void addEventToDatabase() {
+        Event event = new Event("",
+                titleEditText.getText().toString(),
+                startDateEditText.getText().toString(),
+                endDateEditText.getText().toString(),
+                startTimeEditText.getText().toString(),
+                endTimeEditText.getText().toString(),
+                locationEditText.getText().toString(),
+                noteEditText.getText().toString());
+
+        final ArrayList<Salary> salaries = new ArrayList<>();
+        for (String employeeId : selectedEmployeesIds) {
+            Salary tempSalary = new Salary("",
+                    "",
+                    employeeId,
+                    0,
+                    false);
+            salaries.add(tempSalary);
+        }
+
+        EventRepository.getInstance().setListener(ManageEventFragment.thisListener);
+        for (Reminder r : selectedReminders) {
+            Calendar calendar = Calendar.getInstance();
+            Calendar calendarTime = Calendar.getInstance();
+            try {
+                calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+                calendarTime.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+                calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
+                calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
+            r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
+        }
+
+        for (int i = 0; i < editScheduleRecyclerView.getChildCount(); i++) {
+            schedules.get(i).setOrder(i);
+        }
+        for (int i = 0; i < editTaskRecyclerView.getChildCount(); i++) {
+            tasks.get(i).setOrder(i);
+        }
+
+        EventRepository.getInstance().addEventToDatabase(event, salaries, tasks, schedules, selectedReminders);
+        context.finish();
     }
     //----------------------------------------------------------------------------------------------
 

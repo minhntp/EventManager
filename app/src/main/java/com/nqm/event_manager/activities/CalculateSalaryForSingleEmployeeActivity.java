@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -57,6 +58,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     String startDate, endDate;
     String selectedEmployeeId = "";
 
+    Resources res;
+
     Toolbar toolbar;
 
     @Override
@@ -68,6 +71,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         EmployeeRepository.getInstance().setListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
+
+        res = getResources();
 
         connectViews();
         init();
@@ -266,8 +271,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     }
 
     public void showResult() {
-        numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events),
-                resultEventsSize));
+        numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events), resultEventsSize));
 
         calculateSalaryAdapter.notifyDataSetChanged(resultSalaries);
 
@@ -284,9 +288,9 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         }
         sum = paid + unpaid;
 
-        sumEditText.setText("" + sum);
-        paidEditText.setText("" + paid);
-        unpaidEditText.setText("" + unpaid);
+        sumEditText.setText(String.format(res.getString(R.string.number), sum));
+        paidEditText.setText(String.format(res.getString(R.string.number), paid));
+        unpaidEditText.setText(String.format(res.getString(R.string.number), unpaid));
 
         saveButton.setEnabled(!allSalariesPaid);
         payAllButton.setEnabled(!allSalariesPaid);

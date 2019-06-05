@@ -507,34 +507,43 @@ public class EventRepository {
                                          ArrayList<String> employeesIds, final String eventId,
                                          final MyConflictEventCallback callback) {
         ArrayList<com.google.android.gms.tasks.Task<QuerySnapshot>> taskList = new ArrayList<>();
-        for (String employeeId : employeesIds) {
+        for (String id : employeesIds) {
             taskList.add(DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION)
                     .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
-                    .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, employeeId)
+                    .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, id)
                     .orderBy(Constants.SALARY_START_MILI)
                     .get());
         }
+
+        Log.d("debug", "here2");
 
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
         allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
             @Override
             public void onSuccess(List<QuerySnapshot> querySnapshots) {
                 HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
+                Log.d("debug", "here3");
+                Log.d("debug", "snapshots size = " + querySnapshots.size());
                 for (QuerySnapshot documentSnapshots : querySnapshots) {
                     for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+                        Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
                         long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
-                        String eventIdOfS = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
-                        if (docEndMili >= startMili && !eventIdOfS.equals(eventId)) {
-                            String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
-                            if (conflictMap.get(employeeId) == null) {
-                                conflictMap.put(employeeId, new ArrayList<String>());
+                        if (docEndMili >= startMili) {
+                            String docEventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
+                            if (!docEventId.equals(eventId)) {
+                                String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
+                                if (conflictMap.get(employeeId) == null) {
+                                    conflictMap.put(employeeId, new ArrayList<String>());
+                                }
+                                conflictMap.get(employeeId).add(docEventId);
                             }
-                            conflictMap.get(employeeId).add((String) documentSnapshot.get(Constants.SALARY_EVENT_ID));
                         }
 
                     }
                 }
+                Log.d("debug", "here4");
+
                 callback.onCallback(conflictMap);
             }
         });
@@ -542,44 +551,22 @@ public class EventRepository {
 
     public void getConflictEventsIdsAdd(final long startMili, long endMili, final ArrayList<String> employeesIds,
                                         final MyConflictEventCallback callback) {
-//        Map<String, ArrayList<String>> conflictMap = new HashMap<>();
-//        for (Salary s : SalaryRepository.getInstance().getAllSalaries().values()) {
-//
-//        }
         ArrayList<com.google.android.gms.tasks.Task<QuerySnapshot>> taskList = new ArrayList<>();
         for (String id : employeesIds) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(startMili);
-//            Log.d("debug", "start: " + CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
-            calendar.setTimeInMillis(endMili);
-//            Log.d("debug", "end: " + CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
-
             taskList.add(DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION)
                     .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
                     .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, id)
                     .orderBy(Constants.SALARY_START_MILI)
                     .get());
-//
-//            taskList.add(DatabaseAccess.getInstance().getDatabase()
-//                    .collection(Constants.SALARY_COLLECTION)
-//                    .orderBy(Constants)
-//                    .whereLessThanOrEqualTo(Constants.SALARY_END_MILI, endMili)
-//                    .whereGreaterThanOrEqualTo(Constants.SALARY_END_MILI, startMili)
-//                    .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, id)
-//                    .get());
-
         }
 
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
         allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
             @Override
             public void onSuccess(List<QuerySnapshot> querySnapshots) {
-//                Log.d("debug", "succeed");
                 HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
-//                Log.d("debug", "querySnapshots size = " + querySnapshots.size());
                 for (QuerySnapshot documentSnapshots : querySnapshots) {
-//                    Log.d("debug", "documentSnapshots size = " + documentSnapshots.size());
                     for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
                         long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
                         if (docEndMili >= startMili) {
@@ -592,7 +579,6 @@ public class EventRepository {
 
                     }
                 }
-//                Log.d("debug", "conflictMap size" + conflictMap.size());
                 callback.onCallback(conflictMap);
             }
         });

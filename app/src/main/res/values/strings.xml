@@ -15,7 +15,7 @@
 
     <string name="manage_event_fragment_label">Quản lý sự kiện</string>
     <string name="manage_employee_fragment_label">Quản lý nhân viên</string>
-    <string name="calculate_salary_fragment_label">Tính lương</string>
+    <string name="calculate_salary_fragment_label">Quản lý lương</string>
     <string name="event_list_fragment_label">Danh sách sự kiện</string>
     <string name="more_settings_fragment_label">Cài đặt thêm</string>
 
@@ -44,7 +44,9 @@
     <string name="task_overdue">Quá hạn %1$d ngày</string>
     <string name="task_still_valid">Còn %1$d ngày</string>
 
-    <string name="salary_num_of_events">%1$d có bản lương</string>
+    <string name="salary_num_of_events">%1$d sự kiện có bản lương</string>
+    <string name="number">%1$d</string>
+    <string name="email_address_array_item">%1$s,</string>
 
     <string name="event_fragment_list_title">Sự kiện trong ngày %1$s</string>
 

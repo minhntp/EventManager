@@ -14,7 +14,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -177,7 +177,8 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/edit_event_employee_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"/>
 
                 <Button
                     android:id="@+id/edit_event_add_employee_button"
@@ -250,6 +251,6 @@
                 android:textSize="@dimen/text_button"
                 android:textStyle="bold" />
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </RelativeLayout>

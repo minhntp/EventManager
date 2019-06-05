@@ -3,6 +3,7 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -87,9 +88,12 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
     private void connectViews() {
         toolbar = findViewById(R.id.edit_salary_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.edit_salary_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.edit_salary_activity_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         salaryListView = findViewById(R.id.edit_salary_from_view_event_salary_list_view);
     }

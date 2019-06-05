@@ -1,8 +1,8 @@
 package com.nqm.event_manager.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class SearchEventActivity extends AppCompatActivity implements IOnSearchEventItemClicked,
         IOnDataLoadComplete {
 
-    Activity context;
+
     Toolbar toolbar;
 
     RecyclerView eventRecyclerView;
@@ -50,17 +50,20 @@ public class SearchEventActivity extends AppCompatActivity implements IOnSearchE
     private void init() {
         toolbar = findViewById(R.id.search_event_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.search_event_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.search_event_activity_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         EventRepository.getInstance().setListener(this);
 
         resultEventsIds = new ArrayList<>();
         eventAdapter = new SearchEventListAdapter(resultEventsIds);
         eventAdapter.setListener(this);
-        eventRecyclerView.setAdapter(eventAdapter);
         eventRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        eventRecyclerView.setAdapter(eventAdapter);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

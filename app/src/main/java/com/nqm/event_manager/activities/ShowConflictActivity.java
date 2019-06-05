@@ -78,8 +78,8 @@ public class ShowConflictActivity extends AppCompatActivity implements IOnConfli
 
         conflictEventsAdapter = new ShowConflictEventAdapter(conflictEventsIds);
         conflictEventsAdapter.setListener(this);
-        conflictEventsRecyclerView.setAdapter(conflictEventsAdapter);
         conflictEventsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        conflictEventsRecyclerView.setAdapter(conflictEventsAdapter);
         conflictEventsRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 

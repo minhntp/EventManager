@@ -121,7 +121,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         locationEditText = findViewById(R.id.view_event_location_text_view);
         noteEditText = findViewById(R.id.view_event_note_text_view);
 
-        salaryListView = findViewById(R.id.view_event_salaries_listview);
+        salaryListView = findViewById(R.id.view_event_salaries_list_view);
 
         editReminderListView = findViewById(R.id.view_event_edit_reminder_list_view);
         selectReminderButton = findViewById(R.id.view_event_select_reminder_button);
@@ -176,8 +176,8 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         scheduleBackButton = viewScheduleDialog.findViewById(R.id.back_button);
 
         viewScheduleAdapter = new ViewScheduleAdapter(schedules);
-        scheduleRecyclerView.setAdapter(viewScheduleAdapter);
         scheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        scheduleRecyclerView.setAdapter(viewScheduleAdapter);
         scheduleRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         scheduleBackButton.setOnClickListener(new View.OnClickListener() {
@@ -202,8 +202,8 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         taskBackButton = viewTaskDialog.findViewById(R.id.view_task_dialog_back_button);
 
         viewTaskAdapter = new ViewTaskAdapter(tasks);
-        taskRecyclerView.setAdapter(viewTaskAdapter);
         taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        taskRecyclerView.setAdapter(viewTaskAdapter);
         taskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         taskBackButton.setOnClickListener(new View.OnClickListener() {

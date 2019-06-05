@@ -62,23 +62,25 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/button_layout"
-        android:layout_below="@id/edit_task_dialog_button_layout">
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_above="@id/button_layout"-->
+        <!--android:layout_below="@id/edit_task_dialog_button_layout">-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/edit_task_dialog_recycler_view"
+            android:layout_above="@id/dialog_edit_task_button_layout"
+            android:layout_below="@id/edit_task_dialog_button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp" />
-    </ScrollView>
+    <!--</ScrollView>-->
 
 
     <LinearLayout
-        android:id="@+id/button_layout"
+        android:id="@+id/dialog_edit_task_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

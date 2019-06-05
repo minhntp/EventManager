@@ -1,9 +1,11 @@
 package com.nqm.event_manager.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,7 +30,6 @@ import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
-import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class CalculateSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked,
+public class ManageSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked,
         IOnDataLoadComplete {
 
     Button calculateButton, payAllButton, saveButton;
@@ -65,7 +66,10 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     String startDate, endDate;
     String selectedEmployeeId = "";
 
-    public CalculateSalaryFragment() {
+    Resources res;
+    Activity context;
+
+    public ManageSalaryFragment() {
         // Required empty public constructor
     }
 
@@ -76,7 +80,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calculate_salary, container, false);
@@ -85,6 +89,8 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        res = getResources();
+        context = getActivity();
         connectViews(view);
         addEvents();
 
@@ -98,7 +104,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
         resultSalaries = new ArrayList<>();
         selectedSalaries = new ArrayList<>();
 
-        employeesSpinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, employeesInfo);
+        employeesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, employeesInfo);
         employeesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         selectEmployeeSpinner.setAdapter(employeesSpinnerAdapter);
 
@@ -185,8 +191,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
                 int m = calendar.get(Calendar.MONTH);
                 int y = calendar.get(Calendar.YEAR);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        dateSetListener, y, m, d);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context, dateSetListener, y, m, d);
                 datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
@@ -208,8 +213,7 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
                 int m = calendar.get(Calendar.MONTH);
                 int y = calendar.get(Calendar.YEAR);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        dateSetListener, y, m, d);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(context, dateSetListener, y, m, d);
                 datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                 datePickerDialog.show();
             }
@@ -322,25 +326,38 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
     private void updateEmployeesSpinner() {
         if (resultSalaries.size() > 0) {
             employeesIds.clear();
-            for(Salary s : resultSalaries) {
+            for (Salary s : resultSalaries) {
                 String employeeId = s.getEmployeeId();
-                if(!employeesIds.contains(employeeId)) {
+                if (!employeesIds.contains(employeeId)) {
                     employeesIds.add(employeeId);
                 }
             }
             employeesInfo.clear();
             for (String employeeId : employeesIds) {
                 Employee e = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
-                employeesInfo.add(e.getHoTen() + " - " + e.getChuyenMon());
+                if (e != null) {
+                    employeesInfo.add(e.getHoTen() + " - " + e.getChuyenMon());
+                }
             }
             employeesSpinnerAdapter.notifyDataSetChanged();
-            selectEmployeeSpinner.setSelection(0);
-            selectedEmployeeId = employeesIds.get(selectEmployeeSpinner.getSelectedItemPosition());
+
+            if (selectedEmployeeId.isEmpty()) {
+                selectEmployeeSpinner.setSelection(0);
+                selectedEmployeeId = employeesIds.get(selectEmployeeSpinner.getSelectedItemPosition());
+            } else {
+                int position = employeesIds.indexOf(selectedEmployeeId);
+                if (position == -1) {
+                    selectEmployeeSpinner.setSelection(0);
+                    selectedEmployeeId = employeesIds.get(selectEmployeeSpinner.getSelectedItemPosition());
+                } else {
+                    selectEmployeeSpinner.setSelection(position);
+                }
+            }
         }
     }
 
     public void showResult() {
-        numberOfEventsTextView.setText(resultEventSize + " sự kiện có bản lương");
+        numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events), resultEventSize));
 
         calculateSalaryAdapter.notifyDataSetChanged(selectedSalaries);
 
@@ -361,9 +378,9 @@ public class CalculateSalaryFragment extends Fragment implements IOnCalculateSal
         }
         sum = paid + unpaid;
 
-        sumEditText.setText("" + sum);
-        paidEditText.setText("" + paid);
-        unpaidEditText.setText("" + unpaid);
+        sumEditText.setText(String.format(res.getString(R.string.number), sum));
+        paidEditText.setText(String.format(res.getString(R.string.number), paid));
+        unpaidEditText.setText(String.format(res.getString(R.string.number), unpaid));
 
         saveButton.setEnabled(!allSelectedSalariesPaid);
         payAllButton.setEnabled(!allSelectedSalariesPaid);

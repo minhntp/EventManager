@@ -2,10 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--<ScrollView-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
     <TextView
         android:id="@+id/add_schedule_dialog_title_text_view"
         android:layout_width="match_parent"
@@ -51,13 +47,13 @@
         android:id="@+id/add_schedule_dialog_schedule_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/button_layout"
+        android:layout_above="@id/dialog_edit_task_button_layout"
         android:layout_below="@id/add_schedule_button_layout"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"/>
 
     <LinearLayout
-        android:id="@+id/button_layout"
+        android:id="@+id/dialog_edit_task_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

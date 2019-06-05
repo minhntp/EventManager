@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -77,9 +78,13 @@ public class SendEventInfo extends AppCompatActivity {
 
         toolbar = findViewById(R.id.send_event_info_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.send_event_info_activity_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.send_event_info_activity_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
+
 
         eventId = getIntent().getStringExtra("eventId");
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
@@ -144,8 +149,8 @@ public class SendEventInfo extends AppCompatActivity {
                 for (int i = 0; i < employeeListView.getChildCount(); i++) {
                     CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
                     if (cb.isChecked()) {
-                        emailAddressesString += EmployeeRepository.getInstance(null).getAllEmployees()
-                                .get(employeesIds.get(i)).getEmail() + ",";
+                        emailAddressesString += String.format(getResources().getString(R.string.email_address_array_item),
+                                EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i)).getEmail());
                     }
                 }
                 if (emailAddressesString.length() > 0) {

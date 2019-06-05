@@ -1,63 +1,76 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/fragment_manage_salary_function"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_alignParentTop="true"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ngày bắt đầu"
-            android:textSize="@dimen/title" />
+            android:textSize="15sp"
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/calculate_salaries_start_date_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false" />
+            android:focusable="false"
+            android:textSize="17sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ngày kết thúc"
-            android:textSize="@dimen/title" />
+            android:textSize="15sp"
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/calculate_salaries_end_date_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false" />
+            android:focusable="false"
+            android:textSize="17sp" />
 
         <Button
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/calculate_salaries_calculate_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Tính"
             android:textSize="@dimen/text_button"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_manage_salary_calculate_layout"
+        android:layout_below="@id/fragment_manage_salary_function"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/calculate_salaries_number_of_events_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:textSize="@dimen/title"
             android:textStyle="italic" />
 
         <TextView
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Chọn nhân viên"
-            android:textSize="@dimen/title" />
+            android:textSize="15sp"
+            android:textStyle="italic" />
 
         <Spinner
             android:id="@+id/calculate_salaries_employee_spinner"
@@ -65,21 +78,36 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
-
-        </Spinner>
+            android:layout_marginRight="10dp" />
 
         <TextView
-            android:layout_marginTop="10dp"
+            android:id="@+id/fragment_manage_salary_result_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:text="Kết quả"
-            android:textSize="@dimen/title" />
+            android:textSize="15sp"
+            android:textStyle="italic" />
 
-        <com.nqm.event_manager.custom_views.CustomListView
-            android:id="@+id/calculate_salaries_result_list_view"
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/calculate_salaries_result_list_view"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_manage_salary_calculate_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_manage_salary_save_layout"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -87,15 +115,17 @@
             android:orientation="horizontal"
             android:weightSum="5">
 
+
             <TextView
                 android:id="@+id/calculate_salary_sum_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:gravity="center"
                 android:focusableInTouchMode="true"
+                android:gravity="center"
                 android:text="Tổng cộng"
-                android:textSize="@dimen/content" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <EditText
                 android:id="@+id/calculate_salaries_sum_edit_text"
@@ -103,7 +133,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:enabled="false"
-                android:textColor="#0037FF" />
+                android:textColor="#0037FF"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -118,7 +149,8 @@
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="Đã trả"
-                android:textSize="@dimen/content" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <EditText
                 android:id="@+id/calculate_salaries_paid_edit_text"
@@ -126,7 +158,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:enabled="false"
-                android:textColor="#AE00FF19" />
+                android:textColor="#AE00FF19"
+                android:textSize="17sp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -134,7 +167,8 @@
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="Chưa trả"
-                android:textSize="@dimen/content" />
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <EditText
                 android:id="@+id/calculate_salaries_unpaid_edit_text"
@@ -144,36 +178,36 @@
                 android:enabled="false"
                 android:textColor="#FF0000" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="50dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:id="@+id/calculate_salaries_save_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:text="Lưu thay đổi"
-                android:textSize="@dimen/text_button"
-                android:textStyle="bold" />
-
-            <Button
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:id="@+id/calculate_salaries_pay_all_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:text="Thanh toán tất cả"
-                android:textSize="@dimen/text_button"
-                android:textStyle="bold"/>
-        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+    <LinearLayout
+        android:id="@+id/fragment_manage_salary_save_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/calculate_salaries_save_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Lưu thay đổi"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/calculate_salaries_pay_all_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Thanh toán tất cả"
+            android:textSize="@dimen/text_button"
+            android:textStyle="bold" />
+    </LinearLayout>
+</RelativeLayout>

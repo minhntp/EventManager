@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -146,8 +147,19 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.edit_event_action_save_event) {
-            updateEventToDatabase();
+            if (titleEditText.getText().toString().isEmpty()) {
+                titleEditText.setError("Xin mời nhập");
+            } else {
+                titleEditText.setError(null);
+                if (selectedEmployeesIds.size() > 0) {
+                    Log.d("debug", "here1");
+                    checkAndUpdate();
+                } else {
+                    updateEventToDatabase();
+                }
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -189,8 +201,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         context = this;
         ReminderRepository.getInstance().setListener(this);
 
-        eventId = getIntent().getStringExtra("eventId");
-        event = EventRepository.getInstance(null).getAllEvents().get(eventId);
+        eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
+        event = EventRepository.getInstance().getAllEvents().get(eventId);
 
         selectedEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsByEventId(eventId);
         conflictsMap = new HashMap<>();
@@ -199,13 +211,13 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         }
         editEmployeeAdapter = new EditEmployeeEditEventAdapter(eventId, selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
-        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
         });
+        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         fillInformation();
@@ -265,8 +277,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editScheduleCallback.setListener(editScheduleAdapter);
         editScheduleTouchHelper = new ItemTouchHelper(editScheduleCallback);
         editScheduleAdapter.setItemTouchHelper(editScheduleTouchHelper);
-        editScheduleRecyclerView.setAdapter(editScheduleAdapter);
         editScheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editScheduleRecyclerView.setAdapter(editScheduleAdapter);
         editScheduleRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         editScheduleTouchHelper.attachToRecyclerView(editScheduleRecyclerView);
 
@@ -316,8 +328,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editTaskCallback.setListener(editTaskAdapter);
         editTaskTouchHelper = new ItemTouchHelper(editTaskCallback);
         editTaskAdapter.setItemTouchHelper(editTaskTouchHelper);
-        editTaskRecyclerView.setAdapter(editTaskAdapter);
         editTaskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        editTaskRecyclerView.setAdapter(editTaskAdapter);
         editTaskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         editTaskTouchHelper.attachToRecyclerView(editTaskRecyclerView);
 
@@ -364,8 +376,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         selectEmployeeAdapter = new SelectEmployeeEditEventAdapter(selectedEmployeesIds,
                 employees, eventId);
         selectEmployeeAdapter.setListener(this);
-        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
         selectEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
         selectEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         //SEARCH employees
@@ -655,10 +667,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
                     eventId, new EventRepository.MyConflictEventCallback() {
                         @Override
                         public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
-                                conflictsMap.clear();
-                                conflictsMap.putAll(conflictMap);
-                                editEmployeeAdapter.notifyDataSetChanged();
-                                conflictButton.setEnabled(true);
+                            conflictsMap.clear();
+                            conflictsMap.putAll(conflictMap);
+                            editEmployeeAdapter.notifyDataSetChanged();
+                            conflictButton.setEnabled(true);
                         }
                     }
             );
@@ -822,14 +834,62 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     //UPDATE EVENT
     //----------------------------------------------------------------------------------------------
-    private void updateEventToDatabase() {
-        if (titleEditText.getText().toString().isEmpty()) {
-            titleEditText.setError("Xin mời nhập");
-            return;
-        } else {
-            titleEditText.setError(null);
-        }
+    private void checkAndUpdate() {
+        startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
+        endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
 
+        try {
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
+            calendar2.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            startMili = calendar.getTimeInMillis();
+
+            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
+            calendar2.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+            calendar.set(Calendar.HOUR_OF_DAY, calendar2.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
+            endMili = calendar.getTimeInMillis();
+
+            EventRepository.getInstance().getConflictEventsIdsEdit(startMili, endMili, selectedEmployeesIds,
+                    eventId, new EventRepository.MyConflictEventCallback() {
+                        @Override
+                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
+                            Log.d("debug", "here5 conflictMap size = " + conflictMap.size());
+
+                            conflictsMap.clear();
+                            conflictsMap.putAll(conflictMap);
+                            editEmployeeAdapter.notifyDataSetChanged();
+                            boolean isConflictExist = false;
+                            for (ArrayList<String> arr : conflictMap.values()) {
+                                if (arr != null && arr.size() > 0) {
+                                    isConflictExist = true;
+                                    break;
+                                }
+                            }
+                            if (isConflictExist) {
+                                new android.support.v7.app.AlertDialog.Builder(context)
+                                        .setIcon(R.drawable.ic_error)
+                                        .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
+                                        .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                updateEventToDatabase();
+                                            }
+                                        })
+                                        .setNegativeButton("Hủy", null)
+                                        .show();
+                            } else {
+                                updateEventToDatabase();
+                            }
+                        }
+                    });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void updateEventToDatabase() {
         //Event
         Event changedEvent = new Event(eventId, titleEditText.getText().toString(),
                 startDateEditText.getText().toString(), endDateEditText.getText().toString(),

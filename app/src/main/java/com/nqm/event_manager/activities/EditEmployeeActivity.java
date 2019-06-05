@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,6 +17,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.Calendar;
 
@@ -59,9 +61,12 @@ public class EditEmployeeActivity extends AppCompatActivity {
     private void connectViews() {
         toolbar = findViewById(R.id.edit_employee_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.edit_employee_single_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.edit_employee_single_label);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         nameEditText = findViewById(R.id.edit_employee_activity_name_edit_text);
         specialityEditText = findViewById(R.id.edit_employee_activity_speciality_edit_text);
@@ -74,14 +79,16 @@ public class EditEmployeeActivity extends AppCompatActivity {
     private void init() {
         context = this;
 
-        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(getIntent().getStringExtra("employeeId"));
-
-        nameEditText.setText(employee.getHoTen());
-        specialityEditText.setText(employee.getChuyenMon());
-        phoneNumberEditText.setText(employee.getSdt());
-        dateOfBirthEditText.setText(employee.getNgaySinh());
-        emailEditText.setText(employee.getEmail());
-        cmndEditText.setText(employee.getCmnd());
+        employee = EmployeeRepository.getInstance().getAllEmployees().get(getIntent()
+                .getStringExtra(Constants.INTENT_EMPLOYEE_ID));
+        if (employee != null) {
+            nameEditText.setText(employee.getHoTen());
+            specialityEditText.setText(employee.getChuyenMon());
+            phoneNumberEditText.setText(employee.getSdt());
+            dateOfBirthEditText.setText(employee.getNgaySinh());
+            emailEditText.setText(employee.getEmail());
+            cmndEditText.setText(employee.getCmnd());
+        }
     }
 
     private void addEvents() {

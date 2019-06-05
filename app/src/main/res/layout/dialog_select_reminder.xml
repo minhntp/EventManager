@@ -21,11 +21,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:layout_above="@id/button_layout"
+        android:layout_above="@id/dialog_edit_task_button_layout"
         android:layout_below="@id/select_reminder_dialog_title_text_view"/>
 
     <LinearLayout
-        android:id="@+id/button_layout"
+        android:id="@+id/dialog_edit_task_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

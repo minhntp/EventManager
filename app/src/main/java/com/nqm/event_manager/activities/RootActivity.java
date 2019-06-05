@@ -2,6 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,7 +15,7 @@ import android.view.MenuItem;
 
 import com.google.firebase.FirebaseApp;
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.fragments.CalculateSalaryFragment;
+import com.nqm.event_manager.fragments.ManageSalaryFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
@@ -51,7 +52,7 @@ public class RootActivity extends AppCompatActivity
         //open event management as default.
         openManageEventFragment();
 
-        setMenuItemChecked(R.id.nav_event);
+        setMenuItemChecked();
     }
 
     @Override
@@ -73,8 +74,8 @@ public class RootActivity extends AppCompatActivity
         }
     }
 
-    private void setMenuItemChecked(int menuItemID) {
-        MenuItem menuItem = navigationView.getMenu().findItem(menuItemID);
+    private void setMenuItemChecked() {
+        MenuItem menuItem = navigationView.getMenu().findItem(R.id.nav_event);
         menuItem.setChecked(true);
     }
 
@@ -86,9 +87,8 @@ public class RootActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -125,7 +125,7 @@ public class RootActivity extends AppCompatActivity
     private void openCalculateSalaryFragment() {
         // Replace root view to default fragment
         toolbar.setTitle(R.string.calculate_salary_fragment_label);
-        Fragment newFragment = new CalculateSalaryFragment();
+        Fragment newFragment = new ManageSalaryFragment();
         ReplaceFragment(newFragment);
     }
 
