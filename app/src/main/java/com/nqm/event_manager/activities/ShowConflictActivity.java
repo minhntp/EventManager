@@ -33,6 +33,7 @@ public class ShowConflictActivity extends AppCompatActivity implements IOnConfli
     ShowConflictEventAdapter conflictEventsAdapter;
     RecyclerView conflictEventsRecyclerView;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -111,9 +112,12 @@ public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLo
 
         toolbar = findViewById(R.id.view_employee_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.view_employee_single_label);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setTitle(R.string.view_employee_single_label);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         employeeId = getIntent().getStringExtra("employeeId");
         employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);

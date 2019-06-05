@@ -25,6 +25,7 @@ import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.repositories.TaskRepository;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -46,6 +47,8 @@ public class SendEventInfo extends AppCompatActivity {
 
     SendEventEmployeeAdapter employeeAdapter;
     SendEventSectionAdapter sectionAdapter;
+
+    StringBuilder stringBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +88,7 @@ public class SendEventInfo extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-
-        eventId = getIntent().getStringExtra("eventId");
+        eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         event = EventRepository.getInstance(null).getAllEvents().get(eventId);
         employeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
         sectionsTitles = getResources().getStringArray(R.array.sections_titles);
@@ -109,6 +111,7 @@ public class SendEventInfo extends AppCompatActivity {
                 }
             }
         });
+
         deselectAllEmployeesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,6 +121,7 @@ public class SendEventInfo extends AppCompatActivity {
                 }
             }
         });
+
         selectAllSectionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +131,7 @@ public class SendEventInfo extends AppCompatActivity {
                 }
             }
         });
+
         deselectAllSectionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,33 +141,39 @@ public class SendEventInfo extends AppCompatActivity {
                 }
             }
         });
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 context.finish();
             }
         });
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String emailAddressesString = "";
+                stringBuilder = new StringBuilder();
+
                 for (int i = 0; i < employeeListView.getChildCount(); i++) {
                     CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
                     if (cb.isChecked()) {
-                        emailAddressesString += String.format(getResources().getString(R.string.email_address_array_item),
-                                EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i)).getEmail());
+                        Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
+                        if (employee != null) {
+                            stringBuilder.append(String.format(getResources().getString(R.string.email_address_array_item),
+                                    employee.getEmail()));
+                        }
                     }
                 }
-                if (emailAddressesString.length() > 0) {
-                    emailAddressesString = emailAddressesString.substring(0, emailAddressesString.length() - 1);
+                if (stringBuilder.length() > 0) {
+                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
                 }
 
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
                 String mailto = "mailto:";
                 if (ccBccRadioGroup.getCheckedRadioButtonId() == R.id.send_event_cc_radio_button) {
-                    mailto += "?cc=" + emailAddressesString;
+                    mailto += "?cc=" + stringBuilder.toString();
                 } else {
-                    mailto += "?bcc=" + emailAddressesString;
+                    mailto += "?bcc=" + stringBuilder.toString();
                 }
                 mailto += "&subject=" + Uri.encode(event.getTen() + " - " + event.getNgayBatDau());
                 mailto += "&body=" + Uri.encode(prepairContent());
@@ -173,46 +184,50 @@ public class SendEventInfo extends AppCompatActivity {
     }
 
     private String prepairContent() {
-        String content = "";
+        StringBuilder contentStringBuilder = new StringBuilder();
+
         CheckBox cb;
 
         cb = sectionListView.getChildAt(0).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            content += "Sự kiện: " + "\n";
-            content += "\t" + event.getTen() + "\n";
-            content += "\n";
+            contentStringBuilder.append("Sự kiện:\n")
+                    .append("\t").append(event.getTen()).append("\n")
+                    .append("\n");
         }
 
         cb = sectionListView.getChildAt(1).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            content += "Thời gian:" + "\n";
-            content += "\t" + event.getNgayBatDau() + " - " + event.getGioBatDau() + "\n";
-            content += "\t" + event.getNgayKetThuc() + " - " + event.getGioKetThuc() + "\n";
-            content += "\n";
+            contentStringBuilder.append("Thời gian:\n")
+                    .append("\t").append(event.getNgayBatDau()).append(" - ").append(event.getGioBatDau()).append("\n")
+                    .append("\t").append(event.getNgayKetThuc()).append(" - ").append(event.getGioKetThuc()).append("\n")
+                    .append("\n");
         }
 
         cb = sectionListView.getChildAt(2).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            content += "Địa điểm:" + "\n";
-            content += "\t" + event.getDiaDiem() + "\n";
-            content += "\n";
+            contentStringBuilder.append("Địa điểm:\n")
+                    .append("\t").append(event.getDiaDiem()).append("\n")
+                    .append("\n");
         }
 
         cb = sectionListView.getChildAt(3).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            content += "Nhân sự: " + "\n";
+            contentStringBuilder.append("Nhân sự:\n");
             for (int i = 0; i < employeesIds.size(); i++) {
-                Employee e = EmployeeRepository.getInstance(null).getAllEmployees().get(employeesIds.get(i));
-                content += "\t" + "+ " + e.getHoTen() + " - " + e.getChuyenMon() + "\n";
+                Employee employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeesIds.get(i));
+                if (employee != null) {
+                    contentStringBuilder.append("\t").append("+ ").append(employee.getHoTen())
+                            .append(" - ").append(employee.getChuyenMon()).append("\n");
+                }
             }
-            content += "\n";
+            contentStringBuilder.append("\n");
         }
 
         cb = sectionListView.getChildAt(4).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            content += "Ghi chú: " + "\n";
-            content += "\t" + event.getGhiChu() + "\n";
-            content += "\n";
+            contentStringBuilder.append("Ghi chú:\n")
+                    .append("\t").append(event.getGhiChu()).append("\n")
+                    .append("\n");
         }
 
 
@@ -220,36 +235,39 @@ public class SendEventInfo extends AppCompatActivity {
         if (cb.isChecked()) {
             ArrayList<Task> tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
             TaskRepository.sortTasksByOrder(tasks);
-            content += "Công việc: " + "\n";
+            contentStringBuilder.append("Công việc:\n");
             for (Task t : tasks) {
-                content += "\t" + "+ " + t.getDate();
+                contentStringBuilder.append("\t").append("+ ").append(t.getDate());
                 if (!t.getTime().isEmpty()) {
-                    content += "  " + t.getTime();
+                    contentStringBuilder.append("  ").append(t.getTime());
                 } else {
-                    content += "                   ";
+                    contentStringBuilder.append("                   ");
                 }
-                content += ": " + t.getContent();
+                contentStringBuilder.append(": ").append(t.getContent());
                 if (t.isDone()) {
-                    content += " - Đã làm" + "\n";
+                    contentStringBuilder.append(" - Đã làm")
+                            .append("\n");
                 } else {
-                    content += " - Chưa làm" + "\n";
+                    contentStringBuilder.append(" - Chưa làm")
+                            .append("\n");
                 }
             }
-            content += "\n";
+            contentStringBuilder.append("\n");
         }
 
         cb = sectionListView.getChildAt(6).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
             ArrayList<Schedule> schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
             ScheduleRepository.sortSchedulesByOrder(schedules);
-            content += "Lịch trình: " + "\n";
+            contentStringBuilder.append("Lịch trình:\n");
             for (Schedule s : schedules) {
-                content += "\t" + "+ " + s.getTime() + ": " + s.getContent() + "\n";
+                contentStringBuilder.append("\t").append("+ ").append(s.getTime()).append(": ")
+                        .append(s.getContent()).append("\n");
             }
-            content += "\n";
+            contentStringBuilder.append("\n");
         }
-        content = content.replaceAll("\t", " ");
-        return content;
+
+        return contentStringBuilder.toString().replaceAll("\t", " ");
     }
 
     @Override
