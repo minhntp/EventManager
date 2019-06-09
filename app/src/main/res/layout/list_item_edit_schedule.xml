@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="80dp"
     android:orientation="horizontal"
     android:weightSum="10">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@id/add_schedule_reorder">
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/edit_schedule_item_reorder">
 
         <EditText
             android:layout_alignParentTop="true"
-            android:id="@+id/add_schedule_time_edit_text"
-            android:layout_width="90dp"
+            android:id="@+id/edit_schedule_time_edit_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:focusable="false"
             android:hint="Giờ"
-            android:textSize="16sp"
+            android:textSize="@dimen/time_edit_text"
             android:textStyle="italic"
             android:inputType="none" />
 
         <EditText
-            android:layout_below="@+id/add_schedule_time_edit_text"
-            android:id="@+id/add_schedule_content_edit_text"
+            android:layout_below="@+id/edit_schedule_time_edit_text"
+            android:id="@+id/edit_schedule_content_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:textSize="17sp"
+            android:textSize="@dimen/schedule_content_edit_text"
             android:hint="Nội dung" />
     </RelativeLayout>
 
     <ImageView
-        android:id="@+id/add_schedule_reorder"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/edit_schedule_item_reorder"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:src="@drawable/ic_reorder"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_center="true"
+        android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

@@ -18,9 +18,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
-public class CustomCalendarGridAdapter extends BaseAdapter {
+public class DatePickerGridAdapter extends BaseAdapter {
     private final Context context;
     IOnCustomCalendarItemClicked listener;
     private LayoutInflater layoutInflater;
@@ -30,9 +29,10 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     private Date viewDate;
     private ArrayList<CellData> cellDataArrayList;
     private Calendar calendar = Calendar.getInstance();
+    private String eventId = "";
 
     // Days in Current Month
-    public CustomCalendarGridAdapter(Context context, Date selectedDate, Date viewDate) {
+    public DatePickerGridAdapter(Context context, Date selectedDate, Date viewDate) {
         super();
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
@@ -43,6 +43,11 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
 
         cellDataArrayList = new ArrayList<>();
         updateData();
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+        Log.d("debug", "eventId = " + eventId);
     }
 
     @Override
@@ -63,13 +68,13 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = layoutInflater.inflate(R.layout.grid_item_custom_calendar, parent, false);
+            view = layoutInflater.inflate(R.layout.grid_item_date_picker, parent, false);
         }
 
         //Connect views
-        TextView dayTextView = view.findViewById(R.id.custom_calendar_grid_cell_day_text_view);
-        TextView numberOfEventsTextView = view.findViewById(R.id.custom_calendar_grid_cell_number_of_events_text_view);
-        LinearLayout cellLayout = view.findViewById(R.id.custom_calendar_cell_layout);
+        TextView dayTextView = view.findViewById(R.id.date_picker_grid_cell_day_text_view);
+        TextView numberOfEventsTextView = view.findViewById(R.id.date_picker_grid_cell_number_of_events_text_view);
+        LinearLayout cellLayout = view.findViewById(R.id.date_picker_cell_layout);
 
         //Fill information
         //Set colors and background
@@ -131,6 +136,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
 
     public void updateData() {
         cellDataArrayList.clear();
+
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, 1); //dayOfMonth starts from 1
 
@@ -152,14 +158,19 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                 String dateString = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
                 ArrayList<String> arr = numberOfEventsMap.get(dateString);
                 if (arr != null) {
-                    numberOfEvents = arr.size();
+                    int size = arr.size();
+                    if (!eventId.isEmpty() && arr.contains(eventId)) {
+                        numberOfEvents = size - 1;
+                    } else {
+                        numberOfEvents = size;
+                    }
                 }
             } else {
                 day = 0;
             }
             cellDataArrayList.add(new CellData(day, numberOfEvents));
         }
-        Log.d("debug", "calendar adapter update data");
+        Log.d("debug", "date picker adapter update data");
     }
 
     private boolean isSelectedDay(int day) {
@@ -203,7 +214,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        Log.d("debug", "calendar adapter notifyDataSetChanged");
+        Log.d("debug", "date picker adapter notifyDataSetChanged");
     }
 
     //------------------------------------------------------------------

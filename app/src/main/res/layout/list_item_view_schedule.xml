@@ -7,18 +7,18 @@
 
     <TextView
         android:id="@+id/view_schedule_time_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_gravity="center_vertical"
         android:textStyle="italic"
-        android:textSize="16sp" />
+        android:textSize="@dimen/time_text_view" />
 
     <TextView
         android:id="@+id/view_schedule_content_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/view_schedule_time_text_view"
-        android:layout_marginLeft="20dp"
-        android:textSize="18sp" />
+        android:layout_marginStart="20dp"
+        android:textSize="@dimen/schedule_content_text_view" />
 </RelativeLayout>

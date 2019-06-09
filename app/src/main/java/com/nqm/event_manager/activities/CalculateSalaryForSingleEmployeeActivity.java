@@ -1,27 +1,26 @@
 package com.nqm.event_manager.activities;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
+import com.nqm.event_manager.custom_views.CustomDatePicker;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
+import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
@@ -32,13 +31,22 @@ import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
-        implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete {
+        implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
 
     Context context;
+
+    Dialog datePickerDialog;
+    TextView datePickerDialogDateTextView;
+    CustomDatePicker datePicker;
+    Button datePickerDialogOkButton, datePickerDialogCancelButton;
+    EditText selectedDateEditText;
 
     Button calculateButton, payAllButton, saveButton;
     CustomListView resultListView;
@@ -46,19 +54,15 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     TextView numberOfEventsTextView, sumTextView, nameTextView, specialityTextView;
     ImageView profileImageView;
 
-    DatePickerDialog.OnDateSetListener dateSetListener;
     Calendar calendar = Calendar.getInstance();
-    View currentView;
 
     ArrayList<Salary> resultSalaries;
     int resultEventsSize;
 
     CalculateSalaryAdapter calculateSalaryAdapter;
 
-    String startDate, endDate;
+    //    String startDate, endDate;
     String selectedEmployeeId = "";
-
-    Resources res;
 
     Toolbar toolbar;
 
@@ -71,8 +75,6 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         EmployeeRepository.getInstance().setListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
-
-        res = getResources();
 
         connectViews();
         init();
@@ -114,6 +116,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
 
         SalaryRepository.getInstance().setListener(this);
 
+        initDatePickerDialog();
+
         selectedEmployeeId = getIntent().getStringExtra(Constants.INTENT_EMPLOYEE_ID);
         Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(selectedEmployeeId);
         if (employee != null) {
@@ -121,10 +125,8 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
             specialityTextView.setText(employee.getChuyenMon());
         }
 
-        startDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-        endDate = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-        startDateEditText.setText(startDate);
-        endDateEditText.setText(endDate);
+        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
         resultSalaries = new ArrayList<>();
         resultEventsSize = 0;
@@ -133,131 +135,109 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         resultListView.setAdapter(calculateSalaryAdapter);
     }
 
+    private void initDatePickerDialog() {
+        datePickerDialog = new Dialog(this);
+        datePickerDialog.setContentView(R.layout.dialog_custom_date_picker);
+
+        datePickerDialogDateTextView = datePickerDialog.findViewById(R.id.custom_date_picker_dialog_date_text_view);
+        datePicker = datePickerDialog.findViewById(R.id.custom_date_picker_calendar_view);
+        datePickerDialogCancelButton = datePickerDialog.findViewById(R.id.custom_date_picker_cancel_button);
+        datePickerDialogOkButton = datePickerDialog.findViewById(R.id.custom_date_picker_ok_button);
+
+        datePickerDialogDateTextView.setOnClickListener(v -> {
+            StringBuilder sb = new StringBuilder(datePickerDialogDateTextView.getText().toString());
+            sb.delete(0, sb.lastIndexOf("-") + 1);
+            try {
+                datePicker.setViewDate(CalendarUtil.sdfDayMonthYear.parse(sb.toString()));
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        datePicker.setListener(this);
+
+        datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
+
+        datePickerDialogOkButton.setOnClickListener(v -> {
+            String selectedDate = datePicker.getSelectedDate();
+            selectedDateEditText.setText(selectedDate);
+            try {
+                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
+                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+
+                if (startDate.compareTo(endDate) > 0) {
+                    if (selectedDateEditText == startDateEditText) {
+                        endDateEditText.setText(selectedDate);
+                    } else {
+                        startDateEditText.setText(selectedDate);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            datePickerDialog.dismiss();
+        });
+    }
+
     private void addEvents() {
-        dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, monthOfYear);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-//                Update TextEdits & TextViews;
-                if (currentView == startDateEditText) {
-                    startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    startDateEditText.setError(null);
-                } else {
-                    endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    endDateEditText.setError(null);
-                }
-                startDate = startDateEditText.getText().toString();
-                endDate = endDateEditText.getText().toString();
-            }
-        };
-
-        startDateEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calendar = Calendar.getInstance();
-                if (!startDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = startDateEditText;
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
-
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-                        dateSetListener, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
-            }
+        startDateEditText.setOnClickListener(v -> {
+            selectedDateEditText = startDateEditText;
+            showDatePickerDialog();
         });
 
-        endDateEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calendar = Calendar.getInstance();
-                if (!endDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = endDateEditText;
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
-
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-                        dateSetListener, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
-            }
+        endDateEditText.setOnClickListener(v -> {
+            selectedDateEditText = endDateEditText;
+            showDatePickerDialog();
         });
 
-        calculateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startDate = startDateEditText.getText().toString();
-                endDate = endDateEditText.getText().toString();
-                getResultSalaries();
-                showResult();
-            }
+        calculateButton.setOnClickListener(v -> {
+            getResultSalaries();
+            showResult();
         });
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(context)
-                        .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
-                        .setIcon(R.drawable.ic_error)
-                        .setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                saveChanges(false);
-                            }
-                        })
-                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Undo changes by reloading data
-                                sumTextView.requestFocus();
-                                calculateSalaryAdapter.notifyDataSetChanged();
-                            }
-                        }).show();
-            }
-        });
+        saveButton.setOnClickListener(v -> new AlertDialog.Builder(context)
+                .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
+                .setIcon(R.drawable.ic_error)
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(false))
+                .setNegativeButton("Không", (dialog, which) -> {
+                    //Undo changes by reloading data
+                    sumTextView.requestFocus();
+                    calculateSalaryAdapter.notifyDataSetChanged();
+                }).show());
 
-        payAllButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(context)
-                        .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
-                        .setIcon(R.drawable.ic_error)
-                        .setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                saveChanges(true);
-                            }
-                        })
-                        .setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Undo changes by reloading data
-                                sumTextView.requestFocus();
-                                calculateSalaryAdapter.notifyDataSetChanged();
-                            }
-                        }).show();
+        payAllButton.setOnClickListener(v -> new AlertDialog.Builder(context)
+                .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
+                .setIcon(R.drawable.ic_error)
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(true))
+                .setNegativeButton("Không", (dialog, which) -> {
+                    //Undo changes by reloading data
+                    sumTextView.requestFocus();
+                    calculateSalaryAdapter.notifyDataSetChanged();
+                }).show());
+    }
+
+    private void showDatePickerDialog() {
+        try {
+            Date dateFromEditText = CalendarUtil.sdfDayMonthYear.parse(selectedDateEditText.getText().toString());
+            datePicker.setViewDate(dateFromEditText);
+            datePicker.setSelectedDate(dateFromEditText);
+            String txt = CalendarUtil.sdfDayOfWeek.format(dateFromEditText) +
+                    " - " + CalendarUtil.sdfDayMonthYear.format(dateFromEditText);
+            datePickerDialogDateTextView.setText(txt);
+            datePickerDialog.show();
+            if (datePickerDialog.getWindow() != null) {
+                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT);
             }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getResultSalaries() {
         resultSalaries = SalaryRepository.getInstance()
-                .getSalariesByStartDateAndEndDateAndEmployeeId(startDate, endDate, selectedEmployeeId);
+                .getSalariesByStartDateAndEndDateAndEmployeeId(startDateEditText.getText().toString(),
+                        endDateEditText.getText().toString(), selectedEmployeeId);
 
         ArrayList<String> resultEventIds = new ArrayList<>();
         for (Salary s : resultSalaries) {
@@ -271,7 +251,12 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     }
 
     public void showResult() {
-        numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events), resultEventsSize));
+        if (resultSalaries.size() > 0) {
+            numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events),
+                    resultSalaries.size(), resultEventsSize));
+        } else {
+            numberOfEventsTextView.setText(getResources().getString(R.string.salary_no_salaries));
+        }
 
         calculateSalaryAdapter.notifyDataSetChanged(resultSalaries);
 
@@ -288,9 +273,9 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
         }
         sum = paid + unpaid;
 
-        sumEditText.setText(String.format(res.getString(R.string.number), sum));
-        paidEditText.setText(String.format(res.getString(R.string.number), paid));
-        unpaidEditText.setText(String.format(res.getString(R.string.number), unpaid));
+        sumEditText.setText(String.valueOf(sum));
+        paidEditText.setText(String.valueOf(paid));
+        unpaidEditText.setText(String.valueOf(unpaid));
 
         saveButton.setEnabled(!allSalariesPaid);
         payAllButton.setEnabled(!allSalariesPaid);
@@ -348,5 +333,11 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
     public void notifyOnLoadComplete() {
         getResultSalaries();
         showResult();
+    }
+
+    @Override
+    public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
+        datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
+
     }
 }

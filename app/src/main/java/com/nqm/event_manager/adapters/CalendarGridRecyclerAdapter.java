@@ -1,11 +1,11 @@
 package com.nqm.event_manager.adapters;
 
 import android.content.Context;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,23 +20,30 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomCalendarGridAdapter extends BaseAdapter {
-    private final Context context;
-    IOnCustomCalendarItemClicked listener;
-    private LayoutInflater layoutInflater;
+public class CalendarGridRecyclerAdapter extends RecyclerView.Adapter<CalendarGridRecyclerAdapter.ViewHolder> {
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView dayTextView;
+        TextView numberOfEventsTextView;
+        LinearLayout cellLayout;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            dayTextView = itemView.findViewById(R.id.custom_calendar_grid_cell_day_text_view);
+            numberOfEventsTextView = itemView.findViewById(R.id.custom_calendar_grid_cell_number_of_events_text_view);
+            cellLayout = itemView.findViewById(R.id.custom_calendar_cell_layout);
+        }
+    }
+
+    private Calendar calendar = Calendar.getInstance();
+    private IOnCustomCalendarItemClicked listener;
     private Date currentDate;
     private Date selectedDate;
     private Date viewDate;
     private ArrayList<CellData> cellDataArrayList;
-    private Calendar calendar = Calendar.getInstance();
+    private Context context;
 
-    // Days in Current Month
-    public CustomCalendarGridAdapter(Context context, Date selectedDate, Date viewDate) {
-        super();
-        this.context = context;
-        layoutInflater = LayoutInflater.from(context);
-
+    public CalendarGridRecyclerAdapter(Date selectedDate, Date viewDate) {
         currentDate = calendar.getTime();
         this.selectedDate = selectedDate;
         this.viewDate = viewDate;
@@ -45,41 +52,32 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         updateData();
     }
 
+    @NonNull
     @Override
-    public int getCount() {
-        return cellDataArrayList.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public CellData getItem(int position) {
-        return cellDataArrayList.get(position);
-    }
-
-    @Override
-    public View getView(final int position, View view, ViewGroup parent) {
-        if (view == null) {
-            view = layoutInflater.inflate(R.layout.grid_item_custom_calendar, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        if (context == null) {
+            context = viewGroup.getContext();
         }
+        View cellView = LayoutInflater.from(context).inflate(R.layout.grid_item_custom_calendar, viewGroup, false);
+        return new ViewHolder(cellView);
+    }
 
-        //Connect views
-        TextView dayTextView = view.findViewById(R.id.custom_calendar_grid_cell_day_text_view);
-        TextView numberOfEventsTextView = view.findViewById(R.id.custom_calendar_grid_cell_number_of_events_text_view);
-        LinearLayout cellLayout = view.findViewById(R.id.custom_calendar_cell_layout);
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        TextView dayTextView = viewHolder.dayTextView;
+        TextView numberOfEventsTextView = viewHolder.numberOfEventsTextView;
+        LinearLayout cellLayout = viewHolder.cellLayout;
 
-        //Fill information
-        //Set colors and background
-        //if item.day > 0 -> set 2 textviews = item.day & item.numOfEvents, 2 textviews' color = black, background = null
-        //--if item.day.toDayMonthYear == current date -> set 2 textviews' color = accent, background = null
-        //--else if item.day.toDayMonthYeat == selected date -> set 2 textviews' color = white, background = background
-        //else set 2 textviews = "", 2 textviews' color = black, background = null
-        CellData cellData = getItem(position);
+        CellData cellData = cellDataArrayList.get(i);
         if (cellData.getDay() > 0) {
-            //SET TEXT
+            cellLayout.setOnClickListener(v -> {
+                calendar.setTime(viewDate);
+                calendar.set(Calendar.DAY_OF_MONTH, cellData.getDay());
+                selectedDate = calendar.getTime();
+                notifyDataSetChanged();
+                listener.onCustomCalendarCellClicked(selectedDate);
+            });
+
             dayTextView.setText(String.valueOf(cellData.getDay()));
             if (cellData.getNumberOfEvents() > 0) {
                 numberOfEventsTextView.setText(String.valueOf(cellData.getNumberOfEvents()));
@@ -87,7 +85,6 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                 numberOfEventsTextView.setText("");
             }
 
-            //SET STYLE
             if (isCurrentDay(cellData.getDay())) {
                 if (isSelectedDay(cellData.getDay())) {
                     dayTextView.setTextColor(context.getColor(R.color.colorPrimaryLight));
@@ -110,27 +107,22 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                 }
             }
         } else {
+            cellLayout.setOnClickListener(null);
             dayTextView.setText("");
             numberOfEventsTextView.setText("");
             cellLayout.setBackground(null);
         }
 
-        //Add events
-        cellLayout.setOnClickListener(v -> {
-            if (getItem(position).getDay() > 0) {
-                calendar.setTime(viewDate);
-                calendar.set(Calendar.DAY_OF_MONTH, getItem(position).getDay());
-                selectedDate = calendar.getTime();
-                notifyDataSetChanged();
-                listener.onCustomCalendarCellClicked(selectedDate);
-            }
-        });
+    }
 
-        return view;
+    @Override
+    public int getItemCount() {
+        return cellDataArrayList.size();
     }
 
     public void updateData() {
         cellDataArrayList.clear();
+
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, 1); //dayOfMonth starts from 1
 
@@ -159,7 +151,24 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             }
             cellDataArrayList.add(new CellData(day, numberOfEvents));
         }
-        Log.d("debug", "calendar adapter update data");
+    }
+
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date selectedDate) {
+        this.selectedDate = selectedDate;
+    }
+
+    public Date getViewDate() {
+        return viewDate;
+    }
+
+    public void setViewDate(Date viewDate) {
+        this.viewDate = viewDate;
+        updateData();
+        notifyDataSetChanged();
     }
 
     private boolean isSelectedDay(int day) {
@@ -176,37 +185,9 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
                 CalendarUtil.sdfDayMonthYear.format(currentDate));
     }
 
-
     public void setListener(IOnCustomCalendarItemClicked listener) {
         this.listener = listener;
     }
-
-    public Date getSelectedDate() {
-        return selectedDate;
-    }
-
-    public void setSelectedDate(Date selectedDate) {
-        this.selectedDate = selectedDate;
-
-    }
-
-    public Date getViewDate() {
-        return viewDate;
-    }
-
-    public void setViewDate(Date viewDate) {
-        this.viewDate = viewDate;
-        updateData();
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        super.notifyDataSetChanged();
-        Log.d("debug", "calendar adapter notifyDataSetChanged");
-    }
-
-    //------------------------------------------------------------------
 
     private class CellData {
         private int day;

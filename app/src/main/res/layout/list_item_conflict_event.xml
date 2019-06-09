@@ -1,40 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="50dp"
     android:orientation="horizontal"
-    android:weightSum="9">
+    android:weightSum="11">
 
     <TextView
-        android:id="@+id/conflict_event_list_item_time_text_view"
+        android:id="@+id/conflict_event_item_time_text_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="6"
         android:gravity="center_vertical"
-        android:textSize="@dimen/time_list_item" />
+        android:textSize="@dimen/time_text_view"
+        android:layout_marginRight="10dp"
+        android:textStyle="italic"/>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="5"
+        android:weightSum="2"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/conflict_event_list_item_title_text_view"
+            android:id="@+id/conflict_event_item_title_text_view"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textSize="@dimen/info_list_item"
-            android:textStyle="bold" />
+            android:textSize="@dimen/event_title_in_list"
+            android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/conflict_event_list_item_location_text_view"
+            android:id="@+id/conflict_event_item_location_text_view"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:textSize="@dimen/info_list_item" />
+            android:textSize="@dimen/event_location_in_list"/>
     </LinearLayout>
 </LinearLayout>

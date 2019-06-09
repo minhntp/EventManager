@@ -17,8 +17,8 @@ import java.util.ArrayList;
 
 public class EditReminderAdapter extends BaseAdapter {
 
-    Activity context;
-    ArrayList<Reminder> selectedReminders;
+    private Activity context;
+    private ArrayList<Reminder> selectedReminders;
     IOnEditReminderItemClicked listener;
 
     public EditReminderAdapter(Activity context, ArrayList<Reminder> selectedReminders) {

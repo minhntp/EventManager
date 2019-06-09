@@ -3,6 +3,7 @@ package com.nqm.event_manager.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.WriteBatch;
@@ -117,5 +118,9 @@ public class SplashActivity extends AppCompatActivity implements IOnDataLoadComp
             }
         }
         batch.commit();
+    }
+
+    private void backUpAllData() {
+
     }
 }

@@ -70,70 +70,55 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                 }
             });
 
-            dateEditText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            dateEditText.setOnClickListener(v -> {
+                try {
+                    final int position = getAdapterPosition();
+                    calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(tasks.get(position).getDate()));
+                    int d = calendarOfTask.get(Calendar.DAY_OF_MONTH);
+                    int m = calendarOfTask.get(Calendar.MONTH);
+                    int y = calendarOfTask.get(Calendar.YEAR);
+                    DatePickerDialog dpd = new DatePickerDialog(context, (view, year, month, dayOfMonth) -> {
+                        calendarOfTask.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        calendarOfTask.set(Calendar.MONTH, month);
+                        calendarOfTask.set(Calendar.YEAR, year);
+                        tasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendarOfTask.getTime()));
+                        notifyItemChanged(position);
+                    }, y, m, d);
+                    dpd.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
+                    dpd.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            timeEditText.setOnClickListener(v -> {
+                final int position = getAdapterPosition();
+                int hourOfDay = 12;
+                int minute = 0;
+                calendarOfTask = Calendar.getInstance();
+                if (!(tasks.get(position).getTime().isEmpty())) {
                     try {
-                        final int position = getAdapterPosition();
-                        calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(tasks.get(position).getDate()));
-                        int d = calendarOfTask.get(Calendar.DAY_OF_MONTH);
-                        int m = calendarOfTask.get(Calendar.MONTH);
-                        int y = calendarOfTask.get(Calendar.YEAR);
-                        DatePickerDialog dpd = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                calendarOfTask.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                calendarOfTask.set(Calendar.MONTH, month);
-                                calendarOfTask.set(Calendar.YEAR, year);
-                                tasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendarOfTask.getTime()));
-                                notifyItemChanged(position);
-                            }
-                        }, y, m, d);
-                        dpd.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                        dpd.show();
+                        calendarOfTask.setTime(CalendarUtil.sdfTime.parse(tasks.get(position).getTime()));
+                        hourOfDay = calendarOfTask.get(Calendar.HOUR_OF_DAY);
+                        minute = calendarOfTask.get(Calendar.MINUTE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
+                new TimePickerDialog(context, (timePicker, hour, minute1) -> {
+                    calendarOfTask.set(Calendar.HOUR_OF_DAY, hour);
+                    calendarOfTask.set(Calendar.MINUTE, minute1);
+                    tasks.get(position).setTime(CalendarUtil.sdfTime.format(calendarOfTask.getTime()));
+                    notifyItemChanged(position);
+                }, hourOfDay, minute, false).show();
             });
 
-            timeEditText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int position = getAdapterPosition();
-                    int hourOfDay = 12;
-                    int minute = 0;
-                    calendarOfTask = Calendar.getInstance();
-                    if (!(tasks.get(position).getTime().isEmpty())) {
-                        try {
-                            calendarOfTask.setTime(CalendarUtil.sdfTime.parse(tasks.get(position).getTime()));
-                            hourOfDay = calendarOfTask.get(Calendar.HOUR_OF_DAY);
-                            minute = calendarOfTask.get(Calendar.MINUTE);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
-                        @Override
-                        public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                            calendarOfTask.set(Calendar.HOUR_OF_DAY, hour);
-                            calendarOfTask.set(Calendar.MINUTE, minute);
-                            tasks.get(position).setTime(CalendarUtil.sdfTime.format(calendarOfTask.getTime()));
-                            notifyItemChanged(position);
-                        }
-                    }, hourOfDay, minute, false).show();
-                }
-            });
-
-            checkBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        tasks.get(position).setDone(checkBox.isChecked());
-                        listener.onEditTaskItemCheckBoxClicked(checkBox.isChecked());
-                        notifyItemChanged(position);
-                    }
+            checkBox.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    tasks.get(position).setDone(checkBox.isChecked());
+                    listener.onEditTaskItemCheckBoxClicked(checkBox.isChecked());
+                    notifyItemChanged(position);
                 }
             });
         }
@@ -160,8 +145,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
         if (context == null) {
             context = viewGroup.getContext();
         }
-        View taskView = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.list_item_edit_task, viewGroup, false);
+        View taskView = LayoutInflater.from(context).inflate(R.layout.list_item_edit_task, viewGroup, false);
         return new ViewHolder(taskView);
     }
 
@@ -212,14 +196,11 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
         contentEditText.setEnabled(!t.isDone());
         checkBox.setChecked(t.isDone());
 
-        reorderImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    itemTouchHelper.startDrag(viewHolder);
-                }
-                return false;
+        reorderImageView.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                itemTouchHelper.startDrag(viewHolder);
             }
+            return false;
         });
     }
 

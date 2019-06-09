@@ -1,15 +1,12 @@
 package com.nqm.event_manager.repositories;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -37,23 +34,22 @@ import javax.annotation.Nullable;
 
 public class EventRepository {
 
-    static EventRepository instance;
+    private static EventRepository instance;
     private IOnDataLoadComplete listener;
     private boolean isLoaded;
     private HashMap<String, Event> allEvents;
+    private HashMap<String, ArrayList<String>> numberOfEventsMap;
+    private Calendar calendar = Calendar.getInstance();
 
     //-------------------------------------------------------------------------------------------
     private EventRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
-        addListener(new MyEventCallback() {
-            @Override
-            public void onCallback(HashMap<String, Event> eventList) {
-                if (eventList != null) {
-                    allEvents = eventList;
-                    if (EventRepository.this.listener != null) {
-                        isLoaded = true;
-                        EventRepository.this.listener.notifyOnLoadComplete();
-                    }
+        addListener(eventList -> {
+            if (eventList != null) {
+                allEvents = eventList;
+                if (EventRepository.this.listener != null) {
+                    isLoaded = true;
+                    EventRepository.this.listener.notifyOnLoadComplete();
                 }
             }
         });
@@ -87,14 +83,13 @@ public class EventRepository {
     private void addListener(final MyEventCallback callback) {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EVENT_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Events listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Event> events = new HashMap<>();
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w("debug", "Events listen failed.", e);
+                        return;
+                    }
+                    HashMap<String, Event> events = new HashMap<>();
+                    if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             Map<String, Object> tempHashMap = doc.getData();
                             Event tempEvent = new Event(doc.getId(),
@@ -107,9 +102,8 @@ public class EventRepository {
                                     (String) tempHashMap.get(Constants.EVENT_NOTE));
                             events.put(tempEvent.getId(), tempEvent);
                         }
-                        Log.d("debug", "event added");
-                        callback.onCallback(events);
                     }
+                    callback.onCallback(events);
                 });
     }
 
@@ -122,14 +116,14 @@ public class EventRepository {
     private void addListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EVENT_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Events listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Event> events = new HashMap<>();
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w("debug", "Events listen failed.", e);
+                        return;
+                    }
+                    HashMap<String, Event> events = new HashMap<>();
+                    HashMap<String, ArrayList<String>> numberOfEvents = new HashMap<>();
+                    if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             Map<String, Object> tempHashMap = doc.getData();
                             Event tempEvent = new Event(doc.getId(),
@@ -141,11 +135,35 @@ public class EventRepository {
                                     (String) tempHashMap.get(Constants.EVENT_LOCATION),
                                     (String) tempHashMap.get(Constants.EVENT_NOTE));
                             events.put(tempEvent.getId(), tempEvent);
+                            try {
+                                Date startDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayBatDau());
+                                Date endDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayKetThuc());
+                                while (startDate.compareTo(endDate) <= 0) {
+                                    String startString = CalendarUtil.sdfDayMonthYear.format(startDate);
+                                    if (numberOfEvents.get(startString) == null) {
+                                        ArrayList<String> arr = new ArrayList<>();
+                                        arr.add(tempEvent.getId());
+                                        numberOfEvents.put(startString, arr);
+                                    } else {
+                                        numberOfEvents.get(startString).add(tempEvent.getId());
+                                    }
+                                    calendar.setTime(startDate);
+                                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+                                    startDate = calendar.getTime();
+                                }
+                            } catch (Exception ex ) {
+                                ex.printStackTrace();
+                            }
                         }
-                        allEvents = events;
-                        listener.notifyOnLoadComplete();
                     }
+                    allEvents = events;
+                    numberOfEventsMap = numberOfEvents;
+                    listener.notifyOnLoadComplete();
                 });
+    }
+
+    public HashMap<String, ArrayList<String>> getNumberOfEventsMap() {
+        return numberOfEventsMap;
     }
 
     public HashMap<String, Event> getAllEvents() {
@@ -267,8 +285,12 @@ public class EventRepository {
         batch.commit();
     }
 
-    public int getNumberOfEventsThroughDate(String date) {
-        return getEventsThroughDate(date).size();
+    public int getNumberOfEventsThroughDate(String date, String eventId) {
+        if (eventId.isEmpty()) {
+            return getEventsThroughDate(date).size();
+        } else {
+            return getEventsThroughDateEdit(date, eventId).size();
+        }
     }
 
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
@@ -447,9 +469,33 @@ public class EventRepository {
     }
 
     public HashMap<String, Event> getEventsThroughDate(String date) {
+        Log.d("debug", "add");
         HashMap<String, Event> events = new HashMap<>();
         if (getAllEvents().size() > 0) {
             for (Event tempE : allEvents.values()) {
+                try {
+                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
+                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
+                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
+                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
+                        events.put(tempE.getId(), tempE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return events;
+    }
+
+    public HashMap<String, Event> getEventsThroughDateEdit(String date, String eventId) {
+        Log.d("debug", "edit");
+        HashMap<String, Event> events = new HashMap<>();
+        if (getAllEvents().size() > 0) {
+            for (Event tempE : allEvents.values()) {
+                if (tempE.getId().equals(eventId)) {
+                    continue;
+                }
                 try {
                     if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
                             CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&

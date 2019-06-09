@@ -24,9 +24,9 @@ public class ShowConflictEventAdapter extends RecyclerView.Adapter<ShowConflictE
 
         public ViewHolder(View itemView) {
             super(itemView);
-            timeTextView = itemView.findViewById(R.id.conflict_event_list_item_time_text_view);
-            titleTextView = itemView.findViewById(R.id.conflict_event_list_item_title_text_view);
-            locationTextView = itemView.findViewById(R.id.conflict_event_list_item_location_text_view);
+            timeTextView = itemView.findViewById(R.id.conflict_event_item_time_text_view);
+            titleTextView = itemView.findViewById(R.id.conflict_event_item_title_text_view);
+            locationTextView = itemView.findViewById(R.id.conflict_event_item_location_text_view);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

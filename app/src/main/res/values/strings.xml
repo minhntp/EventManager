@@ -44,11 +44,19 @@
     <string name="task_overdue">Quá hạn %1$d ngày</string>
     <string name="task_still_valid">Còn %1$d ngày</string>
 
-    <string name="salary_num_of_events">%1$d sự kiện có bản lương</string>
-    <string name="number">%1$d</string>
-    <string name="email_address_array_item">%1$s,</string>
-
+    <string name="salary_num_of_events">Tìm thấy %1$d bản lương trong %2$d sự kiện</string>
+    <string name="salary_no_salaries">Không tìm thấy bản lương nào</string>
+    <!--<string name="email_address_array_item">%1$s,</string>-->
     <string name="event_fragment_list_title">Sự kiện trong ngày %1$s</string>
 
+    <string name="crash_toast_text">Sending report</string>
+
+    <string name="calendar_month_year">tháng %1$d năm %2$d</string>
+
+    <string name="profile_picture">Ảnh đại diện</string>
+    <string name="call_function">Gọi điện thoại</string>
+    <string name="message_function">Nhắn tin</string>
+    <string name="email_function">Gửi email</string>
+    <string name="salary_function">Tính lương</string>
 
 </resources>

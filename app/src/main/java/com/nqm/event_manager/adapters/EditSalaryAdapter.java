@@ -1,6 +1,7 @@
 package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,22 +14,18 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
-import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class EditSalaryAdapter extends BaseAdapter {
     private final Activity context;
-    private HashMap<String, Salary> allSalaries;
     private ArrayList<Salary> salaries;
-    private HashMap<String, Employee> allEmployees;
+    private Resources res;
 
     public EditSalaryAdapter(Activity context, ArrayList<Salary> salaries) {
         this.context = context;
+        res = context.getResources();
         this.salaries = salaries;
-        allSalaries = SalaryRepository.getInstance(null).getAllSalaries();
-        allEmployees = EmployeeRepository.getInstance(null).getAllEmployees();
     }
 
     @Override
@@ -54,13 +51,16 @@ public class EditSalaryAdapter extends BaseAdapter {
 
         TextView hoTenTextView = view.findViewById(R.id.edit_salary_employee_name_text_view);
         TextView chuyenMonTextView = view.findViewById(R.id.edit_salary_employee_speciality_text_view);
-        final EditText salaryEditText = view.findViewById(R.id.edit_salary_salary_edit_text);
-        final CheckBox paidCheckBox = view.findViewById(R.id.edit_salary_paid_checkbox);
+        EditText salaryEditText = view.findViewById(R.id.edit_salary_salary_edit_text);
+        CheckBox paidCheckBox = view.findViewById(R.id.edit_salary_paid_checkbox);
 
-        //Fill information
-        hoTenTextView.setText(allEmployees.get(getItem(position).getEmployeeId()).getHoTen());
-        chuyenMonTextView.setText(allEmployees.get(getItem(position).getEmployeeId()).getChuyenMon());
-        salaryEditText.setText("" + getItem(position).getSalary());
+        Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(getItem(position).getEmployeeId());
+        if (employee != null) {
+            //Fill information
+            hoTenTextView.setText(employee.getHoTen());
+            chuyenMonTextView.setText(employee.getChuyenMon());
+        }
+        salaryEditText.setText(String.valueOf(getItem(position).getSalary()));
         paidCheckBox.setChecked(getItem(position).isPaid());
 
         if (paidCheckBox.isChecked()) {

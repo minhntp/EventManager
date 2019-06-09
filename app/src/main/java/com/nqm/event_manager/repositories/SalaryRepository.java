@@ -34,7 +34,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class SalaryRepository {
-    static SalaryRepository instance;
+    private static SalaryRepository instance;
     private IOnDataLoadComplete listener;
     private HashMap<String, Salary> allSalaries;
 
@@ -47,14 +47,11 @@ public class SalaryRepository {
 
     private SalaryRepository(final IOnDataLoadComplete listener) {
         this.listener = listener;
-        addListener(new SalaryRepository.MySalaryCallback() {
-            @Override
-            public void onCallback(HashMap<String, Salary> salaryList) {
-                if (salaryList != null) {
-                    allSalaries = salaryList;
-                    if (SalaryRepository.this.listener != null) {
-                        SalaryRepository.this.listener.notifyOnLoadComplete();
-                    }
+        addListener(salaryList -> {
+            if (salaryList != null) {
+                allSalaries = salaryList;
+                if (SalaryRepository.this.listener != null) {
+                    SalaryRepository.this.listener.notifyOnLoadComplete();
                 }
             }
         });
@@ -82,32 +79,29 @@ public class SalaryRepository {
     private void addListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SALARY_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Salary collection listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Salary> salaries = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            if (queryDocumentSnapshots.size() > 0) {
-                                Map<String, Object> data = doc.getData();
-                                int salary;
-                                salary = Integer.parseInt((String) data.get(Constants.SALARY_SALARY));
-                                Salary tempSalary = new Salary(doc.getId(),
-                                        (String) data.get(Constants.SALARY_EVENT_ID),
-                                        (String) data.get(Constants.SALARY_EMPLOYEE_ID),
-                                        salary,
-                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
-                                        (long) data.get(Constants.SALARY_START_MILI),
-                                        (long) data.get(Constants.SALARY_END_MILI));
-                                salaries.put(tempSalary.getSalaryId(), tempSalary);
-                            }
-                        }
-                        allSalaries = salaries;
-                        listener.notifyOnLoadComplete();
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w("debug", "Salary collection listen failed.", e);
+                        return;
                     }
+                    HashMap<String, Salary> salaries = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        if (queryDocumentSnapshots.size() > 0) {
+                            Map<String, Object> data = doc.getData();
+                            int salary;
+                            salary = Integer.parseInt((String) data.get(Constants.SALARY_SALARY));
+                            Salary tempSalary = new Salary(doc.getId(),
+                                    (String) data.get(Constants.SALARY_EVENT_ID),
+                                    (String) data.get(Constants.SALARY_EMPLOYEE_ID),
+                                    salary,
+                                    Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
+                                    (long) data.get(Constants.SALARY_START_MILI),
+                                    (long) data.get(Constants.SALARY_END_MILI));
+                            salaries.put(tempSalary.getSalaryId(), tempSalary);
+                        }
+                    }
+                    allSalaries = salaries;
+                    listener.notifyOnLoadComplete();
                 });
     }
 
@@ -118,31 +112,28 @@ public class SalaryRepository {
     private void addListener(final SalaryRepository.MySalaryCallback callback) {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SALARY_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Salary collection listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Salary> salaryList = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            if (queryDocumentSnapshots.size() > 0) {
-                                Map<String, Object> data = doc.getData();
-                                int salary;
-                                salary = Integer.parseInt((String) data.get(Constants.SALARY_SALARY));
-                                Salary tempSalary = new Salary(doc.getId(),
-                                        (String) data.get(Constants.SALARY_EVENT_ID),
-                                        (String) data.get(Constants.SALARY_EMPLOYEE_ID),
-                                        salary,
-                                        Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
-                                        (long) data.get(Constants.SALARY_START_MILI),
-                                        (long) data.get(Constants.SALARY_END_MILI));
-                                salaryList.put(tempSalary.getSalaryId(), tempSalary);
-                            }
-                        }
-                        callback.onCallback(salaryList);
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w("debug", "Salary collection listen failed.", e);
+                        return;
                     }
+                    HashMap<String, Salary> salaryList = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        if (queryDocumentSnapshots.size() > 0) {
+                            Map<String, Object> data = doc.getData();
+                            int salary;
+                            salary = Integer.parseInt((String) data.get(Constants.SALARY_SALARY));
+                            Salary tempSalary = new Salary(doc.getId(),
+                                    (String) data.get(Constants.SALARY_EVENT_ID),
+                                    (String) data.get(Constants.SALARY_EMPLOYEE_ID),
+                                    salary,
+                                    Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
+                                    (long) data.get(Constants.SALARY_START_MILI),
+                                    (long) data.get(Constants.SALARY_END_MILI));
+                            salaryList.put(tempSalary.getSalaryId(), tempSalary);
+                        }
+                    }
+                    callback.onCallback(salaryList);
                 });
     }
 
@@ -211,18 +202,8 @@ public class SalaryRepository {
                 .collection(Constants.SALARY_COLLECTION)
                 .document(salaryId)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(context, "Đã xóa bản ghi lương", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "Xóa bản ghi lương thất bại", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Toast.makeText(context, "Đã xóa bản ghi lương", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "Xóa bản ghi lương thất bại", Toast.LENGTH_SHORT).show());
     }
 
     public void isSalaryPaid(String employeeId, String eventId, final MyIsPaidSalaryCallback callback) {
@@ -231,24 +212,21 @@ public class SalaryRepository {
                 .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, employeeId)
                 .whereEqualTo(Constants.SALARY_EVENT_ID, eventId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (task.getResult().size() == 0) {
-                                callback.onCallback(false);
-                                return;
-                            } else {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Map<String, Object> data = document.getData();
-                                    boolean isPaid = Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID));
-                                    callback.onCallback(isPaid);
-                                }
-                            }
-                        } else {
-                            Log.d("debug", "is paid salary query task failed");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (task.getResult().size() == 0) {
                             callback.onCallback(false);
+                            return;
+                        } else {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> data = document.getData();
+                                boolean isPaid = Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID));
+                                callback.onCallback(isPaid);
+                            }
                         }
+                    } else {
+                        Log.d("debug", "is paid salary query task failed");
+                        callback.onCallback(false);
                     }
                 });
     }
@@ -271,24 +249,21 @@ public class SalaryRepository {
                     .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
                     .orderBy(Constants.SALARY_START_MILI)
                     .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            ArrayList<String> salariesIds = new ArrayList<>();
-                            ArrayList<String> eventsIds = new ArrayList<>();
-                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
-                                if (docEndMili >= startMili) {
-                                    salariesIds.add(documentSnapshot.getId());
-                                    String eventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
-                                    if(!eventsIds.contains(eventId)) {
-                                        eventsIds.add(eventId);
-                                    }
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        ArrayList<String> salariesIds = new ArrayList<>();
+                        ArrayList<String> eventsIds = new ArrayList<>();
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
+                            if (docEndMili >= startMili) {
+                                salariesIds.add(documentSnapshot.getId());
+                                String eventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
+                                if(!eventsIds.contains(eventId)) {
+                                    eventsIds.add(eventId);
                                 }
-
                             }
-                            callback.onCallback(salariesIds, eventsIds);
+
                         }
+                        callback.onCallback(salariesIds, eventsIds);
                     });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -296,6 +271,8 @@ public class SalaryRepository {
     }
 
     public ArrayList<Salary> getSalariesByStartDateEndDate(String startDate, String endDate) {
+        Log.d("debug", "SalaryReposotory: getSalariesByStartDateEndDate, startDate = " + startDate
+                + ", endDate = " + endDate);
         try {
             Calendar calendar = Calendar.getInstance();
             long startMili = 0, endMili = 0;
@@ -367,20 +344,17 @@ public class SalaryRepository {
 
     //----------------------------------------------------------------------------------------------
     public static void sortSalariesByEventStartDate(ArrayList<Salary> salaries) {
-        Collections.sort(salaries, new Comparator<Salary>() {
-            @Override
-            public int compare(Salary s1, Salary s2) {
-                Date d1 = Calendar.getInstance().getTime();
-                Date d2 = Calendar.getInstance().getTime();
-                try {
-                    d1 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s1.getEventId()).getNgayBatDau());
-                    d2 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s2.getEventId()).getNgayBatDau());
+        Collections.sort(salaries, (s1, s2) -> {
+            Date d1 = Calendar.getInstance().getTime();
+            Date d2 = Calendar.getInstance().getTime();
+            try {
+                d1 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s1.getEventId()).getNgayBatDau());
+                d2 = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance(null).getAllEvents().get(s2.getEventId()).getNgayBatDau());
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return d1.compareTo(d2);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return d1.compareTo(d2);
         });
     }
 }

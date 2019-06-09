@@ -34,8 +34,8 @@ public class EditScheduleAdapter extends RecyclerView.Adapter<EditScheduleAdapte
         public ViewHolder(View itemView) {
             super(itemView);
 
-            timeEditText = itemView.findViewById(R.id.add_schedule_time_edit_text);
-            contentEditText = itemView.findViewById(R.id.add_schedule_content_edit_text);
+            timeEditText = itemView.findViewById(R.id.edit_schedule_time_edit_text);
+            contentEditText = itemView.findViewById(R.id.edit_schedule_content_edit_text);
             reorderImageView = itemView.findViewById(R.id.add_schedule_reorder);
 
             contentEditText.addTextChangedListener(new TextWatcher() {
@@ -84,17 +84,18 @@ public class EditScheduleAdapter extends RecyclerView.Adapter<EditScheduleAdapte
         }
     }
 
-    ArrayList<Schedule> schedules;
-    ItemTouchHelper itemTouchHelper;
-    Calendar calendar = Calendar.getInstance();
-    Context context;
+    private ArrayList<Schedule> schedules;
+    private ItemTouchHelper itemTouchHelper;
+    private Calendar calendar = Calendar.getInstance();
+    private Context context;
 
     public EditScheduleAdapter(ArrayList<Schedule> schedules) {
         this.schedules = schedules;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (context == null) {
             context = parent.getContext();
         }

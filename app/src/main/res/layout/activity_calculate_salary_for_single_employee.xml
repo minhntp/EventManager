@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/calculate_salary_single_toolbar"
-        android:layout_margin="10dp">
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <LinearLayout
             android:id="@+id/calculate_salary_single_above_layout"
@@ -28,8 +29,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -62,7 +61,12 @@
                         android:textSize="@dimen/info_list_item" />
                 </LinearLayout>
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="5dp"
+                android:background="@color/divider" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -75,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:textSize="17sp" />
+                android:textSize="@dimen/date_edit_text" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -89,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:textSize="17sp" />
+                android:textSize="@dimen/date_edit_text" />
 
             <Button
                 android:id="@+id/calculate_salary_single_calculate_button"
@@ -103,18 +107,27 @@
 
             <TextView
                 android:id="@+id/calculate_salary_single_number_of_events_text_view"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_marginBottom="2dp"
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:textColor="@color/textPrimaryColor"
                 android:textSize="@dimen/title"
                 android:textStyle="italic" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Kết quả"
-                android:textSize="15sp"
-                android:textStyle="italic" />
+                android:layout_height="@dimen/divider_height"
+                android:layout_marginBottom="2dp"
+                android:background="@color/divider" />
+
+            <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Kết quả"-->
+            <!--android:textSize="15sp"-->
+            <!--android:textStyle="italic" />-->
 
         </LinearLayout>
 
@@ -136,6 +149,12 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/calculate_salary_single_save_layout"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_marginTop="2dp"
+                android:background="@color/divider" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -161,7 +180,7 @@
                     android:layout_weight="2"
                     android:enabled="false"
                     android:textColor="#0037FF"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/salary_amount_edit_text" />
             </LinearLayout>
 
             <LinearLayout
@@ -186,7 +205,7 @@
                     android:layout_weight="2"
                     android:enabled="false"
                     android:textColor="#AE00FF19"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/salary_amount_edit_text" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -204,7 +223,7 @@
                     android:layout_weight="2"
                     android:enabled="false"
                     android:textColor="#FF0000"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/salary_amount_edit_text" />
             </LinearLayout>
 
         </LinearLayout>

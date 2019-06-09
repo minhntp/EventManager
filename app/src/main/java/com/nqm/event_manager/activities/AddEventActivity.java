@@ -1,10 +1,8 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,17 +12,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.nqm.event_manager.R;
@@ -35,8 +31,10 @@ import com.nqm.event_manager.adapters.EditTaskAdapter;
 import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
+import com.nqm.event_manager.custom_views.CustomDatePicker;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
+import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
@@ -56,14 +54,16 @@ import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class AddEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnSelectReminderItemClicked, IOnEditReminderItemClicked,
-        IOnEditTaskItemClicked {
+        IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
     Activity context;
 
     Toolbar toolbar;
@@ -72,9 +72,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     TextView startDowTextView, endDowTextView;
     Button selectEmployeeButton, scheduleButton, conflictButton, taskButton;
 
-    DatePickerDialog.OnDateSetListener dateSetListener;
     TimePickerDialog.OnTimeSetListener timeSetListener;
-    View currentView;
+    EditText selectedTimeEditText;
 
     ArrayList<String> selectedEmployeesIds;
     HashMap<String, ArrayList<String>> conflictsMap;
@@ -119,10 +118,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     SelectReminderAdapter selectReminderAdapter;
 
     String startTime, endTime;
-
     Calendar calendar = Calendar.getInstance();
     Calendar calendar2 = Calendar.getInstance();
     long startMili, endMili;
+
+    Dialog datePickerDialog;
+    TextView datePickerDialogDateTextView;
+    CustomDatePicker datePicker;
+    Button datePickerDialogOkButton, datePickerDialogCancelButton;
+    TextView selectedDowTextView;
+    EditText selectedDateEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +195,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     private void init() {
         context = this;
 
+        initDatePickerDialog();
+
         //Set start date, end date edit texts from selected date
         String selectedDate = getIntent().getStringExtra(Constants.INTENT_SELECTED_DATE);
         startDateEditText.setText(selectedDate);
@@ -234,6 +241,63 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         initSelectReminderDialog();
     }
 
+    private void initDatePickerDialog() {
+        datePickerDialog = new Dialog(this);
+        datePickerDialog.setContentView(R.layout.dialog_custom_date_picker);
+
+        datePickerDialogDateTextView = datePickerDialog.findViewById(R.id.custom_date_picker_dialog_date_text_view);
+        datePicker = datePickerDialog.findViewById(R.id.custom_date_picker_calendar_view);
+        datePickerDialogCancelButton = datePickerDialog.findViewById(R.id.custom_date_picker_cancel_button);
+        datePickerDialogOkButton = datePickerDialog.findViewById(R.id.custom_date_picker_ok_button);
+
+        datePickerDialogDateTextView.setOnClickListener(v -> {
+            StringBuilder sb = new StringBuilder(datePickerDialogDateTextView.getText().toString());
+            sb.delete(0, sb.lastIndexOf("-") + 1);
+            try {
+                datePicker.setViewDate(CalendarUtil.sdfDayMonthYear.parse(sb.toString()));
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        datePicker.setListener(this);
+
+        datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
+
+        datePickerDialogOkButton.setOnClickListener(v -> {
+            String selectedDate = datePicker.getSelectedDate();
+            String selectedDow = CalendarUtil.dayOfWeekInVietnamese(selectedDate);
+            selectedDateEditText.setText(selectedDate);
+            selectedDowTextView.setText(selectedDow);
+            try {
+                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
+                Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
+                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+                Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
+
+                if (startDate.compareTo(endDate) > 0) {
+                    if (selectedDateEditText == startDateEditText) {
+                        endDateEditText.setText(selectedDate);
+                        endDowTextView.setText(selectedDow);
+                    } else {
+                        startDateEditText.setText(selectedDate);
+                        startDowTextView.setText(selectedDow);
+                    }
+                    if (startTime.compareTo(endTime) > 0) {
+                        endTimeEditText.setText(startTimeEditText.getText().toString());
+                    }
+                } else if (startDate.compareTo(endDate) == 0) {
+                    if (startTime.compareTo(endTime) > 0) {
+                        endTimeEditText.setText(startTimeEditText.getText().toString());
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            datePickerDialog.dismiss();
+        });
+    }
+
     private void initAddScheduleDialog() {
         //data
         schedules = new ArrayList<>();
@@ -266,28 +330,17 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editScheduleTouchHelper.attachToRecyclerView(editScheduleRecyclerView);
 
         //add events
-        editScheduleAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int i = editScheduleAdapter.getItemCount();
-                schedules.add(new Schedule("", "", startTimeEditText.getText().toString(), "", 0));
-                editScheduleAdapter.notifyItemInserted(i);
-            }
+        editScheduleAddButton.setOnClickListener(view -> {
+            int i = editScheduleAdapter.getItemCount();
+            schedules.add(new Schedule("", "", startTimeEditText.getText().toString(), "", 0));
+            editScheduleAdapter.notifyItemInserted(i);
         });
 
-        editScheduleOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editScheduleDialog.dismiss();
-            }
-        });
+        editScheduleOkButton.setOnClickListener(view -> editScheduleDialog.dismiss());
 
-        editScheduleSortButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ScheduleRepository.sortSchedulesByStartTime(schedules);
-                editScheduleAdapter.notifyDataSetChanged();
-            }
+        editScheduleSortButton.setOnClickListener(v -> {
+            ScheduleRepository.sortSchedulesByStartTime(schedules);
+            editScheduleAdapter.notifyDataSetChanged();
         });
     }
 
@@ -316,29 +369,18 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editTaskTouchHelper.attachToRecyclerView(editTaskRecyclerView);
 
         //add events
-        editTaskAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int i = editTaskAdapter.getItemCount();
-                tasks.add(new Task("", "", startDateEditText.getText().toString(), "", "", false, 0));
-                editTaskAdapter.notifyItemInserted(i);
-                updateEditTaskDialogHeader();
-            }
+        editTaskAddButton.setOnClickListener(view -> {
+            int i = editTaskAdapter.getItemCount();
+            tasks.add(new Task("", "", startDateEditText.getText().toString(), "", "", false, 0));
+            editTaskAdapter.notifyItemInserted(i);
+            updateEditTaskDialogHeader();
         });
 
-        editTaskOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editTaskDialog.dismiss();
-            }
-        });
+        editTaskOkButton.setOnClickListener(view -> editTaskDialog.dismiss());
 
-        editTaskSortButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TaskRepository.sortTasksByStartDateTime(tasks);
-                editTaskAdapter.notifyDataSetChanged();
-            }
+        editTaskSortButton.setOnClickListener(v -> {
+            TaskRepository.sortTasksByStartDateTime(tasks);
+            editTaskAdapter.notifyDataSetChanged();
         });
 
     }
@@ -356,12 +398,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         selectReminderListView.setAdapter(selectReminderAdapter);
 
         //Add events
-        selectReminderOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editReminderAdapter.notifyDataSetChanged();
-                selectReminderDialog.dismiss();
-            }
+        selectReminderOkButton.setOnClickListener(view -> {
+            editReminderAdapter.notifyDataSetChanged();
+            selectReminderDialog.dismiss();
         });
     }
 
@@ -400,232 +439,125 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         });
 
         //Add events
-        selectEmployeeOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editEmployeeAdapter.notifyDataSetChanged();
-                selectEmployeeDialog.dismiss();
-            }
+        selectEmployeeOkButton.setOnClickListener(view -> {
+            editEmployeeAdapter.notifyDataSetChanged();
+            selectEmployeeDialog.dismiss();
         });
     }
 
     private void addEvents() {
-        selectEmployeeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSelectEmployeeDialog();
-            }
-        });
+        selectEmployeeButton.setOnClickListener(view -> showSelectEmployeeDialog());
 
-        dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, monthOfYear);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        timeSetListener = (timePicker, hourOfDay, minute) -> {
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute);
+            String selectedTime = CalendarUtil.sdfTime.format(calendar.getTime());
+            selectedTimeEditText.setText(selectedTime);
 
-                //Update TextEdits & TextViews;
-                if (currentView == startDateEditText) {
-                    startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
-                } else {
-                    endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                    endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
-                }
+            //Make sure start date + start time < end date + end time
+            try {
+                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
+                Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
+                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+                Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
 
-                //Make sure start date + start time < end date + end time
-                try {
-                    Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-                    Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
-                    Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-                    Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
-
-                    if (startDate.compareTo(endDate) > 0) {
-                        if (currentView == startDateEditText) {
-                            endDateEditText.setText(startDateEditText.getText().toString());
-                            endDowTextView.setText(startDowTextView.getText().toString());
+                if (startDate.compareTo(endDate) == 0) {
+                    if (startTime.compareTo(endTime) > 0) {
+                        if (selectedTimeEditText == startTimeEditText) {
+                            endTimeEditText.setText(selectedTime);
                         } else {
-                            startDateEditText.setText(endDateEditText.getText().toString());
-                            startDowTextView.setText(endDowTextView.getText().toString());
-                        }
-                        if (startTime.compareTo(endTime) > 0) {
-                            endTimeEditText.setText(startTimeEditText.getText().toString());
-                        }
-                    } else if (startDate.compareTo(endDate) == 0) {
-                        if (startTime.compareTo(endTime) > 0) {
-                            endTimeEditText.setText(startTimeEditText.getText().toString());
+                            calendar.setTime(endDate);
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                            endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                            endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        };
-
-        timeSetListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-
-                if (currentView == startTimeEditText) {
-                    startTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
-                } else {
-                    endTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
-                }
-
-                //Make sure start date + start time < end date + end time
-                try {
-                    Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-                    Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
-                    Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-                    Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
-
-                    if (startDate.compareTo(endDate) == 0) {
-                        if (startTime.compareTo(endTime) > 0) {
-                            if (currentView == startTimeEditText) {
-                                endTimeEditText.setText(startTimeEditText.getText().toString());
-                            } else {
-                                calendar.setTime(endDate);
-                                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                                endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                                endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         };
 
         //set start Date, start Time, end Date, end Time
-        startDateEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                calendar = Calendar.getInstance();
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
-                if (!startDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
-                        d = calendar.get(Calendar.DAY_OF_MONTH);
-                        m = calendar.get(Calendar.MONTH);
-                        y = calendar.get(Calendar.YEAR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = startDateEditText;
+        startDateEditText.setOnClickListener(v -> {
+            selectedDateEditText = startDateEditText;
+            selectedDowTextView = startDowTextView;
+            showDatePickerDialog();
+        });
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(AddEventActivity.this,
-                        dateSetListener, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
+        endDateEditText.setOnClickListener(view -> {
+            selectedDateEditText = endDateEditText;
+            selectedDowTextView = endDowTextView;
+            showDatePickerDialog();
+        });
+
+        startTimeEditText.setOnClickListener(view -> {
+            int hourOfDay = 18;
+            int minute = 0;
+            calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
+                hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                minute = calendar.get(Calendar.MINUTE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            selectedTimeEditText = startTimeEditText;
+            new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
+                    minute, false).show();
+        });
+
+        endTimeEditText.setOnClickListener(view -> {
+            int hourOfDay = 18;
+            int minute = 0;
+            calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
+                hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+                minute = calendar.get(Calendar.MINUTE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            selectedTimeEditText = endTimeEditText;
+            new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
+                    minute, false).show();
+        });
+
+        conflictButton.setOnClickListener(v -> {
+            if (selectedEmployeesIds.size() > 0) {
+                checkForConflict();
+            } else {
+                Toast.makeText(context, "Xin mời chọn nhân sự trước", Toast.LENGTH_SHORT).show();
             }
         });
 
-        endDateEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                calendar = Calendar.getInstance();
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
-                if (!endDateEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString()));
-                        d = calendar.get(Calendar.DAY_OF_MONTH);
-                        m = calendar.get(Calendar.MONTH);
-                        y = calendar.get(Calendar.YEAR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = endDateEditText;
+        taskButton.setOnClickListener(v -> showEditTaskDialog());
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(AddEventActivity.this,
-                        dateSetListener, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
-            }
-        });
+        scheduleButton.setOnClickListener(view -> showAddScheduleDialog());
 
-        startTimeEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int hourOfDay = 18;
-                int minute = 0;
-                calendar = Calendar.getInstance();
-                if (!startTimeEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString()));
-                        hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-                        minute = calendar.get(Calendar.MINUTE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = startTimeEditText;
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
-                        minute, false).show();
-            }
+        selectReminderButton.setOnClickListener(v -> {
+            selectReminderAdapter.notifyDataSetChanged();
+            showAddReminderDialog();
         });
+    }
 
-        endTimeEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int hourOfDay = 18;
-                int minute = 0;
-                calendar = Calendar.getInstance();
-                if (!endTimeEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString()));
-                        hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-                        minute = calendar.get(Calendar.MINUTE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                currentView = endTimeEditText;
-                new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
-                        minute, false).show();
+    private void showDatePickerDialog() {
+        //Make sure start date + start time < end date + end time
+        try {
+            Date dateFromEditText = CalendarUtil.sdfDayMonthYear.parse(selectedDateEditText.getText().toString());
+            datePicker.setViewDate(dateFromEditText);
+            datePicker.setSelectedDate(dateFromEditText);
+            String txt = CalendarUtil.sdfDayOfWeek.format(dateFromEditText) +
+                    " - " + CalendarUtil.sdfDayMonthYear.format(dateFromEditText);
+            datePickerDialogDateTextView.setText(txt);
+            datePickerDialog.show();
+            if (datePickerDialog.getWindow() != null) {
+                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT);
             }
-        });
-
-        conflictButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedEmployeesIds.size() > 0) {
-                    checkForConflict();
-                } else {
-                    Toast.makeText(context, "Xin mời chọn nhân sự trước", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        taskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showEditTaskDialog();
-            }
-        });
-
-        scheduleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddScheduleDialog();
-            }
-        });
-
-        selectReminderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectReminderAdapter.notifyDataSetChanged();
-                showAddReminderDialog();
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void checkForConflict() {
@@ -646,14 +578,11 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             endMili = calendar.getTimeInMillis();
 
             EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili, selectedEmployeesIds,
-                    new EventRepository.MyConflictEventCallback() {
-                        @Override
-                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
-                            conflictsMap.clear();
-                            conflictsMap.putAll(conflictMap);
-                            editEmployeeAdapter.notifyDataSetChanged();
-                            conflictButton.setEnabled(true);
-                        }
+                    conflictMap -> {
+                        conflictsMap.clear();
+                        conflictsMap.putAll(conflictMap);
+                        editEmployeeAdapter.notifyDataSetChanged();
+                        conflictButton.setEnabled(true);
                     });
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -731,34 +660,26 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             endMili = calendar.getTimeInMillis();
 
             EventRepository.getInstance().getConflictEventsIdsAdd(startMili, endMili, selectedEmployeesIds,
-                    new EventRepository.MyConflictEventCallback() {
-                        @Override
-                        public void onCallback(HashMap<String, ArrayList<String>> conflictMap) {
-                            conflictsMap.clear();
-                            conflictsMap.putAll(conflictMap);
-                            editEmployeeAdapter.notifyDataSetChanged();
-                            boolean isConflictExist = false;
-                            for (ArrayList<String> arr : conflictMap.values()) {
-                                if (arr != null && arr.size() > 0) {
-                                    isConflictExist = true;
-                                    break;
-                                }
+                    conflictMap -> {
+                        conflictsMap.clear();
+                        conflictsMap.putAll(conflictMap);
+                        editEmployeeAdapter.notifyDataSetChanged();
+                        boolean isConflictExist = false;
+                        for (ArrayList<String> arr : conflictMap.values()) {
+                            if (arr != null && arr.size() > 0) {
+                                isConflictExist = true;
+                                break;
                             }
-                            if (isConflictExist) {
-                                new android.support.v7.app.AlertDialog.Builder(context)
-                                        .setIcon(R.drawable.ic_error)
-                                        .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
-                                        .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                addEventToDatabase();
-                                            }
-                                        })
-                                        .setNegativeButton("Hủy", null)
-                                        .show();
-                            } else {
-                                addEventToDatabase();
-                            }
+                        }
+                        if (isConflictExist) {
+                            new android.support.v7.app.AlertDialog.Builder(context)
+                                    .setIcon(R.drawable.ic_error)
+                                    .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
+                                    .setPositiveButton("Đồng ý", (dialog, which) -> addEventToDatabase())
+                                    .setNegativeButton("Hủy", null)
+                                    .show();
+                        } else {
+                            addEventToDatabase();
                         }
                     });
         } catch (Exception ex) {
@@ -821,12 +742,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        context.finish();
-                    }
-                })
+                .setPositiveButton("Đồng ý", (dialog, which) -> context.finish())
                 .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();
@@ -941,5 +857,13 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             }
         }
     }
+
+    @Override
+    public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
+        datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
+//        Log.d("debug", "selected date changed");
+    }
+
+
     //----------------------------------------------------------------------------------------------
 }

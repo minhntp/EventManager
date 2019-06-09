@@ -31,7 +31,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
-public class ReminderRepository {
+public class ReminderRepository implements IOnDataLoadComplete {
     static ReminderRepository instance;
     private IOnDataLoadComplete listener;
     private HashMap<String, Reminder> allReminders;
@@ -42,6 +42,7 @@ public class ReminderRepository {
 
     private ReminderRepository() {
 //        allReminders = new HashMap<>();
+        EventRepository.getInstance().setListener(this);
         alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
         addListener();
     }
@@ -94,7 +95,10 @@ public class ReminderRepository {
         this.listener = listener;
     }
 
-    private void addAlarmForAllReminders() {
+    public void addAlarmForAllReminders() {
+        if (EventRepository.getInstance().getAllEvents() == null || allReminders == null) {
+            return;
+        }
         //CANCEL OLD ALARMS
         for (int i = 0; i < numberOfSetAlarms; i++) {
             Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
@@ -108,6 +112,11 @@ public class ReminderRepository {
         //SET NEW ALARMS
         int requestCode = 0;
         for (Reminder r : allReminders.values()) {
+            Event event = EventRepository.getInstance().getEventByEventId(r.getEventId());
+            if (event == null) {
+                continue;
+            }
+
             Calendar reminderCalendar = Calendar.getInstance();
             try {
                 reminderCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(r.getTime()));
@@ -121,7 +130,7 @@ public class ReminderRepository {
 
             if (reminderCalendar.compareTo(currentCalendar) >= 0) {
                 Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
-                Event event = EventRepository.getInstance().getEventByEventId(r.getEventId());
+//                Log.d("debug", "eventId" + r.getEventId());
                 String content = "Địa điểm: " + "\n" +
                         "\t" + event.getDiaDiem() + "\n" +
                         "Thời gian" + "\n" +
@@ -285,6 +294,11 @@ public class ReminderRepository {
             }
         }
         return remindersIds;
+    }
+
+    @Override
+    public void notifyOnLoadComplete() {
+        addAlarmForAllReminders();
     }
 
     private interface MyReminderCallback {

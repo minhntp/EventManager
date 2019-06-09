@@ -1,7 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="10dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -23,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:textSize="17sp" />
+            android:textSize="@dimen/date_edit_text" />
 
         <TextView
             android:layout_width="match_parent"
@@ -37,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:textSize="17sp" />
+            android:textSize="@dimen/date_edit_text" />
 
         <Button
             android:id="@+id/fragment_manage_salary_calculate_button"
@@ -59,9 +61,13 @@
 
         <TextView
             android:id="@+id/fragment_manage_salary_number_of_events_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:paddingBottom="2dp"
+            android:textColor="@color/textPrimaryColor"
             android:textSize="@dimen/title"
             android:textStyle="italic" />
 
@@ -78,16 +84,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="10dp"/>
 
-        <TextView
-            android:id="@+id/fragment_manage_salary_result_text_view"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/divider"
             android:layout_marginTop="5dp"
-            android:text="Kết quả"
-            android:textSize="15sp"
-            android:textStyle="italic" />
+            android:layout_marginBottom="2dp"/>
+
+        <!--<TextView-->
+        <!--android:id="@+id/fragment_manage_salary_result_text_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:text="Kết quả"-->
+        <!--android:textSize="15sp"-->
+        <!--android:textStyle="italic" />-->
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -111,10 +124,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/divider"
+            android:layout_marginTop="2dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="5">
-
 
             <TextView
                 android:id="@+id/fragment_manage_salary_sum_text_view"
@@ -134,7 +152,7 @@
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#0037FF"
-                android:textSize="17sp" />
+                android:textSize="@dimen/salary_amount_edit_text" />
         </LinearLayout>
 
         <LinearLayout
@@ -159,7 +177,7 @@
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#AE00FF19"
-                android:textSize="17sp" />
+                android:textSize="@dimen/salary_amount_edit_text" />
 
             <TextView
                 android:layout_width="0dp"
@@ -176,7 +194,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:enabled="false"
-                android:textColor="#FF0000" />
+                android:textColor="#FF0000"
+                android:textSize="@dimen/salary_amount_edit_text" />
         </LinearLayout>
     </LinearLayout>
 

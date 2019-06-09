@@ -19,7 +19,7 @@ import com.nqm.event_manager.activities.AddEventActivity;
 import com.nqm.event_manager.activities.SearchEventActivity;
 import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.EventListAdapter;
-import com.nqm.event_manager.custom_views.CustomCalendarItem;
+import com.nqm.event_manager.custom_views.CustomCalendar;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
@@ -37,7 +37,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
     CustomListView eventsListView;
     TextView dayTitleTextView;
-    CustomCalendarItem calendarView;
+    CustomCalendar calendarView;
     EventListAdapter mainViewEventAdapter;
     Date selectedDate;
 

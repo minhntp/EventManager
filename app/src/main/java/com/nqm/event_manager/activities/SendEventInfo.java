@@ -159,8 +159,7 @@ public class SendEventInfo extends AppCompatActivity {
                     if (cb.isChecked()) {
                         Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
                         if (employee != null) {
-                            stringBuilder.append(String.format(getResources().getString(R.string.email_address_array_item),
-                                    employee.getEmail()));
+                            stringBuilder.append(employee.getEmail()).append(",");
                         }
                     }
                 }

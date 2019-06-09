@@ -12,8 +12,8 @@ import com.nqm.event_manager.repositories.TaskRepository;
 
 public class DatabaseAccess {
 
-    static DatabaseAccess instance;
-    FirebaseFirestore database;
+    private static DatabaseAccess instance;
+    private FirebaseFirestore database;
 
     private DatabaseAccess() {
         database = FirebaseFirestore.getInstance();
@@ -44,6 +44,7 @@ public class DatabaseAccess {
         return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
                 (EmployeeRepository.getInstance().getAllEmployees() != null) &&
                 (EventRepository.getInstance().getAllEvents() != null) &&
+                (EventRepository.getInstance().getNumberOfEventsMap() != null) &&
                 (ReminderRepository.getInstance().getAllReminders() != null) &&
                 (SalaryRepository.getInstance().getAllSalaries() != null) &&
                 (ScheduleRepository.getInstance().getAllSchedules() != null) &&

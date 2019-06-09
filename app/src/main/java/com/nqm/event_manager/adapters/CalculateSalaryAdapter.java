@@ -1,6 +1,7 @@
 package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,30 +21,19 @@ import java.util.ArrayList;
 
 public class CalculateSalaryAdapter extends BaseAdapter {
     private final Activity context;
-    int sum = 0, paid = 0, unpaid = 0;
     IOnCalculateSalaryItemClicked listener;
     private ArrayList<Salary> resultSalaries;
+    private Resources res;
 
     public CalculateSalaryAdapter(Activity context, ArrayList<Salary> resultSalaries) {
         this.context = context;
         this.resultSalaries = resultSalaries;
+        res = context.getResources();
     }
 
 
     public void setListener(IOnCalculateSalaryItemClicked listener) {
         this.listener = listener;
-    }
-
-    public int getSum() {
-        return sum;
-    }
-
-    public int getPaid() {
-        return paid;
-    }
-
-    public int getUnpaid() {
-        return unpaid;
     }
 
     @Override
@@ -77,33 +67,34 @@ public class CalculateSalaryAdapter extends BaseAdapter {
         //Fill information
         final Salary salary = getItem(position);
         Event event = EventRepository.getInstance().getAllEvents().get(salary.getEventId());
-
-        try {
-            startDateTextView.setText(CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
-                    .parse(event.getNgayBatDau())));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        titleTextView.setText(event.getTen());
-        locationTextView.setText(event.getDiaDiem());
-        salaryEditText.setText("" + salary.getSalary());
-        paidCheckBox.setChecked(salary.isPaid());
-
-        if (salary.isPaid()) {
-            paidCheckBox.setEnabled(false);
-            salaryEditText.setEnabled(false);
-        } else {
-            paidCheckBox.setEnabled(true);
-            salaryEditText.setEnabled(true);
-        }
-
-        //Add events
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onCalculateSalaryItemClicked(salary.getEventId());
+        if (event != null) {
+            try {
+                startDateTextView.setText(CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
+                        .parse(event.getNgayBatDau())));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+            titleTextView.setText(event.getTen());
+            locationTextView.setText(event.getDiaDiem());
+            salaryEditText.setText(String.valueOf(salary.getSalary()));
+            paidCheckBox.setChecked(salary.isPaid());
+
+            if (salary.isPaid()) {
+                paidCheckBox.setEnabled(false);
+                salaryEditText.setEnabled(false);
+            } else {
+                paidCheckBox.setEnabled(true);
+                salaryEditText.setEnabled(true);
+            }
+
+            //Add events
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onCalculateSalaryItemClicked(salary.getEventId());
+                }
+            });
+        }
 
         return view;
     }
