@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
 import com.nqm.event_manager.BuildConfig;
 import com.nqm.event_manager.R;
 
@@ -21,6 +22,7 @@ public class EventManager extends Application {
     @Override
     public void onCreate() {
         ACRA.init(this);
+        FirebaseApp.initializeApp(this);
         super.onCreate();
         EventManager.context = getApplicationContext();
     }

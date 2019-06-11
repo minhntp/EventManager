@@ -28,8 +28,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="rtl"
-            android:layout_marginBottom="10dp"
             app:queryHint="Theo tiêu đề, địa điểm, ghi chú"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_marginLeft="10dp"

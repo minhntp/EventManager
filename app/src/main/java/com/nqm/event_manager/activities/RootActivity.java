@@ -2,6 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.firebase.FirebaseApp;
@@ -19,6 +21,8 @@ import com.nqm.event_manager.fragments.ManageSalaryFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.utils.DatabaseAccess;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -28,16 +32,15 @@ public class RootActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
-
+//        FirebaseApp.initializeApp(this);
+        if (!DatabaseAccess.isAllDataLoaded()) {
+            Intent splashIntent = new Intent(this, SplashActivity.class);
+            startActivity(splashIntent);
+            Log.d("debug", "right after start splash at RootActivity");
+            finish();
+        }
         setContentView(R.layout.activity_root);
         initView();
-    }
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
     }
 
     private void initView() {

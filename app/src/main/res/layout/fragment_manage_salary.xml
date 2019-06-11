@@ -67,9 +67,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/custom_calendar_grid_item_background"
             android:gravity="center"
             android:paddingBottom="2dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:textColor="@color/textPrimaryColor"
             android:textSize="@dimen/section_title"
             android:textStyle="italic" />
@@ -77,8 +79,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chọn nhân viên"
-            android:textSize="15sp"
+            android:text="Nhân viên"
+            android:textSize="@dimen/section_title"
             android:textStyle="italic" />
 
         <Spinner
