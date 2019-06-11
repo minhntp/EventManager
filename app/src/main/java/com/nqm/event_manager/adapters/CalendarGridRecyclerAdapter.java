@@ -116,6 +116,11 @@ public class CalendarGridRecyclerAdapter extends RecyclerView.Adapter<CalendarGr
     }
 
     @Override
+    public long getItemId(int position) {
+        return (long) position;
+    }
+
+    @Override
     public int getItemCount() {
         return cellDataArrayList.size();
     }

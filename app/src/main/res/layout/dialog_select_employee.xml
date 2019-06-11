@@ -1,50 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="5dp">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/add_schedule_dialog_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:focusableInTouchMode="true"
         android:gravity="center_vertical"
-        android:text="Chọn Nhân sự"
+        android:text="Chọn nhân sự"
         android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textSize="@dimen/dialog_title"
+        android:textAllCaps="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/textPrimaryColor"/>
 
-    <android.support.v7.widget.SearchView
-        android:id="@+id/select_employee_search_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/add_schedule_dialog_title_text_view"
-        android:layoutDirection="rtl" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/select_employee_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/dialog_edit_task_button_layout"
-        android:layout_below="@id/select_employee_search_view" />
-
-    <LinearLayout
-        android:id="@+id/dialog_edit_task_button_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <Button
-            android:id="@+id/add_schedule_ok_button"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_below="@+id/add_schedule_dialog_title_text_view">
+        <android.support.v7.widget.SearchView
+            android:id="@+id/select_employee_search_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="OK"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layoutDirection="rtl" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/select_employee_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/dialog_edit_task_button_layout"
+            android:layout_below="@id/select_employee_search_view" />
+
+        <LinearLayout
+            android:id="@+id/dialog_edit_task_button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/add_schedule_ok_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="OK"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
 </RelativeLayout>

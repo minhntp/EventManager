@@ -8,14 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:focusableInTouchMode="true"
         android:gravity="center_vertical"
         android:text="Công việc"
         android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textSize="@dimen/dialog_title"
+        android:textAllCaps="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/textPrimaryColor"/>
 
     <ProgressBar
         android:id="@+id/view_task_dialog_progress_bar"
@@ -24,6 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="15dp"
         android:layout_below="@+id/view_task_dialog_title_text_view"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp" />
 
@@ -32,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/view_task_dialog_progress_bar"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
         android:textSize="16sp" />
 

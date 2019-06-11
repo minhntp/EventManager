@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/event_title_text_view"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:textSize="@dimen/event_title_in_list"
@@ -33,9 +33,9 @@
         <TextView
             android:id="@+id/event_location_text_view"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="25dp"
             android:ellipsize="end"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:maxLines="1"
             android:textSize="@dimen/event_location_in_list" />
     </LinearLayout>

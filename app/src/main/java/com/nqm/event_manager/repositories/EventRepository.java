@@ -5,8 +5,6 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -29,8 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class EventRepository {
 
@@ -151,7 +147,7 @@ public class EventRepository {
                                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                                     startDate = calendar.getTime();
                                 }
-                            } catch (Exception ex ) {
+                            } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
                         }
@@ -565,33 +561,30 @@ public class EventRepository {
         Log.d("debug", "here2");
 
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
-        allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
-            @Override
-            public void onSuccess(List<QuerySnapshot> querySnapshots) {
-                HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
-                Log.d("debug", "here3");
-                Log.d("debug", "snapshots size = " + querySnapshots.size());
-                for (QuerySnapshot documentSnapshots : querySnapshots) {
-                    for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
-                        Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
-                        long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
-                        if (docEndMili >= startMili) {
-                            String docEventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
-                            if (!docEventId.equals(eventId)) {
-                                String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
-                                if (conflictMap.get(employeeId) == null) {
-                                    conflictMap.put(employeeId, new ArrayList<String>());
-                                }
-                                conflictMap.get(employeeId).add(docEventId);
+        allTasks.addOnSuccessListener(querySnapshots -> {
+            HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
+            Log.d("debug", "here3");
+            Log.d("debug", "snapshots size = " + querySnapshots.size());
+            for (QuerySnapshot documentSnapshots : querySnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+                    Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
+                    long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
+                    if (docEndMili >= startMili) {
+                        String docEventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
+                        if (!docEventId.equals(eventId)) {
+                            String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
+                            if (conflictMap.get(employeeId) == null) {
+                                conflictMap.put(employeeId, new ArrayList<String>());
                             }
+                            conflictMap.get(employeeId).add(docEventId);
                         }
-
                     }
-                }
-                Log.d("debug", "here4");
 
-                callback.onCallback(conflictMap);
+                }
             }
+            Log.d("debug", "here4");
+
+            callback.onCallback(conflictMap);
         });
     }
 
@@ -634,46 +627,42 @@ public class EventRepository {
     //----------------------------------------------------------------------------------------------
 
     public void sortEventsByStartDateTime(ArrayList<Event> events) {
-        Collections.sort(events, new Comparator<Event>() {
-            @Override
-            public int compare(Event e1, Event e2) {
-                int compareResult = 0;
-                try {
-                    if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
-                        compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
-                                CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
-                    } else {
-                        compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
-                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Collections.sort(events, (e1, e2) -> {
+            int compareResult = 0;
+            try {
+                if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
+                    compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
+                            CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
+                } else {
+                    compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
+                            CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                 }
-                return compareResult;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return compareResult;
         });
     }
 
     public void sortEventsIdsByStartDateTime(ArrayList<String> eventsIds) {
-        Collections.sort(eventsIds, new Comparator<String>() {
-            @Override
-            public int compare(String id1, String id2) {
-                int compareResult = 0;
-                Event e1 = allEvents.get(id1);
-                Event e2 = allEvents.get(id2);
+        Collections.sort(eventsIds, (id1, id2) -> {
+            int compareResult = 0;
+            Event e1 = allEvents.get(id1);
+            Event e2 = allEvents.get(id2);
+            if (e1 != null && e2 != null) {
                 try {
                     if (!e1.getNgayBatDau().equals(e2.getNgayBatDau())) {
                         compareResult = CalendarUtil.sdfDayMonthYear.parse(e1.getNgayBatDau()).compareTo(
                                 CalendarUtil.sdfDayMonthYear.parse(e2.getNgayBatDau()));
                     } else {
                         compareResult = CalendarUtil.sdfTime.parse(e1.getGioBatDau()).compareTo(
-                                CalendarUtil.sdfTime.parse(e2.getGioKetThuc()));
+                                CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                return compareResult;
             }
+            return compareResult;
         });
     }
 

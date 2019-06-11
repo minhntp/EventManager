@@ -17,6 +17,10 @@ public class SplashActivity2 extends AppCompatActivity implements IOnDataLoadCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+    }
+
+    @Override
+    protected void onResume() {
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         if (DatabaseAccess.isAllDataLoaded()) {
             Intent viewEventIntent = new Intent(this, ViewEventActivity.class);
@@ -26,6 +30,7 @@ public class SplashActivity2 extends AppCompatActivity implements IOnDataLoadCom
         } else {
             DatabaseAccess.setDatabaseListener(this);
         }
+        super.onResume();
     }
 
     @Override

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.AddEmployeeActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -37,14 +40,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:text="Họ tên:"
-                android:textSize="@dimen/content" />
+                android:textSize="@dimen/section_content" />
 
             <EditText
                 android:id="@+id/add_employee_activity_name_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:textSize="@dimen/content" />
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -65,7 +68,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:textSize="@dimen/content" />
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +91,7 @@
                 android:layout_weight="6"
                 android:clickable="true"
                 android:focusable="false"
-                android:textSize="@dimen/content" />
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -109,7 +112,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:textSize="@dimen/content"
+                android:textSize="@dimen/section_content"
                 android:inputType="phone"/>
         </LinearLayout>
 
@@ -131,7 +134,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:textSize="@dimen/content"
+                android:textSize="@dimen/section_content"
                 android:inputType="textEmailAddress"/>
         </LinearLayout>
 
@@ -153,7 +156,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:textSize="@dimen/content"
+                android:textSize="@dimen/section_content"
                 android:inputType="number"/>
         </LinearLayout>
 

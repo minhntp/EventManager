@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.ViewEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/view_event_toolbar"
@@ -49,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Thời gian"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <TextView
@@ -57,14 +59,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:textSize="@dimen/content" />
+                    android:textSize="@dimen/section_content" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Địa điểm"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <TextView
@@ -72,14 +74,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:textSize="@dimen/content" />
+                    android:textSize="@dimen/section_content" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Nhân sự"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <com.nqm.event_manager.custom_views.CustomListView
@@ -92,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Ghi chú"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <TextView
@@ -128,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Nhắc nhở"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <com.nqm.event_manager.custom_views.CustomListView

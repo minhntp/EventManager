@@ -15,13 +15,11 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_today"
-        android:icon="@drawable/ic_list"
         android:orderInCategory="100"
         android:title="Ngày hôm nay"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_selected_day"
-        android:icon="@drawable/ic_list"
         android:orderInCategory="100"
         android:title="Ngày đã chọn"
         app:showAsAction="never" />

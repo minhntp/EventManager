@@ -36,7 +36,7 @@ public class EditScheduleAdapter extends RecyclerView.Adapter<EditScheduleAdapte
 
             timeEditText = itemView.findViewById(R.id.edit_schedule_time_edit_text);
             contentEditText = itemView.findViewById(R.id.edit_schedule_content_edit_text);
-            reorderImageView = itemView.findViewById(R.id.add_schedule_reorder);
+            reorderImageView = itemView.findViewById(R.id.edit_schedule_item_reorder);
 
             contentEditText.addTextChangedListener(new TextWatcher() {
                 @Override

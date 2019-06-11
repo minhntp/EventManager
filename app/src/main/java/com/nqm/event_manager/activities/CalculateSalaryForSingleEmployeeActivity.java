@@ -226,7 +226,7 @@ public class CalculateSalaryForSingleEmployeeActivity extends AppCompatActivity
             datePickerDialogDateTextView.setText(txt);
             datePickerDialog.show();
             if (datePickerDialog.getWindow() != null) {
-                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {

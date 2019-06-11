@@ -218,12 +218,12 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         }
         editEmployeeAdapter = new EditEmployeeEditEventAdapter(eventId, selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
-        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) {
+        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(this) /*{
             @Override
             public boolean canScrollVertically() {
                 return false;
             }
-        });
+        }*/);
         editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
@@ -617,7 +617,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             datePicker.setEventId(eventId);
             datePickerDialog.show();
             if (datePickerDialog.getWindow() != null) {
-                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,
+                datePickerDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {

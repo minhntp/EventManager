@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:orientation="horizontal"
-    android:weightSum="11">
+    android:weightSum="10">
 
     <TextView
         android:id="@+id/search_event_item_time_text_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="6"
+        android:layout_weight="5"
         android:gravity="center_vertical"
         android:textSize="@dimen/time_text_view"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="5dp"
         android:textStyle="italic"/>
 
     <LinearLayout

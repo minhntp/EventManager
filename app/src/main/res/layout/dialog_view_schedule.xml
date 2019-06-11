@@ -7,13 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:focusableInTouchMode="true"
         android:gravity="center_vertical"
         android:text="Lịch trình"
         android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textSize="@dimen/dialog_title"
+        android:textAllCaps="true"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/textPrimaryColor" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/view_schedule_dialog_recycler_view"

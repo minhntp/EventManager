@@ -30,8 +30,14 @@ public class RootActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_root);
         initView();
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
     }
 
     private void initView() {
@@ -43,8 +49,18 @@ public class RootActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        toggle.setDrawerIndicatorEnabled(false);
+//        toggle.setHomeAsUpIndicator(R.drawable.ic_list);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+//        toggle.setToolbarNavigationClickListener(v -> {
+//            if (drawer.isDrawerVisible(GravityCompat.START)) {
+//                drawer.closeDrawer(GravityCompat.START);
+//            } else {
+//                drawer.openDrawer(GravityCompat.START);
+//            }
+//        });
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

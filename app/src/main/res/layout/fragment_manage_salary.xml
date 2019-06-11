@@ -1,4 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.RootActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="10dp"
@@ -68,7 +71,7 @@
             android:gravity="center"
             android:paddingBottom="2dp"
             android:textColor="@color/textPrimaryColor"
-            android:textSize="@dimen/title"
+            android:textSize="@dimen/section_title"
             android:textStyle="italic" />
 
         <TextView

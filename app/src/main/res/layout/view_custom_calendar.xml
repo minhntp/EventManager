@@ -50,7 +50,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:weightSum="7"
+        android:orientation="horizontal"
+        android:layout_marginBottom="2dp">
 
         <TextView
             style="@style/CustomCalendarViewHeader"
@@ -97,7 +99,8 @@
         android:id="@+id/calendar_view_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
         android:numColumns="7"
-        android:stretchMode="columnWidth" />
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="0dp"/>
 </merge>

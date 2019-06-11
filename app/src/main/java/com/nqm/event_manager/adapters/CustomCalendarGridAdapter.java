@@ -7,9 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.custom_views.CustomRelativeLayout;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -69,7 +71,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
         //Connect views
         TextView dayTextView = view.findViewById(R.id.custom_calendar_grid_cell_day_text_view);
         TextView numberOfEventsTextView = view.findViewById(R.id.custom_calendar_grid_cell_number_of_events_text_view);
-        LinearLayout cellLayout = view.findViewById(R.id.custom_calendar_cell_layout);
+        CustomRelativeLayout cellLayout = view.findViewById(R.id.custom_calendar_cell_layout);
 
         //Fill information
         //Set colors and background

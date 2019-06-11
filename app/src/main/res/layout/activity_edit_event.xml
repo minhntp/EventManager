@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.EditEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/edit_event_toolbar"
@@ -33,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tên sự kiện"
-                android:textSize="@dimen/title"
+                android:textSize="@dimen/section_title"
                 android:textStyle="bold" />
 
             <EditText
@@ -54,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="Bắt đầu"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -79,7 +81,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:hint="Ngày bắt đầu"
-                        android:textSize="@dimen/content" />
+                        android:textSize="@dimen/section_content" />
 
                     <EditText
                         android:id="@+id/edit_event_start_time_edit_text"
@@ -89,14 +91,14 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:hint="Giờ bắt đầu"
-                        android:textSize="@dimen/content" />
+                        android:textSize="@dimen/section_content" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Kết thúc"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -121,7 +123,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:hint="Ngày bắt đầu"
-                        android:textSize="@dimen/content" />
+                        android:textSize="@dimen/section_content" />
 
                     <EditText
                         android:id="@+id/edit_event_end_time_edit_text"
@@ -131,7 +133,7 @@
                         android:clickable="true"
                         android:focusable="false"
                         android:hint="Giờ kết thúc"
-                        android:textSize="@dimen/content" />
+                        android:textSize="@dimen/section_content" />
                 </LinearLayout>
 
                 <TextView
@@ -139,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Địa điểm"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <EditText
@@ -148,7 +150,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="none"
                     android:text="1220 Võ Nguyên Giáp"
-                    android:textSize="@dimen/content" />
+                    android:textSize="@dimen/section_content" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -160,7 +162,7 @@
                         android:layout_centerInParent="true"
                         android:layout_marginTop="5dp"
                         android:text="Nhân sự"
-                        android:textSize="@dimen/title"
+                        android:textSize="@dimen/section_title"
                         android:textStyle="bold" />
 
                     <Button
@@ -194,7 +196,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="Ghi chú"
-                    android:textSize="@dimen/title"
+                    android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
 
                 <EditText
@@ -231,7 +233,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Nhắc nhở"
-                android:textSize="@dimen/title"
+                android:textSize="@dimen/section_title"
                 android:textStyle="bold" />
 
             <com.nqm.event_manager.custom_views.CustomListView
