@@ -70,5 +70,6 @@ public class EditReminderAdapter extends BaseAdapter {
     public void notifyDataSetChanged() {
         ReminderRepository.sortReminder(selectedReminders);
         super.notifyDataSetChanged();
+        listener.remindersChanged();
     }
 }

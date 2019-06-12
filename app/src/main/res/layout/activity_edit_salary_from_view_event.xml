@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.EditSalaryFromViewEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.EditSalaryFromViewEventActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/edit_salary_toolbar"
@@ -17,19 +16,17 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/edit_salary_toolbar">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:layout_marginBottom="20dp"
-            android:orientation="vertical"
-            tools:context="com.example.clay.event_manager.activities.RootActivity$EventDetailsActivity">
+            android:orientation="vertical">
 
             <com.nqm.event_manager.custom_views.CustomListView
                 android:id="@+id/edit_salary_from_view_event_salary_list_view"

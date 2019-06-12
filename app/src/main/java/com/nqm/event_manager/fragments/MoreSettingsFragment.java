@@ -38,6 +38,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     Button selectReminderOkButton;
 
     ArrayList<Reminder> selectedReminders;
+    boolean isRemindersChanged;
 
     Activity context;
 
@@ -46,7 +47,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_more_settings, container, false);
     }
@@ -84,6 +85,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         }
 
         initSelectReminderDialog();
+        isRemindersChanged = false;
     }
 
     private void initSelectReminderDialog() {
@@ -91,7 +93,9 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
 
         lWindowParams = new WindowManager.LayoutParams();
-        lWindowParams.copyFrom(selectReminderDialog.getWindow().getAttributes());
+        if (selectReminderDialog.getWindow() != null) {
+            lWindowParams.copyFrom(selectReminderDialog.getWindow().getAttributes());
+        }
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
@@ -103,22 +107,18 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         selectReminderListView.setAdapter(selectReminderAdapter);
 
         //Add events
-        selectReminderOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editReminderAdapter.notifyDataSetChanged();
-                selectReminderDialog.dismiss();
-            }
+        selectReminderOkButton.setOnClickListener(view -> {
+            editReminderAdapter.notifyDataSetChanged();
+            selectReminderDialog.dismiss();
         });
     }
 
     private void addEvents() {
-        selectReminderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!context.isFinishing()) {
-                    selectReminderAdapter.notifyDataSetChanged();
-                    selectReminderDialog.show();
+        selectReminderButton.setOnClickListener(v -> {
+            if (!context.isFinishing()) {
+                selectReminderAdapter.notifyDataSetChanged();
+                selectReminderDialog.show();
+                if (selectReminderDialog.getWindow() != null) {
                     selectReminderDialog.getWindow().setAttributes(lWindowParams);
                 }
             }
@@ -150,6 +150,11 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     }
 
     @Override
+    public void remindersChanged() {
+        isRemindersChanged = true;
+    }
+
+    @Override
     public void onSelectReminderCheckBoxClicked(int minute, boolean isChecked) {
         if (isChecked) {
             selectedReminders.add(new Reminder("", "", minute, ""));
@@ -166,7 +171,9 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
     @Override
     public void onPause() {
-        DefaultReminderRepository.getInstance().updateDefaultReminders(selectedReminders);
+        if (isRemindersChanged) {
+            DefaultReminderRepository.getInstance().updateDefaultReminders(selectedReminders);
+        }
         super.onPause();
     }
 }

@@ -20,9 +20,9 @@ public class SelectEmployeeAddEventAdapter extends
         RecyclerView.Adapter<SelectEmployeeAddEventAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView profileImageView;
-        public TextView nameTextView, specialityTextView;
-        public CheckBox selectCheckBox;
+        private ImageView profileImageView;
+        private TextView nameTextView, specialityTextView;
+        private CheckBox selectCheckBox;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -31,14 +31,11 @@ public class SelectEmployeeAddEventAdapter extends
             specialityTextView = itemView.findViewById(R.id.select_employee_speciality_text_view);
             selectCheckBox = itemView.findViewById(R.id.select_employee_select_checkbox);
 
-            selectCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
-                        }
+            selectCheckBox.setOnClickListener(v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
                     }
                 }
             });
@@ -65,9 +62,8 @@ public class SelectEmployeeAddEventAdapter extends
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View employeeView = inflater.inflate(R.layout.list_item_select_employee, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(employeeView);
 
-        return viewHolder;
+        return new ViewHolder(employeeView);
     }
 
     @Override

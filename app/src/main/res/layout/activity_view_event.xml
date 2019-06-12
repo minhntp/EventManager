@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.ViewEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.ViewEventActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/view_event_toolbar"
@@ -14,21 +14,43 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@color/textPrimaryColor"/>
+        app:titleTextColor="@color/textPrimaryColor" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/view_event_toolbar">
 
-        <LinearLayout
-            xmlns:tools="http://schemas.android.com/tools"
+        <LinearLayout xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:layout_marginBottom="20dp"
+            android:layout_margin="10dp"
             android:orientation="vertical"
             tools:context="com.example.clay.event_manager.activities.RootActivity$EventDetailsActivity">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_event_black" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:text="Tên sự kiện"
+                    android:textSize="@dimen/section_title"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/view_event_title_text_view"
@@ -42,113 +64,188 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_time" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_weight="9"
                     android:text="Thời gian"
                     android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/view_event_time_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textSize="@dimen/section_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_location" />
 
                 <TextView
-                    android:id="@+id/view_event_time_text_view"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:textSize="@dimen/section_content" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_weight="9"
                     android:text="Địa điểm"
                     android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/view_event_location_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textSize="@dimen/section_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_people" />
 
                 <TextView
-                    android:id="@+id/view_event_location_text_view"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:textSize="@dimen/section_content" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_weight="9"
                     android:text="Nhân sự"
                     android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
+            </LinearLayout>
 
-                <com.nqm.event_manager.custom_views.CustomListView
-                    android:id="@+id/view_event_salaries_list_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/view_event_salaries_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_note" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_weight="9"
                     android:text="Ghi chú"
                     android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/view_event_note_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:textSize="@dimen/note" />
+            <TextView
+                android:id="@+id/view_event_note_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:textSize="@dimen/note" />
 
-                <Button
-                    android:id="@+id/view_event_task_button"
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/view_event_task_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Công việc"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/view_event_schedule_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Lịch trình"
+                android:textSize="@dimen/text_button"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Công việc"
-                    android:textSize="@dimen/text_button"
-                    android:textStyle="bold" />
-
-                <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/view_event_schedule_button"
-                    android:layout_gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Lịch trình"
-                    android:textSize="@dimen/text_button"
-                    android:textStyle="bold"/>
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_reminder" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_weight="9"
                     android:text="Nhắc nhở"
                     android:textSize="@dimen/section_title"
                     android:textStyle="bold" />
-
-                <com.nqm.event_manager.custom_views.CustomListView
-                    android:id="@+id/view_event_edit_reminder_list_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/view_event_select_reminder_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thêm nhắc nhở"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/text_button"
-                    android:layout_marginBottom="50dp"/>
             </LinearLayout>
 
+            <com.nqm.event_manager.custom_views.CustomListView
+                android:id="@+id/view_event_edit_reminder_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/view_event_select_reminder_button"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:text="Thêm nhắc nhở"
+                android:textSize="@dimen/sub_text_button" />
 
         </LinearLayout>
 

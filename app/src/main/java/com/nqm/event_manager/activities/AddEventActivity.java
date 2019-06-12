@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -399,9 +398,11 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
         //Add events
         selectReminderOkButton.setOnClickListener(view -> {
-            editReminderAdapter.notifyDataSetChanged();
+//            editReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.dismiss();
         });
+
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
     }
 
     private void initSelectEmployeeDialog() {
@@ -440,13 +441,19 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
         //Add events
         selectEmployeeOkButton.setOnClickListener(view -> {
-            editEmployeeAdapter.notifyDataSetChanged();
+//            editEmployeeAdapter.notifyDataSetChanged();
             selectEmployeeDialog.dismiss();
         });
+
+        selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.notifyDataSetChanged());
+
+
     }
 
     private void addEvents() {
-        selectEmployeeButton.setOnClickListener(view -> showSelectEmployeeDialog());
+        selectEmployeeButton.setOnClickListener(view -> {
+            showSelectEmployeeDialog();
+        });
 
         timeSetListener = (timePicker, hourOfDay, minute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -537,7 +544,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
         selectReminderButton.setOnClickListener(v -> {
             selectReminderAdapter.notifyDataSetChanged();
-            showAddReminderDialog();
+            showEditReminderDialog();
         });
     }
 
@@ -624,6 +631,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
+            selectEmployeeAdapter.notifyDataSetChanged();
             selectEmployeeDialog.show();
             if (selectEmployeeDialog.getWindow() != null) {
                 selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
@@ -631,8 +639,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         }
     }
 
-    private void showAddReminderDialog() {
+    private void showEditReminderDialog() {
         if (!isFinishing()) {
+            selectReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.show();
             if (selectReminderDialog.getWindow() != null) {
                 selectReminderDialog.getWindow().setAttributes(lWindowParams);
@@ -754,7 +763,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     }
     //----------------------------------------------------------------------------------------------
 
-    //EDIT TASK LIST
+    //TASK DIALOG
     //----------------------------------------------------------------------------------------------
 
     private void updateEditTaskDialogHeader() {
@@ -788,6 +797,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     //SELECT EMPLOYEE DIALOG
     //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCheckBoxClicked(String employeeId, boolean isChecked) {
         if (isChecked) {
@@ -799,17 +809,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         }
     }
 
+    //EDIT EMPLOYEE LIST
+    //----------------------------------------------------------------------------------------------
     @Override
     public void onDeleteButtonClicked(String employeeId) {
         selectedEmployeesIds.remove(employeeId);
         conflictsMap.remove(employeeId);
         editEmployeeAdapter.notifyDataSetChanged();
-        selectEmployeeAdapter.notifyDataSetChanged();
+//        selectEmployeeAdapter.notifyDataSetChanged();
     }
-    //----------------------------------------------------------------------------------------------
 
-    //EDIT EMPLOYEE LIST
-    //----------------------------------------------------------------------------------------------
     @Override
     public void onListItemClicked(String employeeId) {
         ArrayList<String> conflictEvents = conflictsMap.get(employeeId);
@@ -839,6 +848,11 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             }
         }
     }
+
+    @Override
+    public void remindersChanged() {
+
+    }
     //----------------------------------------------------------------------------------------------
 
     //SELECT REMINDER LIST
@@ -847,11 +861,12 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     public void onSelectReminderCheckBoxClicked(int minute, boolean isChecked) {
         if (isChecked) {
             selectedReminders.add(new Reminder("", "", minute, ""));
+//            editReminderAdapter.notifyDataSetChanged();
         } else {
             for (Reminder r : selectedReminders) {
                 if (r.getMinute() == minute) {
                     selectedReminders.remove(r);
-                    editReminderAdapter.notifyDataSetChanged();
+//                    editReminderAdapter.notifyDataSetChanged();
                     return;
                 }
             }

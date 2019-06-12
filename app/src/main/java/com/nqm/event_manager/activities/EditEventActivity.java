@@ -68,7 +68,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
             locationEditText, noteEditText;
     TextView startDowTextView, endDowTextView;
-    Button addEmployeesButton, taskButton, scheduleButton;
+    Button selectEmployeesButton, taskButton, scheduleButton;
 
     TimePickerDialog.OnTimeSetListener timeSetListener;
 
@@ -192,7 +192,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         noteEditText = findViewById(R.id.edit_event_note_edit_text);
 
         conflictButton = findViewById(R.id.edit_event_conflict_button);
-        addEmployeesButton = findViewById(R.id.edit_event_add_employee_button);
+        selectEmployeesButton = findViewById(R.id.edit_event_add_employee_button);
         taskButton = findViewById(R.id.edit_event_task_button);
         scheduleButton = findViewById(R.id.edit_event_schedule_button);
 
@@ -406,9 +406,6 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void initSelectEmployeeDialog() {
         selectEmployeeDialog = new Dialog(this);
         selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
-//        lWindowParams.copyFrom(selectEmployeeDialog.getWindow().getAttributes());
-//        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-//        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
         //Connect views
         selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
@@ -442,9 +439,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
         //Add events
         selectEmployeeOkButton.setOnClickListener(view -> {
-            editEmployeeAdapter.notifyDataSetChanged();
+//            editEmployeeAdapter.notifyDataSetChanged();
             selectEmployeeDialog.dismiss();
         });
+
+        selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.notifyDataSetChanged());
     }
 
     private void initSelectReminderDialog() {
@@ -461,59 +460,20 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
         //Add events
         selectReminderOkButton.setOnClickListener(view -> {
-            editReminderAdapter.notifyDataSetChanged();
+//            editReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.dismiss();
         });
+
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
+
     }
 
     private void addEvents() {
-        addEmployeesButton.setOnClickListener(view -> showSelectEmployeeDialog());
+        selectEmployeesButton.setOnClickListener(view -> showSelectEmployeeDialog());
 
         taskButton.setOnClickListener(v -> showEditTaskDialog());
 
         scheduleButton.setOnClickListener(view -> showEditScheduleDialog());
-
-//        dateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
-//            calendar.set(Calendar.YEAR, year);
-//            calendar.set(Calendar.MONTH, monthOfYear);
-//            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//
-//            //Update TextEdits & TextViews;
-//            if (currentView == startDateEditText) {
-//                startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-//                startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
-//            } else {
-//                endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-//                endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
-//            }
-//
-//            //Make sure start date + start time < end date + end time
-//            try {
-//                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-//                Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
-//                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-//                Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
-//
-//                if (startDate.compareTo(endDate) > 0) {
-//                    if (currentView == startDateEditText) {
-//                        endDateEditText.setText(startDateEditText.getText().toString());
-//                        endDowTextView.setText(startDowTextView.getText().toString());
-//                    } else {
-//                        startDateEditText.setText(endDateEditText.getText().toString());
-//                        startDowTextView.setText(endDowTextView.getText().toString());
-//                    }
-//                    if (startTime.compareTo(endTime) > 0) {
-//                        endTimeEditText.setText(startTimeEditText.getText().toString());
-//                    }
-//                } else if (startDate.compareTo(endDate) == 0) {
-//                    if (startTime.compareTo(endTime) > 0) {
-//                        endTimeEditText.setText(startTimeEditText.getText().toString());
-//                    }
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        };
 
         timeSetListener = (timePicker, hourOfDay, minute) -> {
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -655,6 +615,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     private void showSelectEmployeeDialog() {
         if (!isFinishing()) {
+            selectEmployeeAdapter.notifyDataSetChanged();
             selectEmployeeDialog.show();
             if (selectEmployeeDialog.getWindow() != null) {
                 selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
@@ -697,6 +658,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     private void showSelectReminderDialog() {
         if (!isFinishing()) {
+            selectReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.show();
             if (selectReminderDialog.getWindow() != null) {
                 selectReminderDialog.getWindow().setAttributes(lWindowParams);
@@ -704,7 +666,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         }
     }
 
-    //ACTIVITY LIFE CYCLE
+    //ACTIVITY
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean onSupportNavigateUp() {
@@ -774,7 +736,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         selectedEmployeesIds.remove(employeeId);
         conflictsMap.remove(employeeId);
         editEmployeeAdapter.notifyDataSetChanged();
-        selectEmployeeAdapter.notifyDataSetChanged();
+//        selectEmployeeAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -917,6 +879,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     }
 
     @Override
+    public void remindersChanged() {
+
+    }
+
+    @Override
     public void onSelectReminderCheckBoxClicked(int minute, boolean isChecked) {
         if (isChecked) {
             selectedReminders.add(new Reminder("", eventId, minute, ""));
@@ -924,7 +891,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             for (Reminder r : selectedReminders) {
                 if (r.getMinute() == minute) {
                     selectedReminders.remove(r);
-                    editReminderAdapter.notifyDataSetChanged();
+//                    editReminderAdapter.notifyDataSetChanged();
                     return;
                 }
             }

@@ -36,26 +36,20 @@ public class EditEmployeeAddEventAdapter extends
             specialityTextView = itemView.findViewById(R.id.edit_employee_list_item_speciality_text_view);
             deleteButton = itemView.findViewById(R.id.edit_employee_list_item_delete_button);
 
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onDeleteButtonClicked(selectedEmployeesIds.get(position));
-                        }
+            deleteButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onDeleteButtonClicked(selectedEmployeesIds.get(position));
                     }
                 }
             });
 
-            View.OnClickListener itemClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onListItemClicked(selectedEmployeesIds.get(position));
-                        }
+            View.OnClickListener itemClickListener = v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onListItemClicked(selectedEmployeesIds.get(position));
                     }
                 }
             };

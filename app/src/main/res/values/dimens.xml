@@ -11,6 +11,7 @@
     <dimen name="section_title">16sp</dimen>
     <dimen name="section_content">17sp</dimen>
     <dimen name="text_button">16sp</dimen>
+    <dimen name="sub_text_button">14sp</dimen>
     <dimen name="note">16sp</dimen>
     <dimen name="time_list_item">15sp</dimen>
     <dimen name="info_list_item">16sp</dimen>

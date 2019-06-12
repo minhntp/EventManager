@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.ViewEmployeeActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.ViewEmployeeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/view_employee_toolbar"
@@ -16,29 +16,34 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/view_employee_toolbar"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
-        android:orientation="vertical"
-        tools:context=".activities.ViewEmployeeActivity">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_name"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="Họ tên:"
                 android:textSize="@dimen/section_title" />
 
@@ -46,23 +51,30 @@
                 android:id="@+id/view_employee_activity_name_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="12"
                 android:clickable="false"
                 android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_guitar"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="Chuyên môn:"
                 android:textSize="@dimen/section_title" />
 
@@ -70,47 +82,61 @@
                 android:id="@+id/view_employee_activity_speciality_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="12"
                 android:clickable="false"
                 android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_birthday"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="Ngày sinh:"
-                android:textSize="@dimen/section_title"  />
+                android:textSize="@dimen/section_title" />
 
             <TextView
                 android:id="@+id/view_employee_activity_date_of_birth_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="12"
                 android:clickable="false"
                 android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_phone"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="Số điện thoại:"
                 android:textSize="@dimen/section_title" />
 
@@ -118,7 +144,7 @@
                 android:id="@+id/view_employee_activity_phone_number_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="8"
                 android:clickable="false"
                 android:textSize="@dimen/section_content" />
 
@@ -127,7 +153,7 @@
                 style="@style/ManageEmployeeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:src="@drawable/ic_call" />
 
             <ImageButton
@@ -135,22 +161,29 @@
                 style="@style/ManageEmployeeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:src="@drawable/ic_message" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_email_black"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="Email:"
                 android:textSize="@dimen/section_title" />
 
@@ -158,7 +191,7 @@
                 android:id="@+id/view_employee_activity_email_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+                android:layout_weight="10"
                 android:clickable="false"
                 android:textSize="@dimen/section_content" />
 
@@ -167,22 +200,29 @@
                 style="@style/ManageEmployeeButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:src="@drawable/ic_email" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="9">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:weightSum="19">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_identity"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="6"
                 android:text="CMND:"
                 android:textSize="@dimen/section_title" />
 
@@ -190,9 +230,9 @@
                 android:id="@+id/view_employee_activity_cmnd_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="12"
                 android:clickable="false"
-                android:textSize="@dimen/section_content"/>
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
     </LinearLayout>

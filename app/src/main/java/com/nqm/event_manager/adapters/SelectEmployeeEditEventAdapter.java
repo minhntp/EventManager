@@ -21,9 +21,9 @@ public class SelectEmployeeEditEventAdapter extends
         RecyclerView.Adapter<SelectEmployeeEditEventAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView profileImageView;
-        public TextView nameTextView, specialityTextView;
-        public CheckBox selectCheckBox;
+        private ImageView profileImageView;
+        private TextView nameTextView, specialityTextView;
+        private CheckBox selectCheckBox;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -32,14 +32,11 @@ public class SelectEmployeeEditEventAdapter extends
             specialityTextView = itemView.findViewById(R.id.select_employee_speciality_text_view);
             selectCheckBox = itemView.findViewById(R.id.select_employee_select_checkbox);
 
-            selectCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (listener != null) {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
-                        }
+            selectCheckBox.setOnClickListener(v -> {
+                if (listener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
                     }
                 }
             });
@@ -69,9 +66,8 @@ public class SelectEmployeeEditEventAdapter extends
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View employeeView = inflater.inflate(R.layout.list_item_select_employee, viewGroup, false);
-        ViewHolder viewHolder = new ViewHolder(employeeView);
 
-        return viewHolder;
+        return new ViewHolder(employeeView);
     }
 
     @Override
@@ -85,17 +81,24 @@ public class SelectEmployeeEditEventAdapter extends
         nameTextView.setText(employee.getHoTen());
         specialityTextView.setText(employee.getChuyenMon());
 
-        SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, new SalaryRepository.MyIsPaidSalaryCallback() {
-            @Override
-            public void onCallback(boolean isPaid) {
-                if (isPaid) {
-                    selectCheckBox.setVisibility(View.INVISIBLE);
-                } else {
-                    selectCheckBox.setVisibility(View.VISIBLE);
-                    selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
-                }
-            }
-        });
+//        selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+
+//        SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, isPaid -> {
+//            if (isPaid) {
+//                selectCheckBox.setVisibility(View.INVISIBLE);
+//            } else {
+//                selectCheckBox.setVisibility(View.VISIBLE);
+//                selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+//            }
+//        });
+
+        boolean isPaid = SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId);
+        if (isPaid) {
+            selectCheckBox.setVisibility(View.INVISIBLE);
+        } else {
+            selectCheckBox.setVisibility(View.VISIBLE);
+            selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+        }
 
     }
 

@@ -7,7 +7,7 @@
     <string name="view_event_activity_label">Chi tiết sự kiện</string>
     <string name="send_event_info_activity_label">Gửi thông tin sự kiện</string>
     <string name="show_conflict_activity_label">Các sự kiện bị xung đột</string>
-    <string name="search_event_activity_label">Tìm kiếm sự kiện</string>
+    <string name="search_event_activity_label">Danh sách và Tìm kiếm sự kiện</string>
     <string name="calculate_salary_single_employee_label">Tính lương cho nhân viên</string>
     <string name="add_employee_single_label">Thêm nhân viên</string>
     <string name="edit_employee_single_label">Sửa thông tin nhân viên</string>
@@ -58,5 +58,10 @@
     <string name="message_function">Nhắn tin</string>
     <string name="email_function">Gửi email</string>
     <string name="salary_function">Tính lương</string>
+    <string name="ok_button">OK</string>
+    <string name="add_button">Thêm</string>
+    <string name="sort_button">Sắp xếp</string>
+    <string name="schedule_dialog">Lịch trình</string>
+    <string name="reminder_dialog">Chọn thời gian nhắc nhở</string>
 
 </resources>

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.AddEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.AddEventActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/add_event_toolbar"
@@ -28,32 +27,63 @@
             android:layout_margin="10dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tên sự kiện"
-                android:textSize="@dimen/section_title"
-                android:textStyle="bold" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="10">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_event_black" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:text="Tên sự kiện"
+                    android:textSize="@dimen/section_title"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/add_event_title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Bắt đầu"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="bold" />
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="10">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_time" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:text="Bắt đầu"
+                        android:textSize="@dimen/section_title"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -90,12 +120,28 @@
                         android:textSize="@dimen/section_content" />
                 </LinearLayout>
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Kết thúc"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="bold" />
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="10">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_time" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:text="Kết thúc"
+                        android:textSize="@dimen/section_title"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -132,13 +178,28 @@
                         android:textSize="@dimen/section_content" />
                 </LinearLayout>
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Địa điểm"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="bold" />
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="10">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_location" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:text="Địa điểm"
+                        android:textSize="@dimen/section_title"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/add_event_location_edit_text"
@@ -151,14 +212,29 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginTop="10dp"
-                        android:text="Nhân sự"
-                        android:textSize="@dimen/section_title"
-                        android:textStyle="bold" />
+                        android:layout_centerVertical="true"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:weightSum="10">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_people" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="9"
+                            android:text="Nhân sự"
+                            android:textSize="@dimen/section_title"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/add_event_conflict_button"
@@ -167,15 +243,14 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:text="Xung đột"
-                        android:textSize="@dimen/text_button"
-                        android:textStyle="bold" />
+                        android:textSize="@dimen/sub_text_button" />
                 </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/add_event_edit_employee_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never"/>
+                    android:overScrollMode="never" />
 
                 <Button
                     android:id="@+id/add_event_select_employee_button"
@@ -183,16 +258,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chọn nhân sự"
-                    android:textSize="@dimen/text_button"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/sub_text_button"/>
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Ghi chú"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="10">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_note" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:text="Ghi chú"
+                        android:textSize="@dimen/section_title"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/add_event_note_edit_text"
@@ -222,13 +311,28 @@
                     android:textSize="@dimen/text_button"
                     android:textStyle="bold" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="Nhắc nhở"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="10">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_reminder" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:text="Nhắc nhở"
+                        android:textSize="@dimen/section_title"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <com.nqm.event_manager.custom_views.CustomListView
                     android:id="@+id/add_event_reminder_list_view"
@@ -244,8 +348,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="50dp"
                     android:text="Thêm nhắc nhở"
-                    android:textSize="@dimen/text_button"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/sub_text_button"/>
             </LinearLayout>
 
         </LinearLayout>

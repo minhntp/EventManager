@@ -12,7 +12,7 @@
         android:layout_weight="5"
         android:gravity="center_vertical"
         android:textSize="@dimen/time_text_view"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="3dp"
         android:textStyle="italic"/>
 
     <LinearLayout

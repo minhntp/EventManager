@@ -58,7 +58,7 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".activities.ViewEventActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />

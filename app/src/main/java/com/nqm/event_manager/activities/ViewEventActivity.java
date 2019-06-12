@@ -2,7 +2,6 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
@@ -89,6 +87,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     ListView selectReminderListView;
     Button selecReminderOkButton;
     SelectReminderAdapter selectReminderAdapter;
+    boolean isRemindersChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +154,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         editReminderListView.setAdapter(editReminderAdapter);
 
         initSelectReminderDialog();
+        isRemindersChanged = false;
     }
 
     private void initViewScheduleDialog() {
@@ -166,7 +166,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         viewScheduleDialog.setContentView(R.layout.dialog_view_schedule);
 
         lWindowParams = new WindowManager.LayoutParams();
-        if (viewScheduleDialog.getWindow() !=null) {
+        if (viewScheduleDialog.getWindow() != null) {
             lWindowParams.copyFrom(viewScheduleDialog.getWindow().getAttributes());
         }
         lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
@@ -180,12 +180,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         scheduleRecyclerView.setAdapter(viewScheduleAdapter);
         scheduleRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        scheduleBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewScheduleDialog.dismiss();
-            }
-        });
+        scheduleBackButton.setOnClickListener(view -> viewScheduleDialog.dismiss());
     }
 
     private void initViewTaskDialog() {
@@ -206,12 +201,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         taskRecyclerView.setAdapter(viewTaskAdapter);
         taskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-        taskBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewTaskDialog.dismiss();
-            }
-        });
+        taskBackButton.setOnClickListener(view -> viewTaskDialog.dismiss());
     }
 
     @Override
@@ -231,13 +221,10 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa sự kiện")
                     .setMessage("Bạn có chắc chắn không?")
-                    .setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener);
-                            EventRepository.getInstance().deleteEventFromDatabase(eventId);
-                            context.finish();
-                        }
+                    .setPositiveButton("Có", (dialog, which) -> {
+                        DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener);
+                        EventRepository.getInstance().deleteEventFromDatabase(eventId);
+                        context.finish();
                     })
                     .setNegativeButton("Không", null)
                     .show();
@@ -296,36 +283,24 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     }
 
     private void addEvents() {
-        viewScheduleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewScheduleButton.setOnClickListener(view -> {
 //                schedules = ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId);
-                if (schedules.size() > 0) {
-                    showViewScheduleDialog();
-                } else {
-                    Toast.makeText(context, "Sự kiện không có lịch trình nào", Toast.LENGTH_SHORT).show();
-                }
+            if (schedules.size() > 0) {
+                showViewScheduleDialog();
+            } else {
+                Toast.makeText(context, "Sự kiện không có lịch trình nào", Toast.LENGTH_SHORT).show();
             }
         });
 
-        viewTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tasks.size() > 0) {
-                    showViewTaskDialog();
-                } else {
-                    Toast.makeText(context, "Sự kiện không có công việc nào", Toast.LENGTH_SHORT).show();
-                }
+        viewTaskButton.setOnClickListener(v -> {
+            if (tasks.size() > 0) {
+                showViewTaskDialog();
+            } else {
+                Toast.makeText(context, "Sự kiện không có công việc nào", Toast.LENGTH_SHORT).show();
             }
         });
 
-        selectReminderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectReminderAdapter.notifyDataSetChanged();
-                showSelectReminderDialog();
-            }
-        });
+        selectReminderButton.setOnClickListener(v -> showSelectReminderDialog());
     }
 
     private void showViewScheduleDialog() {
@@ -368,18 +343,18 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         selectReminderListView.setAdapter(selectReminderAdapter);
 
         //Add events
-        selecReminderOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editReminderAdapter.notifyDataSetChanged();
-                selectReminderDialog.dismiss();
-            }
+        selecReminderOkButton.setOnClickListener(view -> {
+//                editReminderAdapter.notifyDataSetChanged();
+            selectReminderDialog.dismiss();
         });
+
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
 
     }
 
     private void showSelectReminderDialog() {
         if (!isFinishing()) {
+            selectReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.show();
         }
     }
@@ -429,7 +404,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
     @Override
     protected void onPause() {
-        saveRemindersToDatabase();
+        if (isRemindersChanged) {
+            saveRemindersToDatabase();
+        }
         super.onPause();
     }
 
@@ -471,6 +448,11 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     }
 
     @Override
+    public void remindersChanged() {
+        isRemindersChanged = true;
+    }
+
+    @Override
     public void onSelectReminderCheckBoxClicked(int minute, boolean isChecked) {
         if (isChecked) {
             selectedReminders.add(new Reminder("", eventId, minute, ""));
@@ -478,7 +460,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
             for (Reminder r : selectedReminders) {
                 if (r.getMinute() == minute) {
                     selectedReminders.remove(r);
-                    editReminderAdapter.notifyDataSetChanged();
+//                    editReminderAdapter.notifyDataSetChanged();
                     return;
                 }
             }
