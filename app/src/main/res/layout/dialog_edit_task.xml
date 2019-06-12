@@ -51,8 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:text="Sắp xếp"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button" />
 
         <Button
             android:id="@+id/edit_task_dialog_add_button"
@@ -61,8 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="Thêm"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button"/>
     </RelativeLayout>
 
     <!--<ScrollView-->
@@ -97,7 +95,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="OK"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button"/>
     </LinearLayout>
 </RelativeLayout>

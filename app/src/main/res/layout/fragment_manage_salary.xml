@@ -1,13 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.RootActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="10dp"
     android:layout_marginTop="5dp"
     android:layout_marginRight="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activities.RootActivity">
 
     <LinearLayout
         android:id="@+id/fragment_manage_salary_function"
@@ -16,12 +15,29 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ngày bắt đầu"
-            android:textSize="15sp"
-            android:textStyle="italic" />
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_time" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:text="Ngày bắt đầu"
+                android:textSize="@dimen/section_title"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/fragment_manage_salary_start_date_edit_text"
@@ -30,12 +46,29 @@
             android:focusable="false"
             android:textSize="@dimen/date_edit_text" />
 
-        <TextView
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ngày kết thúc"
-            android:textSize="15sp"
-            android:textStyle="italic" />
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ic_time" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:text="Ngày kết thúc"
+                android:textSize="@dimen/section_title"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <EditText
             android:id="@+id/fragment_manage_salary_end_date_edit_text"
@@ -51,8 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Tính"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button" />
     </LinearLayout>
 
     <LinearLayout
@@ -66,22 +98,37 @@
             android:id="@+id/fragment_manage_salary_number_of_events_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/custom_calendar_grid_item_background"
             android:gravity="center"
             android:paddingBottom="2dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
             android:textColor="@color/textPrimaryColor"
             android:textSize="@dimen/section_title"
             android:textStyle="italic" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nhân viên"
-            android:textSize="@dimen/section_title"
-            android:textStyle="italic" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="10">
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_employee"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Nhân viên"
+                android:textSize="@dimen/section_title"
+                android:textStyle="italic"
+                android:layout_weight="9"/>
+        </LinearLayout>
+
+
 
         <Spinner
             android:id="@+id/fragment_manage_salary_employee_spinner"
@@ -89,14 +136,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_height"
-            android:background="@color/divider"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="2dp"/>
+            android:layout_marginBottom="2dp"
+            android:background="@color/divider" />
 
         <!--<TextView-->
         <!--android:id="@+id/fragment_manage_salary_result_text_view"-->
@@ -130,8 +177,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_height"
-            android:background="@color/divider"
-            android:layout_marginTop="2dp"/>
+            android:layout_marginTop="2dp"
+            android:background="@color/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -220,8 +267,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="Lưu thay đổi"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button" />
 
         <Button
             android:id="@+id/fragment_manage_salary_pay_all_button"
@@ -231,7 +277,6 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="Thanh toán tất cả"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button" />
     </LinearLayout>
 </RelativeLayout>

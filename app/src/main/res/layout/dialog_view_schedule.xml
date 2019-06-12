@@ -37,11 +37,10 @@
         <Button
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:id="@+id/back_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Trở về"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold"/>
+            android:text="@string/back_button"
+            android:textSize="@dimen/sub_text_button"/>
     </LinearLayout>
 </RelativeLayout>

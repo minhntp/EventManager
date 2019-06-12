@@ -53,8 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="OK"
-                android:textSize="@dimen/text_button"
-                android:textStyle="bold" />
+                android:textSize="@dimen/sub_text_button"/>
         </LinearLayout>
     </RelativeLayout>
 

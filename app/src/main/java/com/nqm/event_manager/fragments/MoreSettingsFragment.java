@@ -2,6 +2,7 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -108,9 +109,10 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
         //Add events
         selectReminderOkButton.setOnClickListener(view -> {
-            editReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.dismiss();
         });
+
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
     }
 
     private void addEvents() {
@@ -162,7 +164,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
             for (Reminder r : selectedReminders) {
                 if (r.getMinute() == minute) {
                     selectedReminders.remove(r);
-                    editReminderAdapter.notifyDataSetChanged();
+//                    editReminderAdapter.notifyDataSetChanged();
                     return;
                 }
             }

@@ -12,7 +12,7 @@
         android:paddingBottom="10dp"
         android:focusableInTouchMode="true"
         android:gravity="center_vertical"
-        android:text="Công việc"
+        android:text="@string/task_dialog"
         android:textAlignment="center"
         android:textSize="@dimen/dialog_title"
         android:textAllCaps="true"
@@ -69,7 +69,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Trở về"
-            android:textSize="@dimen/text_button"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sub_text_button"/>
     </LinearLayout>
 </RelativeLayout>

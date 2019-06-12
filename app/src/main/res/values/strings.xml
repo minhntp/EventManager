@@ -63,5 +63,8 @@
     <string name="sort_button">Sắp xếp</string>
     <string name="schedule_dialog">Lịch trình</string>
     <string name="reminder_dialog">Chọn thời gian nhắc nhở</string>
+    <string name="back_button">Trở về</string>
+    <string name="task_dialog">Công việc</string>
+    <string name="add_reminder_button">Thêm nhắc nhở</string>
 
 </resources>
