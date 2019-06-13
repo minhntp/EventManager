@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.EditEmployeeActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.EditEmployeeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/edit_employee_toolbar"
@@ -28,15 +28,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_name"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_name" />
 
             <TextView
                 android:id="@+id/edit_employee_name_text_view"
@@ -57,15 +57,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_guitar"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_guitar" />
 
             <TextView
                 android:layout_width="0dp"
@@ -85,22 +85,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_birthday"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_birthday" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
                 android:text="Ngày sinh:"
-                android:textSize="@dimen/section_title"  />
+                android:textSize="@dimen/section_title" />
 
             <EditText
                 android:id="@+id/edit_employee_activity_date_of_birth_edit_text"
@@ -115,15 +115,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_phone"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_phone" />
 
             <TextView
                 android:layout_width="0dp"
@@ -137,22 +137,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="phone"/>
+                android:inputType="phone"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_email_black"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_email_black" />
 
             <TextView
                 android:layout_width="0dp"
@@ -166,22 +166,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_identity"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_identity" />
 
             <TextView
                 android:layout_width="0dp"
@@ -195,8 +195,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
     </LinearLayout>
