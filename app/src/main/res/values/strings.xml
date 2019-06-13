@@ -38,7 +38,6 @@
         <item>Lịch trình</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="task_progress">Đã hoàn thành %1$d/%2$d</string>
     <string name="task_today">Hôm nay</string>
     <string name="task_overdue">Quá hạn %1$d ngày</string>

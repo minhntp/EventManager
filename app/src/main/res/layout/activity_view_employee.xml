@@ -31,14 +31,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_name"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -62,14 +62,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_guitar"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -93,14 +93,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_birthday"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -124,14 +124,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_phone"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -171,14 +171,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_email_black"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -210,14 +210,14 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:weightSum="19">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_identity"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="0dp"
