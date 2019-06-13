@@ -37,7 +37,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
 
     @Override
     public Employee getItem(int position) {
-        return EmployeeRepository.getInstance(null).getAllEmployees().get(employeesIds.get(position));
+        return EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(position));
     }
 
     @Override

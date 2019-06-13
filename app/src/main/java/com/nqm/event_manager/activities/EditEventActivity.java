@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,8 +67,9 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         IOnEditReminderItemClicked, IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
     android.support.v7.widget.Toolbar toolbar;
 
-    EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
-            locationEditText, noteEditText;
+    EditText startDateEditText, startTimeEditText, endDateEditText, endTimeEditText, noteEditText;
+    AutoCompleteTextView titleAutoCompleteTextView, locationAutoCompleteTextView;
+    ArrayAdapter<String> titleAdapter, locationAdapter;
     TextView startDowTextView, endDowTextView;
     Button selectEmployeesButton, taskButton, scheduleButton;
 
@@ -154,10 +157,10 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         int id = item.getItemId();
 
         if (id == R.id.edit_event_action_save_event) {
-            if (titleEditText.getText().toString().isEmpty()) {
-                titleEditText.setError("Xin mời nhập");
+            if (titleAutoCompleteTextView.getText().toString().isEmpty()) {
+                titleAutoCompleteTextView.setError("Xin mời nhập");
             } else {
-                titleEditText.setError(null);
+                titleAutoCompleteTextView.setError(null);
                 if (selectedEmployeesIds.size() > 0) {
                     Log.d("debug", "here1");
                     checkAndUpdate();
@@ -179,16 +182,19 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        titleEditText = findViewById(R.id.edit_event_title_edit_text);
+//        titleEditText = findViewById(R.id.edit_event_title_edit_text);
         startDateEditText = findViewById(R.id.edit_event_start_date_edit_text);
         startTimeEditText = findViewById(R.id.edit_event_start_time_edit_text);
         endDateEditText = findViewById(R.id.edit_event_end_date_edit_text);
         endTimeEditText = findViewById(R.id.edit_event_end_time_edit_text);
+        titleAutoCompleteTextView = findViewById(R.id.edit_event_title_auto_complete_text_view);
+        locationAutoCompleteTextView = findViewById(R.id.edit_event_location_auto_complete_text_view);
+
 
         startDowTextView = findViewById(R.id.edit_event_start_dow_text_view);
         endDowTextView = findViewById(R.id.edit_event_end_dow_text_view);
 
-        locationEditText = findViewById(R.id.edit_event_location_edit_text);
+//        locationEditText = findViewById(R.id.edit_event_location_edit_text);
         noteEditText = findViewById(R.id.edit_event_note_edit_text);
 
         conflictButton = findViewById(R.id.edit_event_conflict_button);
@@ -208,6 +214,14 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         event = EventRepository.getInstance().getAllEvents().get(eventId);
+
+        titleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EventRepository.getInstance().getTitles());
+        titleAutoCompleteTextView.setAdapter(titleAdapter);
+
+        locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EventRepository.getInstance().getLocations());
+        locationAutoCompleteTextView.setAdapter(locationAdapter);
 
         initDatePickerDialog();
 
@@ -242,7 +256,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     }
 
     private void fillInformation() {
-        titleEditText.setText(event.getTen());
+        titleAutoCompleteTextView.setText(event.getTen());
         startDateEditText.setText(event.getNgayBatDau());
         startTimeEditText.setText(event.getGioBatDau());
         endDateEditText.setText(event.getNgayKetThuc());
@@ -255,7 +269,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             e.printStackTrace();
         }
 
-        locationEditText.setText(event.getDiaDiem());
+        locationAutoCompleteTextView.setText(event.getDiaDiem());
         noteEditText.setText(event.getGhiChu());
     }
 
@@ -812,14 +826,13 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
 
     private void updateEventToDatabase() {
         //Event
-        Event changedEvent = new Event(eventId, titleEditText.getText().toString(),
+        Event changedEvent = new Event(eventId, titleAutoCompleteTextView.getText().toString(),
                 startDateEditText.getText().toString(), endDateEditText.getText().toString(),
                 startTimeEditText.getText().toString(), endTimeEditText.getText().toString(),
-                locationEditText.getText().toString(), noteEditText.getText().toString());
+                locationAutoCompleteTextView.getText().toString(), noteEditText.getText().toString());
 
         //Salaries
-        ArrayList<String> unchangedEmployeesIds = EmployeeRepository.getInstance(null)
-                .getEmployeesIdsByEventId(eventId);
+        ArrayList<String> unchangedEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsByEventId(eventId);
 
         ArrayList<String> deleteEmployeesIds = new ArrayList<>();
         ArrayList<String> addEmployeesIds = new ArrayList<>();

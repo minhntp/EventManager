@@ -65,5 +65,6 @@
     <string name="back_button">Trở về</string>
     <string name="task_dialog">Công việc</string>
     <string name="add_reminder_button">Thêm nhắc nhở</string>
+    <string name="event_title">Tên sự kiện</string>
 
 </resources>

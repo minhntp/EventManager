@@ -44,7 +44,7 @@ public class DatabaseAccess {
         return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
                 (EmployeeRepository.getInstance().getAllEmployees() != null) &&
                 (EventRepository.getInstance().getAllEvents() != null) &&
-                (EventRepository.getInstance().getNumberOfEventsMap() != null) &&
+//                (EventRepository.getInstance().getNumberOfEventsMap() != null) &&
                 (ReminderRepository.getInstance().getAllReminders() != null) &&
                 (SalaryRepository.getInstance().getAllSalaries() != null) &&
                 (ScheduleRepository.getInstance().getAllSchedules() != null) &&

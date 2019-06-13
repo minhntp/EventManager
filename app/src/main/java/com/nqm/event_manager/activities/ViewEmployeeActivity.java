@@ -120,7 +120,7 @@ public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLo
         }
 
         employeeId = getIntent().getStringExtra("employeeId");
-        employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeeId);
+        employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
 
         fillInformation();
     }

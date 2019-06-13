@@ -58,7 +58,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
         connectViews(view);
 
         searchString = "";
-        resultEmployeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsBySearchString(searchString);
+        resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
         employeeAdapter = new ViewEmployeeListAdapter(getActivity(), resultEmployeesIds);
         employeeListView.setAdapter(employeeAdapter);
         employeeAdapter.setListener(this);

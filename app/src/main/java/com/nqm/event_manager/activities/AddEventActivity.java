@@ -15,6 +15,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -66,8 +68,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     Activity context;
 
     Toolbar toolbar;
-    EditText titleEditText, startDateEditText, startTimeEditText, endDateEditText, endTimeEditText,
-            locationEditText, noteEditText;
+    EditText startDateEditText, startTimeEditText, endDateEditText, endTimeEditText, noteEditText;
+    AutoCompleteTextView titleAutoCompleteTextView, locationAutoCompleteTextView;
+    ArrayAdapter<String> titleAdapter, locationAdapter;
     TextView startDowTextView, endDowTextView;
     Button selectEmployeeButton, scheduleButton, conflictButton, taskButton;
 
@@ -148,10 +151,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.add_event_action_add_event) {
-            if (titleEditText.getText().toString().isEmpty()) {
-                titleEditText.setError("Xin mời nhập");
+            if (titleAutoCompleteTextView.getText().toString().isEmpty()) {
+                titleAutoCompleteTextView.setError("Xin mời nhập");
             } else {
-                titleEditText.setError(null);
+                titleAutoCompleteTextView.setError(null);
                 if (selectedEmployeesIds.size() > 0) {
                     checkAndSave();
                 } else {
@@ -170,12 +173,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        titleEditText = findViewById(R.id.add_event_title_edit_text);
+//        titleEditText = findViewById(R.id.add_event_title_edit_text);
+        titleAutoCompleteTextView = findViewById(R.id.add_event_title_auto_complete_text_view);
         startDateEditText = findViewById(R.id.add_event_start_date_edit_text);
         startTimeEditText = findViewById(R.id.add_event_start_time_edit_text);
         endDateEditText = findViewById(R.id.add_event_end_date_edit_text);
         endTimeEditText = findViewById(R.id.add_event_end_time_edit_text);
-        locationEditText = findViewById(R.id.add_event_location_edit_text);
+//        locationEditText = findViewById(R.id.add_event_location_edit_text);
+        locationAutoCompleteTextView = findViewById(R.id.add_event_location_auto_complete_text_view);
         noteEditText = findViewById(R.id.add_event_note_edit_text);
 
         startDowTextView = findViewById(R.id.add_event_start_dow_text_view);
@@ -193,6 +198,14 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     private void init() {
         context = this;
+
+        titleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EventRepository.getInstance().getTitles());
+        titleAutoCompleteTextView.setAdapter(titleAdapter);
+
+        locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EventRepository.getInstance().getLocations());
+        locationAutoCompleteTextView.setAdapter(locationAdapter);
 
         initDatePickerDialog();
 
@@ -698,12 +711,12 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
 
     private void addEventToDatabase() {
         Event event = new Event("",
-                titleEditText.getText().toString(),
+                titleAutoCompleteTextView.getText().toString(),
                 startDateEditText.getText().toString(),
                 endDateEditText.getText().toString(),
                 startTimeEditText.getText().toString(),
                 endTimeEditText.getText().toString(),
-                locationEditText.getText().toString(),
+                locationAutoCompleteTextView.getText().toString(),
                 noteEditText.getText().toString());
 
         final ArrayList<Salary> salaries = new ArrayList<>();

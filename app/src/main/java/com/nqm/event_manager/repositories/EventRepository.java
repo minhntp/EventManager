@@ -35,21 +35,23 @@ public class EventRepository {
     private boolean isLoaded;
     private HashMap<String, Event> allEvents;
     private HashMap<String, ArrayList<String>> numberOfEventsMap;
+    private ArrayList<String> titles;
+    private ArrayList<String> locations;
     private Calendar calendar = Calendar.getInstance();
 
     //-------------------------------------------------------------------------------------------
-    private EventRepository(final IOnDataLoadComplete listener) {
-        this.listener = listener;
-        addListener(eventList -> {
-            if (eventList != null) {
-                allEvents = eventList;
-                if (EventRepository.this.listener != null) {
-                    isLoaded = true;
-                    EventRepository.this.listener.notifyOnLoadComplete();
-                }
-            }
-        });
-    }
+//    private EventRepository(final IOnDataLoadComplete listener) {
+//        this.listener = listener;
+//        addListener(eventList -> {
+//            if (eventList != null) {
+//                allEvents = eventList;
+//                if (EventRepository.this.listener != null) {
+//                    isLoaded = true;
+//                    EventRepository.this.listener.notifyOnLoadComplete();
+//                }
+//            }
+//        });
+//    }
 
     private EventRepository() {
 //        allEvents = new HashMap<>();
@@ -57,17 +59,17 @@ public class EventRepository {
     }
     //-------------------------------------------------------------------------------------------
 
-    static public EventRepository getInstance(IOnDataLoadComplete listener) {
-        if (instance == null) {
-            instance = new EventRepository(listener);
-        } else {
-            instance.listener = listener;
-            if (instance.isLoaded && listener != null) {
-                instance.listener.notifyOnLoadComplete();
-            }
-        }
-        return instance;
-    }
+//    static public EventRepository getInstance(IOnDataLoadComplete listener) {
+//        if (instance == null) {
+//            instance = new EventRepository(listener);
+//        } else {
+//            instance.listener = listener;
+//            if (instance.isLoaded && listener != null) {
+//                instance.listener.notifyOnLoadComplete();
+//            }
+//        }
+//        return instance;
+//    }
 
     static public EventRepository getInstance() {
         if (instance == null) {
@@ -76,32 +78,32 @@ public class EventRepository {
         return instance;
     }
 
-    private void addListener(final MyEventCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.EVENT_COLLECTION)
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.w("debug", "Events listen failed.", e);
-                        return;
-                    }
-                    HashMap<String, Event> events = new HashMap<>();
-                    if (queryDocumentSnapshots != null) {
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            Map<String, Object> tempHashMap = doc.getData();
-                            Event tempEvent = new Event(doc.getId(),
-                                    (String) tempHashMap.get(Constants.EVENT_NAME),
-                                    (String) tempHashMap.get(Constants.EVENT_START_DATE),
-                                    (String) tempHashMap.get(Constants.EVENT_END_DATE),
-                                    (String) tempHashMap.get(Constants.EVENT_START_TIME),
-                                    (String) tempHashMap.get(Constants.EVENT_END_TIME),
-                                    (String) tempHashMap.get(Constants.EVENT_LOCATION),
-                                    (String) tempHashMap.get(Constants.EVENT_NOTE));
-                            events.put(tempEvent.getId(), tempEvent);
-                        }
-                    }
-                    callback.onCallback(events);
-                });
-    }
+//    private void addListener(final MyEventCallback callback) {
+//        DatabaseAccess.getInstance().getDatabase()
+//                .collection(Constants.EVENT_COLLECTION)
+//                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+//                    if (e != null) {
+//                        Log.w("debug", "Events listen failed.", e);
+//                        return;
+//                    }
+//                    HashMap<String, Event> events = new HashMap<>();
+//                    if (queryDocumentSnapshots != null) {
+//                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+//                            Map<String, Object> tempHashMap = doc.getData();
+//                            Event tempEvent = new Event(doc.getId(),
+//                                    (String) tempHashMap.get(Constants.EVENT_NAME),
+//                                    (String) tempHashMap.get(Constants.EVENT_START_DATE),
+//                                    (String) tempHashMap.get(Constants.EVENT_END_DATE),
+//                                    (String) tempHashMap.get(Constants.EVENT_START_TIME),
+//                                    (String) tempHashMap.get(Constants.EVENT_END_TIME),
+//                                    (String) tempHashMap.get(Constants.EVENT_LOCATION),
+//                                    (String) tempHashMap.get(Constants.EVENT_NOTE));
+//                            events.put(tempEvent.getId(), tempEvent);
+//                        }
+//                    }
+//                    callback.onCallback(events);
+//                });
+//    }
 
     public void setListener(IOnDataLoadComplete listener) {
         this.listener = listener;
@@ -119,6 +121,8 @@ public class EventRepository {
                     }
                     HashMap<String, Event> events = new HashMap<>();
                     HashMap<String, ArrayList<String>> numberOfEvents = new HashMap<>();
+                    ArrayList<String> titles = new ArrayList<>();
+                    ArrayList<String> locations = new ArrayList<>();
                     if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             Map<String, Object> tempHashMap = doc.getData();
@@ -131,6 +135,8 @@ public class EventRepository {
                                     (String) tempHashMap.get(Constants.EVENT_LOCATION),
                                     (String) tempHashMap.get(Constants.EVENT_NOTE));
                             events.put(tempEvent.getId(), tempEvent);
+                            titles.add(tempEvent.getTen());
+                            locations.add(tempEvent.getDiaDiem());
                             try {
                                 Date startDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayBatDau());
                                 Date endDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayKetThuc());
@@ -154,8 +160,18 @@ public class EventRepository {
                     }
                     allEvents = events;
                     numberOfEventsMap = numberOfEvents;
+                    this.titles = titles;
+                    this.locations = locations;
                     listener.notifyOnLoadComplete();
                 });
+    }
+
+    public ArrayList<String> getTitles() {
+        return titles;
+    }
+
+    public ArrayList<String> getLocations() {
+        return locations;
     }
 
     public HashMap<String, ArrayList<String>> getNumberOfEventsMap() {

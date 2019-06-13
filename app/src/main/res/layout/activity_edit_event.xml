@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.EditEventActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.EditEventActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/edit_event_toolbar"
@@ -54,11 +54,18 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/edit_event_title_edit_text"
+            <!--<EditText-->
+            <!--android:id="@+id/edit_event_title_edit_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="20dp"-->
+            <!--android:textStyle="bold" />-->
+            <AutoCompleteTextView
+                android:id="@+id/edit_event_title_auto_complete_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:completionThreshold="1"
+                android:textSize="@dimen/section_content"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -205,11 +212,18 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <EditText
-                    android:id="@+id/edit_event_location_edit_text"
+                <!--<EditText-->
+                <!--android:id="@+id/edit_event_location_edit_text"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="@dimen/section_content" />-->
+                <AutoCompleteTextView
+                    android:id="@+id/edit_event_location_auto_complete_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/section_content" />
+                    android:completionThreshold="1"
+                    android:textSize="@dimen/section_content"
+                    android:textStyle="bold" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -220,8 +234,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:orientation="horizontal"
                         android:gravity="center"
+                        android:orientation="horizontal"
                         android:weightSum="10">
 
                         <ImageView
@@ -254,7 +268,7 @@
                     android:id="@+id/edit_event_employee_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never"/>
+                    android:overScrollMode="never" />
 
                 <Button
                     android:id="@+id/edit_event_add_employee_button"
@@ -262,13 +276,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thêm nhân sự"
-                    android:textSize="@dimen/sub_text_button"/>
+                    android:textSize="@dimen/sub_text_button" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center"
+                    android:orientation="horizontal"
                     android:weightSum="10">
 
                     <ImageView
@@ -319,8 +333,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
+                android:orientation="horizontal"
                 android:weightSum="10">
 
                 <ImageView
@@ -353,7 +367,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="50dp"
                 android:text="Thêm nhắc nhở"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -27,8 +29,10 @@ public class EditEmployeeActivity extends AppCompatActivity {
     Employee employee;
 
     Toolbar toolbar;
-    EditText nameEditText, specialityEditText, phoneNumberEditText, dateOfBirthEditText,
+    EditText nameEditText, phoneNumberEditText, dateOfBirthEditText,
             emailEditText, cmndEditText;
+    AutoCompleteTextView specialityAutoCompleteTextView;
+    ArrayAdapter<String> specialityAdapter;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -69,7 +73,8 @@ public class EditEmployeeActivity extends AppCompatActivity {
         }
 
         nameEditText = findViewById(R.id.edit_employee_activity_name_edit_text);
-        specialityEditText = findViewById(R.id.edit_employee_activity_speciality_edit_text);
+//        specialityEditText = findViewById(R.id.edit_employee_activity_speciality_edit_text);
+        specialityAutoCompleteTextView = findViewById(R.id.edit_employee_speciality_auto_complete_text_view);
         phoneNumberEditText = findViewById(R.id.edit_employee_activity_phone_number_edit_text);
         dateOfBirthEditText = findViewById(R.id.edit_employee_activity_date_of_birth_edit_text);
         emailEditText = findViewById(R.id.edit_employee_activity_email_edit_text);
@@ -79,11 +84,15 @@ public class EditEmployeeActivity extends AppCompatActivity {
     private void init() {
         context = this;
 
+        specialityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EmployeeRepository.getInstance().getSpecialities());
+        specialityAutoCompleteTextView.setAdapter(specialityAdapter);
+
         employee = EmployeeRepository.getInstance().getAllEmployees().get(getIntent()
                 .getStringExtra(Constants.INTENT_EMPLOYEE_ID));
         if (employee != null) {
             nameEditText.setText(employee.getHoTen());
-            specialityEditText.setText(employee.getChuyenMon());
+            specialityAutoCompleteTextView.setText(employee.getChuyenMon());
             phoneNumberEditText.setText(employee.getSdt());
             dateOfBirthEditText.setText(employee.getNgaySinh());
             emailEditText.setText(employee.getEmail());
@@ -132,16 +141,16 @@ public class EditEmployeeActivity extends AppCompatActivity {
         } else {
             nameEditText.setError(null);
         }
-        if (specialityEditText.getText().toString().isEmpty()) {
-            specialityEditText.setError("Xin mời nhập");
+        if (specialityAutoCompleteTextView.getText().toString().isEmpty()) {
+            specialityAutoCompleteTextView.setError("Xin mời nhập");
             return;
         } else {
-            specialityEditText.setError(null);
+            specialityAutoCompleteTextView.setError(null);
         }
 
         Employee editedEmployee = new Employee(employee.getId(),
                 nameEditText.getText().toString(),
-                specialityEditText.getText().toString(),
+                specialityAutoCompleteTextView.getText().toString(),
                 cmndEditText.getText().toString(),
                 dateOfBirthEditText.getText().toString(),
                 phoneNumberEditText.getText().toString(),

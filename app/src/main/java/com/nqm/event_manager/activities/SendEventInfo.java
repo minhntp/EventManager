@@ -89,8 +89,8 @@ public class SendEventInfo extends AppCompatActivity {
         }
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
-        event = EventRepository.getInstance(null).getAllEvents().get(eventId);
-        employeesIds = EmployeeRepository.getInstance(null).getEmployeesIdsByEventId(eventId);
+        event = EventRepository.getInstance().getAllEvents().get(eventId);
+        employeesIds = EmployeeRepository.getInstance().getEmployeesIdsByEventId(eventId);
         sectionsTitles = getResources().getStringArray(R.array.sections_titles);
 
         employeeAdapter = new SendEventEmployeeAdapter(this, employeesIds);
@@ -213,7 +213,7 @@ public class SendEventInfo extends AppCompatActivity {
         if (cb.isChecked()) {
             contentStringBuilder.append("Nhân sự:\n");
             for (int i = 0; i < employeesIds.size(); i++) {
-                Employee employee = EmployeeRepository.getInstance(null).getAllEmployees().get(employeesIds.get(i));
+                Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
                 if (employee != null) {
                     contentStringBuilder.append("\t").append("+ ").append(employee.getHoTen())
                             .append(" - ").append(employee.getChuyenMon()).append("\n");

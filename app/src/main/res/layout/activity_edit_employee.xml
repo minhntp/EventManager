@@ -74,11 +74,18 @@
                 android:text="Chuyên môn:"
                 android:textSize="@dimen/section_title" />
 
-            <EditText
-                android:id="@+id/edit_employee_activity_speciality_edit_text"
+            <!--<EditText-->
+                <!--android:id="@+id/edit_employee_activity_speciality_edit_text"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="12"-->
+                <!--android:textSize="@dimen/section_content" />-->
+            <AutoCompleteTextView
+                android:id="@+id/edit_employee_speciality_auto_complete_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
+                android:completionThreshold="1"
                 android:textSize="@dimen/section_content" />
         </LinearLayout>
 

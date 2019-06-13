@@ -3,31 +3,24 @@ package com.nqm.event_manager.repositories;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
-import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 import com.nqm.event_manager.utils.StringUtil;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 public class EmployeeRepository {
 
     static EmployeeRepository instance;
     private HashMap<String, Employee> allEmployees;
+    private ArrayList<String> specialities;
     private IOnDataLoadComplete listener;
 
     //------------------------------------------------------------------------------------------
@@ -36,24 +29,24 @@ public class EmployeeRepository {
         addListener();
     }
 
-    private EmployeeRepository(final IOnDataLoadComplete listener) {
-        this.listener = listener;
-        allEmployees = new HashMap<>();
-        addListener(new MyEmployeeCallback() {
-            @Override
-            public void onCallback(HashMap<String, Employee> employeeList) {
-                if (employeeList != null) {
-                    allEmployees = employeeList;
-                    if (EmployeeRepository.this.listener != null) {
-                        EmployeeRepository.this.listener.notifyOnLoadComplete();
-                    }
-                }
-            }
-        });
-        if (allEmployees == null) {
-            allEmployees = new HashMap<>();
-        }
-    }
+//    private EmployeeRepository(final IOnDataLoadComplete listener) {
+//        this.listener = listener;
+//        allEmployees = new HashMap<>();
+//        addListener(new MyEmployeeCallback() {
+//            @Override
+//            public void onCallback(HashMap<String, Employee> employeeList) {
+//                if (employeeList != null) {
+//                    allEmployees = employeeList;
+//                    if (EmployeeRepository.this.listener != null) {
+//                        EmployeeRepository.this.listener.notifyOnLoadComplete();
+//                    }
+//                }
+//            }
+//        });
+//        if (allEmployees == null) {
+//            allEmployees = new HashMap<>();
+//        }
+//    }
 
     static public EmployeeRepository getInstance() {
         if (instance == null) {
@@ -62,26 +55,26 @@ public class EmployeeRepository {
         return instance;
     }
 
-    static public EmployeeRepository getInstance(IOnDataLoadComplete listener) {
-        if (instance == null) {
-            instance = new EmployeeRepository(listener);
-        }
-        return instance;
-    }
+//    static public EmployeeRepository getInstance(IOnDataLoadComplete listener) {
+//        if (instance == null) {
+//            instance = new EmployeeRepository(listener);
+//        }
+//        return instance;
+//    }
 
     //------------------------------------------------------------------------------------------
 
     private void addListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EMPLOYEE_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Employees listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Employee> employees = new HashMap<>();
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w("debug", "Employees listen failed.", e);
+                        return;
+                    }
+                    HashMap<String, Employee> employees = new HashMap<>();
+                    ArrayList<String> specialities = new ArrayList<>();
+                    if (queryDocumentSnapshots != null) {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             Map<String, Object> tempHashMap = doc.getData();
                             Employee tempEmployee = new Employee(doc.getId(),
@@ -92,8 +85,10 @@ public class EmployeeRepository {
                                     (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
                             employees.put(tempEmployee.getId(), tempEmployee);
+                            specialities.add(tempEmployee.getChuyenMon());
                         }
                         allEmployees = employees;
+                        this.specialities = specialities;
                         listener.notifyOnLoadComplete();
                     }
                 });
@@ -103,32 +98,36 @@ public class EmployeeRepository {
         this.listener = listener;
     }
 
-    private void addListener(final EmployeeRepository.MyEmployeeCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.EMPLOYEE_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Employees listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Employee> employees = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            Map<String, Object> tempHashMap = doc.getData();
-                            Employee tempEmployee = new Employee(doc.getId(),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_NAME),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_SPECIALITY),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_IDENTITY),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_DAY_OF_BIRTH),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
-                            employees.put(tempEmployee.getId(), tempEmployee);
-                        }
-                        callback.onCallback(employees);
-                    }
-                });
+    public ArrayList<String> getSpecialities() {
+        return specialities;
     }
+
+    //    private void addListener(final EmployeeRepository.MyEmployeeCallback callback) {
+//        DatabaseAccess.getInstance().getDatabase()
+//                .collection(Constants.EMPLOYEE_COLLECTION)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                        if (e != null) {
+//                            Log.w("debug", "Employees listen failed.", e);
+//                            return;
+//                        }
+//                        HashMap<String, Employee> employees = new HashMap<>();
+//                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+//                            Map<String, Object> tempHashMap = doc.getData();
+//                            Employee tempEmployee = new Employee(doc.getId(),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_NAME),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_SPECIALITY),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_IDENTITY),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_DAY_OF_BIRTH),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
+//                                    (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
+//                            employees.put(tempEmployee.getId(), tempEmployee);
+//                        }
+//                        callback.onCallback(employees);
+//                    }
+//                });
+//    }
 
     //------------------------------------------------------------------------------------------
 

@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -25,8 +27,10 @@ public class AddEmployeeActivity extends AppCompatActivity {
     Activity context;
 
     Toolbar toolbar;
-    EditText nameEditText, specialityEditText, phoneNumberEditText, dateOfBirthEditText,
+    EditText nameEditText, phoneNumberEditText, dateOfBirthEditText,
             emailEditText, cmndEditText;
+    AutoCompleteTextView specialityAutoCompleteTextView;
+    ArrayAdapter<String> specialityAdapter;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -37,6 +41,11 @@ public class AddEmployeeActivity extends AppCompatActivity {
 
         connectViews();
         context = this;
+
+        specialityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                EmployeeRepository.getInstance().getSpecialities());
+        specialityAutoCompleteTextView.setAdapter(specialityAdapter);
+
         addEvents();
         nameEditText.requestFocus();
     }
@@ -52,7 +61,8 @@ public class AddEmployeeActivity extends AppCompatActivity {
         }
 
         nameEditText = findViewById(R.id.add_employee_activity_name_edit_text);
-        specialityEditText = findViewById(R.id.add_employee_activity_speciality_edit_text);
+//        specialityEditText = findViewById(R.id.add_employee_activity_speciality_edit_text);
+        specialityAutoCompleteTextView = findViewById(R.id.add_employee_speciality_auto_complete_text_view);
         phoneNumberEditText = findViewById(R.id.add_employee_activity_phone_number_edit_text);
         dateOfBirthEditText = findViewById(R.id.add_employee_activity_date_of_birth_edit_text);
         emailEditText = findViewById(R.id.add_employee_activity_email_edit_text);
@@ -60,37 +70,31 @@ public class AddEmployeeActivity extends AppCompatActivity {
     }
 
     private void addEvents() {
-        dateOfBirthEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int d = 1;
-                int m = 1;
-                int y = 1990;
-                calendar = Calendar.getInstance();
-                if (!dateOfBirthEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(dateOfBirthEditText.getText().toString()));
-                        d = calendar.get(Calendar.DAY_OF_MONTH);
-                        m = calendar.get(Calendar.MONTH);
-                        y = calendar.get(Calendar.YEAR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        dateOfBirthEditText.setOnClickListener(v -> {
+            int d = 1;
+            int m = 1;
+            int y = 1990;
+            calendar = Calendar.getInstance();
+            if (!dateOfBirthEditText.getText().toString().isEmpty()) {
+                try {
+                    calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(dateOfBirthEditText.getText().toString()));
+                    d = calendar.get(Calendar.DAY_OF_MONTH);
+                    m = calendar.get(Calendar.MONTH);
+                    y = calendar.get(Calendar.YEAR);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                calendar.set(Calendar.YEAR, year);
-                                calendar.set(Calendar.MONTH, month);
-                                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                dateOfBirthEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                            }
-                        }, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
             }
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(context,
+                    (view, year, month, dayOfMonth) -> {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        dateOfBirthEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                    }, y, m, d);
+            datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
+            datePickerDialog.show();
         });
     }
 
@@ -117,16 +121,16 @@ public class AddEmployeeActivity extends AppCompatActivity {
         } else {
             nameEditText.setError(null);
         }
-        if (specialityEditText.getText().toString().isEmpty()) {
-            specialityEditText.setError("Xin mời nhập");
+        if (specialityAutoCompleteTextView.getText().toString().isEmpty()) {
+            specialityAutoCompleteTextView.setError("Xin mời nhập");
             return;
         } else {
-            specialityEditText.setError(null);
+            specialityAutoCompleteTextView.setError(null);
         }
 
         Employee employee = new Employee("",
                 nameEditText.getText().toString(),
-                specialityEditText.getText().toString(),
+                specialityAutoCompleteTextView.getText().toString(),
                 cmndEditText.getText().toString(),
                 dateOfBirthEditText.getText().toString(),
                 phoneNumberEditText.getText().toString(),
@@ -140,12 +144,7 @@ public class AddEmployeeActivity extends AppCompatActivity {
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        context.finish();
-                    }
-                })
+                .setPositiveButton("Đồng ý", (dialog, which) -> context.finish())
                 .setNegativeButton("Hủy", null)
                 .show();
         return super.onSupportNavigateUp();

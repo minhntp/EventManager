@@ -15,9 +15,8 @@
         <activity
             android:name=".activities.SplashActivity2"
             android:excludeFromRecents="true"
-            android:taskAffinity=""/>
-        <activity
-            android:name=".activities.SplashActivity">
+            android:taskAffinity="" />
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
@@ -27,11 +26,12 @@
         </activity>
         <activity
             android:name=".activities.SearchEventActivity"
-            android:label="@string/search_event_activity_label" />
+            android:label="@string/search_event_activity_label"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.RootActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustNothing">
+            android:windowSoftInputMode="adjustPan">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.VIEW" /> -->
@@ -44,37 +44,39 @@
         <activity
             android:name=".activities.SendEventInfo"
             android:label="@string/send_event_info_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.AddEmployeeActivity"
             android:label="@string/add_employee_single_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.EditEmployeeActivity"
             android:label="@string/edit_employee_single_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.ViewEmployeeActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.ViewEventActivity"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.AddEventActivity"
             android:label="@string/add_event_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.EditSalaryFromViewEventActivity"
             android:label="@string/edit_salary_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.EditEventActivity"
             android:label="@string/edit_event_activity_label"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".activities.ShowConflictActivity" />
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.ShowConflictActivity"
+            android:windowSoftInputMode="adjustPan" />
 
         <receiver android:name=".broadcast_receivers.ReminderNotificationReceiver" />
         <receiver android:name=".broadcast_receivers.SetRemindersOnBootReceiver">

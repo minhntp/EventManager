@@ -30,4 +30,5 @@
     <dimen name="schedule_content_edit_text">16sp</dimen>
     <dimen name="schedule_content_text_view">16sp</dimen>
     <dimen name="dialog_title">18sp</dimen>
+    <dimen name="event_title_edit_text">20sp</dimen>
 </resources>

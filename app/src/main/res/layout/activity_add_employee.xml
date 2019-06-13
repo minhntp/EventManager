@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.AddEmployeeActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.AddEmployeeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/add_employee_toolbar"
@@ -35,9 +34,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_name"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_name" />
 
             <TextView
                 android:layout_width="0dp"
@@ -63,9 +62,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_guitar"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_guitar" />
 
             <TextView
                 android:layout_width="0dp"
@@ -74,11 +73,18 @@
                 android:text="Chuyên môn:"
                 android:textSize="@dimen/section_title" />
 
-            <EditText
-                android:id="@+id/add_employee_activity_speciality_edit_text"
+            <!--<EditText-->
+            <!--android:id="@+id/add_employee_activity_speciality_edit_text"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="12"-->
+            <!--android:textSize="@dimen/section_content" />-->
+            <AutoCompleteTextView
+                android:id="@+id/add_employee_speciality_auto_complete_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
+                android:completionThreshold="1"
                 android:textSize="@dimen/section_content" />
         </LinearLayout>
 
@@ -91,16 +97,16 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_birthday"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_birthday" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
                 android:text="Ngày sinh:"
-                android:textSize="@dimen/section_title"  />
+                android:textSize="@dimen/section_title" />
 
             <EditText
                 android:id="@+id/add_employee_activity_date_of_birth_edit_text"
@@ -121,9 +127,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_phone"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_phone" />
 
             <TextView
                 android:layout_width="0dp"
@@ -137,8 +143,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="phone"/>
+                android:inputType="phone"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -150,9 +156,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_email_black"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_email_black" />
 
             <TextView
                 android:layout_width="0dp"
@@ -166,8 +172,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
         <LinearLayout
@@ -179,9 +185,9 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_identity"
+                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:layout_gravity="center"/>
+                android:src="@drawable/ic_identity" />
 
             <TextView
                 android:layout_width="0dp"
@@ -195,8 +201,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="12"
-                android:textSize="@dimen/section_content"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:textSize="@dimen/section_content" />
         </LinearLayout>
 
     </LinearLayout>
