@@ -66,5 +66,24 @@
     <string name="task_dialog">Công việc</string>
     <string name="add_reminder_button">Thêm nhắc nhở</string>
     <string name="event_title">Tên sự kiện</string>
+    <string name="select_default_employees">Chọn nhân sự mặc định</string>
+    <string name="default_reminders">Nhắc nhở mặc định</string>
+    <string name="default_employees">Nhân sự mặc định</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="log_in_email">Email:</string>
+    <string name="log_in_password">Mật khẩu:</string>
+    <string name="log_in">Đăng nhập</string>
+    <string name="sign_in">Đăng ký</string>
+    <string name="select_default_reminders">Chọn nhắc nhở mặc định</string>
+    <string name="select_employees">Chọn nhân sự</string>
+    <string name="select_reminders">Chọn nhắc nhở</string>
 
 </resources>

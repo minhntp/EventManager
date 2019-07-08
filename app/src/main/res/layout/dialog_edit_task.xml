@@ -69,7 +69,7 @@
         <!--android:layout_above="@id/button_layout"-->
         <!--android:layout_below="@id/edit_task_dialog_button_layout">-->
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/edit_task_dialog_recycler_view"
             android:layout_above="@id/dialog_edit_task_button_layout"
             android:layout_below="@id/edit_task_dialog_button_layout"

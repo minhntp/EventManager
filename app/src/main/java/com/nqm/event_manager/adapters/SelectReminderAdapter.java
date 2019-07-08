@@ -84,7 +84,7 @@ public class SelectReminderAdapter extends BaseAdapter {
         for (Reminder r : selectedReminders) {
             selectedRemindersMinutes.add(r.getMinute());
         }
-        Log.d("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
+//        Log.d("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
         super.notifyDataSetChanged();
     }
 }

@@ -1,8 +1,8 @@
 package com.nqm.event_manager.adapters;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
@@ -34,12 +34,12 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
         }
     }
 
-    private ArrayList<Task> tasks;
+    private ArrayList<EventTask> eventTasks;
     Calendar calendarOfTask = Calendar.getInstance();
     Calendar calendarOfCurrentTime = Calendar.getInstance();
 
-    public ViewTaskAdapter(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+    public ViewTaskAdapter(ArrayList<EventTask> eventTasks) {
+        this.eventTasks = eventTasks;
     }
 
     @NonNull
@@ -52,7 +52,7 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Task t = tasks.get(i);
+        EventTask t = eventTasks.get(i);
 
         viewHolder.dateTextView.setText(t.getDate());
         viewHolder.dowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(t.getDate()));
@@ -89,7 +89,7 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return eventTasks.size();
     }
 
 }

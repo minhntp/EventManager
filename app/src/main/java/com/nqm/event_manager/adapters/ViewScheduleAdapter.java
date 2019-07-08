@@ -1,17 +1,14 @@
 package com.nqm.event_manager.adapters;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.repositories.ScheduleRepository;
 
 import java.util.ArrayList;
 

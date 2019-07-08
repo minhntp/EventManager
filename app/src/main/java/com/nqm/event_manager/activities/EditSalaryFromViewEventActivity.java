@@ -3,9 +3,9 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,12 +72,12 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
             EditText salaryEditText = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
             CheckBox isPaidCheckBox = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
 
-            Log.d("debug", "salary = " + salaryEditText.getText().toString());
+//            Log.d("debug", "salary = " + salaryEditText.getText().toString());
             if (salaryEditText.getText().toString().equals("")) {
                 salaries.get(i).setSalary(0);
             } else {
                 salaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
-                Log.d("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
+//                Log.d("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
             }
             salaries.get(i).setPaid(isPaidCheckBox.isChecked());
         }
@@ -104,7 +104,7 @@ public class EditSalaryFromViewEventActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        new android.support.v7.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {

@@ -1,9 +1,8 @@
 package com.nqm.event_manager.custom_views;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 
 public class CustomRelativeLayout extends LinearLayout {

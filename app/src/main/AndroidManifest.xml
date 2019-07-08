@@ -12,11 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activities.SplashActivity2"
-            android:excludeFromRecents="true"
-            android:taskAffinity="" />
-        <activity android:name=".activities.SplashActivity">
+        <activity android:name=".activities.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.SplashActivity2"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+        <activity android:name=".activities.SplashActivity"/>
         <activity
             android:name=".activities.SearchEventActivity"
             android:label="@string/search_event_activity_label"

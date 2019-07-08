@@ -5,13 +5,13 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -43,10 +43,11 @@ import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.repositories.DefaultEmployeeRepository;
 import com.nqm.event_manager.repositories.DefaultReminderRepository;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -89,7 +90,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     RecyclerView selectEmployeeRecyclerView;
     SelectEmployeeAddEventAdapter selectEmployeeAdapter;
 
-    ArrayList<Task> tasks;
+    ArrayList<EventTask> eventTasks;
     int count = 0;
     EditTaskAdapter editTaskAdapter;
     RecyclerView editTaskRecyclerView;
@@ -226,6 +227,9 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         }
 
         selectedEmployeesIds = new ArrayList<>();
+        for (String id : DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds().values()) {
+            selectedEmployeesIds.add(id);
+        }
         conflictsMap = new HashMap<>();
         editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
@@ -243,7 +247,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         initSelectEmployeeDialog();
 
         selectedReminders = new ArrayList<>();
-        for (int minute : DefaultReminderRepository.getInstance().getDefaultReminders()) {
+        for (int minute : DefaultReminderRepository.getInstance().getDefaultReminders().values()) {
             selectedReminders.add(new Reminder("", "", minute, ""));
         }
         editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
@@ -357,7 +361,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     }
 
     private void initEditTaskDialog() {
-        tasks = new ArrayList<>();
+        eventTasks = new ArrayList<>();
 
         editTaskDialog = new Dialog(this);
         editTaskDialog.setContentView(R.layout.dialog_edit_task);
@@ -369,7 +373,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editTaskCompletedTextView = editTaskDialog.findViewById(R.id.edit_task_dialog_completed_text_view);
         editTaskProgressBar = editTaskDialog.findViewById(R.id.edit_task_dialog_progress_bar);
 
-        editTaskAdapter = new EditTaskAdapter(tasks);
+        editTaskAdapter = new EditTaskAdapter(eventTasks);
         editTaskAdapter.setListener(this);
         editTaskCallback = new ItemDraggedOrSwipedCallback();
         editTaskCallback.setListener(editTaskAdapter);
@@ -383,7 +387,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         //add events
         editTaskAddButton.setOnClickListener(view -> {
             int i = editTaskAdapter.getItemCount();
-            tasks.add(new Task("", "", startDateEditText.getText().toString(), "", "", false, 0));
+            eventTasks.add(new EventTask("", "", startDateEditText.getText().toString(), "", "", false, 0));
             editTaskAdapter.notifyItemInserted(i);
             updateEditTaskDialogHeader();
         });
@@ -391,7 +395,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         editTaskOkButton.setOnClickListener(view -> editTaskDialog.dismiss());
 
         editTaskSortButton.setOnClickListener(v -> {
-            TaskRepository.sortTasksByStartDateTime(tasks);
+            TaskRepository.sortTasksByStartDateTime(eventTasks);
             editTaskAdapter.notifyDataSetChanged();
         });
 
@@ -459,8 +463,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         });
 
         selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.notifyDataSetChanged());
-
-
     }
 
     private void addEvents() {
@@ -624,16 +626,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             if (editTaskDialog.getWindow() != null) {
                 editTaskDialog.getWindow().setAttributes(lWindowParams);
             }
-            if (tasks.size() > 0) {
+            if (eventTasks.size() > 0) {
                 count = 0;
-                for (Task t : tasks) {
+                for (EventTask t : eventTasks) {
                     if (t.isDone()) {
                         count++;
                     }
                 }
-                int progress = 100 * count / tasks.size();
+                int progress = 100 * count / eventTasks.size();
                 editTaskProgressBar.setProgress(progress);
-                String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+                String progressString = String.format(getResources().getString(R.string.task_progress), count, eventTasks.size());
                 editTaskCompletedTextView.setText(progressString);
             } else {
                 editTaskProgressBar.setProgress(0);
@@ -694,7 +696,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
                             }
                         }
                         if (isConflictExist) {
-                            new android.support.v7.app.AlertDialog.Builder(context)
+                            new androidx.appcompat.app.AlertDialog.Builder(context)
                                     .setIcon(R.drawable.ic_error)
                                     .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
                                     .setPositiveButton("Đồng ý", (dialog, which) -> addEventToDatabase())
@@ -749,10 +751,10 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
             schedules.get(i).setOrder(i);
         }
         for (int i = 0; i < editTaskRecyclerView.getChildCount(); i++) {
-            tasks.get(i).setOrder(i);
+            eventTasks.get(i).setOrder(i);
         }
 
-        EventRepository.getInstance().addEventToDatabase(event, salaries, tasks, schedules, selectedReminders);
+        EventRepository.getInstance().addEventToDatabase(event, salaries, eventTasks, schedules, selectedReminders);
         context.finish();
     }
     //----------------------------------------------------------------------------------------------
@@ -761,7 +763,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean onSupportNavigateUp() {
-        new android.support.v7.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", (dialog, which) -> context.finish())
@@ -780,16 +782,16 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     //----------------------------------------------------------------------------------------------
 
     private void updateEditTaskDialogHeader() {
-        if (tasks.size() > 0) {
+        if (eventTasks.size() > 0) {
             int count = 0;
-            for (Task t : tasks) {
+            for (EventTask t : eventTasks) {
                 if (t.isDone()) {
                     count++;
                 }
             }
-            int progress = 100 * count / tasks.size();
+            int progress = 100 * count / eventTasks.size();
             editTaskProgressBar.setProgress(progress);
-            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, eventTasks.size());
             editTaskCompletedTextView.setText(progressString);
         } else {
             editTaskProgressBar.setProgress(0);

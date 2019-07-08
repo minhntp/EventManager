@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,10 +32,10 @@ import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.Task;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
@@ -54,7 +54,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
     Button viewScheduleButton, viewTaskButton;
     TextView titleEditText, timeEditText, locationEditText, noteEditText;
-    android.support.v7.widget.Toolbar toolbar;
+    androidx.appcompat.widget.Toolbar toolbar;
 
     String eventId;
     Event selectedEvent;
@@ -64,7 +64,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     CustomListView salaryListView;
 
     Dialog viewTaskDialog;
-    ArrayList<Task> tasks;
+    ArrayList<EventTask> eventTasks;
     ViewTaskAdapter viewTaskAdapter;
     RecyclerView taskRecyclerView;
     Button taskBackButton;
@@ -184,9 +184,9 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     }
 
     private void initViewTaskDialog() {
-        tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
-//        if (tasks == null) {
-//            tasks = new ArrayList<>();
+        eventTasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+//        if (eventTasks == null) {
+//            eventTasks = new ArrayList<>();
 //        }
         viewTaskDialog = new Dialog(this);
         viewTaskDialog.setContentView(R.layout.dialog_view_task);
@@ -196,7 +196,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         taskRecyclerView = viewTaskDialog.findViewById(R.id.view_task_dialog_recycler_view);
         taskBackButton = viewTaskDialog.findViewById(R.id.view_task_dialog_back_button);
 
-        viewTaskAdapter = new ViewTaskAdapter(tasks);
+        viewTaskAdapter = new ViewTaskAdapter(eventTasks);
         taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         taskRecyclerView.setAdapter(viewTaskAdapter);
         taskRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -216,7 +216,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
         //Xóa sự kiện
         if (id == R.id.view_event_action_delete_event) {
-            Log.d("debug", "deleting " + eventId);
+//            Log.d("debug", "deleting " + eventId);
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa sự kiện")
@@ -293,7 +293,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         });
 
         viewTaskButton.setOnClickListener(v -> {
-            if (tasks.size() > 0) {
+            if (eventTasks.size() > 0) {
                 showViewTaskDialog();
             } else {
                 Toast.makeText(context, "Sự kiện không có công việc nào", Toast.LENGTH_SHORT).show();
@@ -319,14 +319,14 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
                 viewTaskDialog.getWindow().setAttributes(lWindowParams);
             }
             int count = 0;
-            for (Task t : tasks) {
+            for (EventTask t : eventTasks) {
                 if (t.isDone()) {
                     count++;
                 }
             }
-            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, eventTasks.size());
             taskCompletedTextView.setText(progressString);
-            taskProgressBar.setProgress(100 * count / tasks.size());
+            taskProgressBar.setProgress(100 * count / eventTasks.size());
         }
     }
 
@@ -383,11 +383,11 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
         viewSalaryAdapter.notifyDataSetChanged();
 
-        tasks.clear();
-        tasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
-        TaskRepository.sortTasksByOrder(tasks);
+        eventTasks.clear();
+        eventTasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
+        TaskRepository.sortTasksByOrder(eventTasks);
         viewTaskAdapter.notifyDataSetChanged();
-        viewTaskButton.setEnabled(!(tasks.size() == 0));
+        viewTaskButton.setEnabled(!(eventTasks.size() == 0));
 
         schedules.clear();
         schedules.addAll(ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId));
@@ -419,11 +419,11 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
         viewSalaryAdapter.notifyDataSetChanged();
 
-        tasks.clear();
-        tasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
-        TaskRepository.sortTasksByOrder(tasks);
+        eventTasks.clear();
+        eventTasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
+        TaskRepository.sortTasksByOrder(eventTasks);
         viewTaskAdapter.notifyDataSetChanged();
-        viewTaskButton.setEnabled(!(tasks.size() == 0));
+        viewTaskButton.setEnabled(!(eventTasks.size() == 0));
 
         schedules.clear();
         schedules.addAll(ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(eventId));

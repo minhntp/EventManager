@@ -1,25 +1,18 @@
 package com.nqm.event_manager.custom_views;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.adapters.CalendarGridRecyclerAdapter;
-import com.nqm.event_manager.adapters.CustomCalendarGridAdapter;
 import com.nqm.event_manager.adapters.DatePickerGridAdapter;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;

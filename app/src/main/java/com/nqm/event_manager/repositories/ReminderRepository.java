@@ -146,7 +146,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCalendar.getTimeInMillis(), pendingIntent);
 
-                Log.d("debug", "set alarm, request code = " + requestCode);
+//                Log.d("debug", "set alarm, request code = " + requestCode);
                 requestCode++;
             }
             numberOfSetAlarms = requestCode;
@@ -188,7 +188,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
-                            Log.w("debug", "Reminder collection listen failed.", e);
+//                            Log.d("debug", "Reminder collection listen failed.", e);
                             return;
                         }
                         HashMap<String, Reminder> reminderList = new HashMap<>();

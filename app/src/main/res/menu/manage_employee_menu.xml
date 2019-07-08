@@ -4,7 +4,7 @@
     <item android:id="@+id/manage_employee_search_action"
         android:title="Tìm kiếm nhân viên"
         android:icon="@drawable/ic_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"/>
     <item android:id="@+id/manage_employee_add_action"
         android:title="Thêm nhân viên"

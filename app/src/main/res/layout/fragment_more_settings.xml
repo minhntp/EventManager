@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.RootActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activities.RootActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,14 +22,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
                 android:src="@drawable/ic_reminder" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="Nhắc nhở mặc định"
+                android:text="@string/default_reminders"
                 android:textSize="@dimen/section_title"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -39,18 +38,61 @@
             android:id="@+id/more_settings_reminder_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="60dp" />
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="100dp" />
 
         <Button
             android:id="@+id/more_settings_add_reminder_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="50dp"
-            android:text="@string/add_reminder_button"
-            android:textSize="@dimen/sub_text_button"/>
+            android:layout_marginStart="10dp"
+            android:text="@string/select_default_reminders"
+            android:textSize="@dimen/sub_text_button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_people" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/default_employees"
+                android:textSize="@dimen/section_title"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/more_settings_employee_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:overScrollMode="never" />
+
+        <Button
+            android:id="@+id/more_settings_add_employee_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/select_default_employees"
+            android:textSize="@dimen/sub_text_button" />
     </LinearLayout>
 
 

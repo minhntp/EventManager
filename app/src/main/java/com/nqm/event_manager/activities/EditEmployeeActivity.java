@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -163,7 +163,7 @@ public class EditEmployeeActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        new android.support.v7.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {

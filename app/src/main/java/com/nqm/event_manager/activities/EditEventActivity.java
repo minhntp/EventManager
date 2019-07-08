@@ -5,13 +5,13 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,9 +44,9 @@ import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.Task;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ReminderRepository;
@@ -65,7 +65,7 @@ import java.util.Locale;
 public class EditEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnDataLoadComplete, IOnSelectReminderItemClicked,
         IOnEditReminderItemClicked, IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
-    android.support.v7.widget.Toolbar toolbar;
+    androidx.appcompat.widget.Toolbar toolbar;
 
     EditText startDateEditText, startTimeEditText, endDateEditText, endTimeEditText, noteEditText;
     AutoCompleteTextView titleAutoCompleteTextView, locationAutoCompleteTextView;
@@ -92,7 +92,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     RecyclerView editEmployeeRecyclerView;
     EditEmployeeEditEventAdapter editEmployeeAdapter;
 
-    ArrayList<Task> tasks;
+    ArrayList<EventTask> eventTasks;
     EditTaskAdapter editTaskAdapter;
     RecyclerView editTaskRecyclerView;
     Button editTaskOkButton, editTaskAddButton, editTaskSortButton;
@@ -162,7 +162,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             } else {
                 titleAutoCompleteTextView.setError(null);
                 if (selectedEmployeesIds.size() > 0) {
-                    Log.d("debug", "here1");
+//                    Log.d("debug", "here1. conflict size = " + conflictsMap.size());
                     checkAndUpdate();
                 } else {
                     updateEventToDatabase();
@@ -376,8 +376,8 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     }
 
     private void initEditTaskDialog() {
-        tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
-        TaskRepository.sortTasksByOrder(tasks);
+        eventTasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+        TaskRepository.sortTasksByOrder(eventTasks);
 
         editTaskDialog = new Dialog(this);
         editTaskDialog.setContentView(R.layout.dialog_edit_task);
@@ -389,7 +389,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editTaskCompletedTextView = editTaskDialog.findViewById(R.id.edit_task_dialog_completed_text_view);
         editTaskProgressBar = editTaskDialog.findViewById(R.id.edit_task_dialog_progress_bar);
 
-        editTaskAdapter = new EditTaskAdapter(tasks);
+        editTaskAdapter = new EditTaskAdapter(eventTasks);
         editTaskAdapter.setListener(this);
         editTaskCallback = new ItemDraggedOrSwipedCallback();
         editTaskCallback.setListener(editTaskAdapter);
@@ -403,7 +403,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         //add events
         editTaskAddButton.setOnClickListener(view -> {
             int i = editTaskAdapter.getItemCount();
-            tasks.add(new Task("", "", startDateEditText.getText().toString(), "", "", false, i));
+            eventTasks.add(new EventTask("", "", startDateEditText.getText().toString(), "", "", false, i));
             editTaskAdapter.notifyItemInserted(i);
             updateEditTaskDialogHeader();
         });
@@ -411,7 +411,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         editTaskOkButton.setOnClickListener(view -> editTaskDialog.dismiss());
 
         editTaskSortButton.setOnClickListener(v -> {
-            TaskRepository.sortTasksByStartDateTime(tasks);
+            TaskRepository.sortTasksByStartDateTime(eventTasks);
             editTaskAdapter.notifyDataSetChanged();
         });
 
@@ -643,16 +643,16 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             if (editTaskDialog.getWindow() != null) {
                 editTaskDialog.getWindow().setAttributes(lWindowParams);
             }
-            if (tasks.size() > 0) {
+            if (eventTasks.size() > 0) {
                 int count = 0;
-                for (Task t : tasks) {
+                for (EventTask t : eventTasks) {
                     if (t.isDone()) {
                         count++;
                     }
                 }
-                int progress = 100 * count / tasks.size();
+                int progress = 100 * count / eventTasks.size();
                 editTaskProgressBar.setProgress(progress);
-                String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+                String progressString = String.format(getResources().getString(R.string.task_progress), count, eventTasks.size());
                 editTaskCompletedTextView.setText(progressString);
             } else {
                 editTaskProgressBar.setProgress(0);
@@ -684,7 +684,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean onSupportNavigateUp() {
-        new android.support.v7.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Trở về mà không lưu?")
                 .setPositiveButton("Đồng ý", (dialog, which) -> context.finish())
@@ -702,16 +702,16 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     // EDIT TASK LIST
     //----------------------------------------------------------------------------------------------
     private void updateEditTaskDialogHeader() {
-        if (tasks.size() > 0) {
+        if (eventTasks.size() > 0) {
             int count = 0;
-            for (Task t : tasks) {
+            for (EventTask t : eventTasks) {
                 if (t.isDone()) {
                     count++;
                 }
             }
-            int progress = 100 * count / tasks.size();
+            int progress = 100 * count / eventTasks.size();
             editTaskProgressBar.setProgress(progress);
-            String progressString = String.format(getResources().getString(R.string.task_progress), count, tasks.size());
+            String progressString = String.format(getResources().getString(R.string.task_progress), count, eventTasks.size());
             editTaskCompletedTextView.setText(progressString);
         } else {
             editTaskProgressBar.setProgress(0);
@@ -780,6 +780,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     private void checkAndUpdate() {
         startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
         endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
+//        Log.d(Constants.DEBUG, "entered checkAndUpdate()");
 
         try {
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
@@ -794,10 +795,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
             endMili = calendar.getTimeInMillis();
 
+//            Log.d(Constants.DEBUG, "entered checkAndUpdate() try catch");
+
             EventRepository.getInstance().getConflictEventsIdsEdit(startMili, endMili, selectedEmployeesIds,
                     eventId, conflictMap -> {
-                        Log.d("debug", "here5 conflictMap size = " + conflictMap.size());
-
+//                        Log.d("debug", "here5 conflictMap size = " + conflictMap.size());
                         conflictsMap.clear();
                         conflictsMap.putAll(conflictMap);
                         editEmployeeAdapter.notifyDataSetChanged();
@@ -809,7 +811,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
                             }
                         }
                         if (isConflictExist) {
-                            new android.support.v7.app.AlertDialog.Builder(context)
+                            new androidx.appcompat.app.AlertDialog.Builder(context)
                                     .setIcon(R.drawable.ic_error)
                                     .setTitle("Có xung đột về nhân viên. Vẫn tiếp tục Lưu?")
                                     .setPositiveButton("Đồng ý", (dialog, which) -> updateEventToDatabase())
@@ -869,11 +871,11 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
             schedules.get(i).setOrder(i);
         }
         for (int i = 0; i < editTaskRecyclerView.getChildCount(); i++) {
-            tasks.get(i).setOrder(i);
+            eventTasks.get(i).setOrder(i);
         }
 
         EventRepository.getInstance().updateEventToDatabase(changedEvent, deleteEmployeesIds,
-                addEmployeesIds, tasks, schedules, selectedReminders);
+                addEmployeesIds, eventTasks, schedules, selectedReminders);
         context.finish();
     }
     //----------------------------------------------------------------------------------------------

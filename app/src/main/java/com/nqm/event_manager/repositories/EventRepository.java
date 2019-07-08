@@ -2,7 +2,6 @@ package com.nqm.event_manager.repositories;
 
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -13,7 +12,7 @@ import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -22,7 +21,6 @@ import com.nqm.event_manager.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +30,6 @@ public class EventRepository {
 
     private static EventRepository instance;
     private IOnDataLoadComplete listener;
-    private boolean isLoaded;
     private HashMap<String, Event> allEvents;
     private HashMap<String, ArrayList<String>> numberOfEventsMap;
     private ArrayList<String> titles;
@@ -135,19 +132,24 @@ public class EventRepository {
                                     (String) tempHashMap.get(Constants.EVENT_LOCATION),
                                     (String) tempHashMap.get(Constants.EVENT_NOTE));
                             events.put(tempEvent.getId(), tempEvent);
-                            titles.add(tempEvent.getTen());
-                            locations.add(tempEvent.getDiaDiem());
+                            if (!titles.contains(tempEvent.getTen())) {
+                                titles.add(tempEvent.getTen());
+                            }
+                            if (!locations.contains(tempEvent.getDiaDiem())) {
+                                locations.add(tempEvent.getDiaDiem());
+                            }
                             try {
                                 Date startDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayBatDau());
                                 Date endDate = CalendarUtil.sdfDayMonthYear.parse(tempEvent.getNgayKetThuc());
                                 while (startDate.compareTo(endDate) <= 0) {
                                     String startString = CalendarUtil.sdfDayMonthYear.format(startDate);
-                                    if (numberOfEvents.get(startString) == null) {
-                                        ArrayList<String> arr = new ArrayList<>();
+                                    ArrayList<String> arr = numberOfEvents.get(startString);
+                                    if (arr == null) {
+                                        arr = new ArrayList<>();
                                         arr.add(tempEvent.getId());
                                         numberOfEvents.put(startString, arr);
                                     } else {
-                                        numberOfEvents.get(startString).add(tempEvent.getId());
+                                        arr.add(tempEvent.getId());
                                     }
                                     calendar.setTime(startDate);
                                     calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -182,11 +184,11 @@ public class EventRepository {
         return allEvents;
     }
 
-    public void addEventToDatabase(Event event, ArrayList<Salary> salaries, ArrayList<Task> tasks,
+    public void addEventToDatabase(Event event, ArrayList<Salary> salaries, ArrayList<EventTask> eventTasks,
                                    ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
-        long miliStart = 0, miliEnd = 0;
+        long miliStart, miliEnd;
 
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
@@ -232,16 +234,16 @@ public class EventRepository {
             batch.set(salaryDocRef, salaryData);
         }
 
-        for (Task task : tasks) {
+        for (EventTask eventTask : eventTasks) {
             DocumentReference taskDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.TASK_COLLECTION).document();
             HashMap<String, String> taskData = new HashMap<>();
             taskData.put(Constants.TASK_EVENT_ID, eventDocRef.getId());
-            taskData.put(Constants.TASK_DATE, task.getDate());
-            taskData.put(Constants.TASK_TIME, task.getTime());
-            taskData.put(Constants.TASK_CONTENT, task.getContent());
-            taskData.put(Constants.TASK_IS_DONE, "" + task.isDone());
-            taskData.put(Constants.TASK_ORDER, Integer.toString(task.getOrder()));
+            taskData.put(Constants.TASK_DATE, eventTask.getDate());
+            taskData.put(Constants.TASK_TIME, eventTask.getTime());
+            taskData.put(Constants.TASK_CONTENT, eventTask.getContent());
+            taskData.put(Constants.TASK_IS_DONE, "" + eventTask.isDone());
+            taskData.put(Constants.TASK_ORDER, Integer.toString(eventTask.getOrder()));
             batch.set(taskDocRef, taskData);
         }
 
@@ -297,20 +299,20 @@ public class EventRepository {
         batch.commit();
     }
 
-    public int getNumberOfEventsThroughDate(String date, String eventId) {
-        if (eventId.isEmpty()) {
-            return getEventsThroughDate(date).size();
-        } else {
-            return getEventsThroughDateEdit(date, eventId).size();
-        }
-    }
+//    public int getNumberOfEventsThroughDate(String date, String eventId) {
+//        if (eventId.isEmpty()) {
+//            return getEventsThroughDate(date).size();
+//        } else {
+//            return getEventsThroughDateEdit(date, eventId).size();
+//        }
+//    }
 
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
-                                      ArrayList<String> addEmployeesIds, ArrayList<Task> tasks,
+                                      ArrayList<String> addEmployeesIds, ArrayList<EventTask> eventTasks,
                                       ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
-        long miliStart = 0, miliEnd = 0;
+        long miliStart, miliEnd;
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -417,7 +419,7 @@ public class EventRepository {
             batch.delete(deleteTaskDocRef);
         }
 
-        for (Task t : tasks) {
+        for (EventTask t : eventTasks) {
             DocumentReference addTaskDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.TASK_COLLECTION).document();
             Map<String, Object> addTaskData = new HashMap<>();
@@ -463,65 +465,66 @@ public class EventRepository {
         return eventsIds;
     }
 
-    public HashMap<String, Event> getEventsByDate(String date) {
-//        Log.d("debug", "EventRepository: getting event on date: " + date);
-        HashMap<String, Event> events = new HashMap<>();
-        if (getAllEvents().size() > 0) {
-            for (String eventID : allEvents.keySet()) {
-                if (allEvents.get(eventID).getNgayBatDau().equals(date)) {
-                    events.put(eventID, allEvents.get(eventID));
-                }
-            }
-        }
-        return events;
-    }
+//    public HashMap<String, Event> getEventsByDate(String date) {
+////        Log.d("debug", "EventRepository: getting event on date: " + date);
+//        HashMap<String, Event> events = new HashMap<>();
+//        if (getAllEvents().size() > 0) {
+//            for (String eventID : allEvents.keySet()) {
+//                Event e = allEvents.get(eventID);
+//                if (e != null && e.getNgayBatDau().equals(date)) {
+//                    events.put(eventID, allEvents.get(eventID));
+//                }
+//            }
+//        }
+//        return events;
+//    }
 
     public Event getEventByEventId(String id) {
         return allEvents.get(id);
     }
 
-    public HashMap<String, Event> getEventsThroughDate(String date) {
-        Log.d("debug", "add");
-        HashMap<String, Event> events = new HashMap<>();
-        if (getAllEvents().size() > 0) {
-            for (Event tempE : allEvents.values()) {
-                try {
-                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
-                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
-                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
-                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
-                        events.put(tempE.getId(), tempE);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return events;
-    }
+//    public HashMap<String, Event> getEventsThroughDate(String date) {
+//        Log.d("debug", "add");
+//        HashMap<String, Event> events = new HashMap<>();
+//        if (getAllEvents().size() > 0) {
+//            for (Event tempE : allEvents.values()) {
+//                try {
+//                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
+//                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
+//                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
+//                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
+//                        events.put(tempE.getId(), tempE);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return events;
+//    }
 
-    public HashMap<String, Event> getEventsThroughDateEdit(String date, String eventId) {
-        Log.d("debug", "edit");
-        HashMap<String, Event> events = new HashMap<>();
-        if (getAllEvents().size() > 0) {
-            for (Event tempE : allEvents.values()) {
-                if (tempE.getId().equals(eventId)) {
-                    continue;
-                }
-                try {
-                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
-                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
-                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
-                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
-                        events.put(tempE.getId(), tempE);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return events;
-    }
+//    public HashMap<String, Event> getEventsThroughDateEdit(String date, String eventId) {
+//        Log.d("debug", "edit");
+//        HashMap<String, Event> events = new HashMap<>();
+//        if (getAllEvents().size() > 0) {
+//            for (Event tempE : allEvents.values()) {
+//                if (tempE.getId().equals(eventId)) {
+//                    continue;
+//                }
+//                try {
+//                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
+//                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
+//                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
+//                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
+//                        events.put(tempE.getId(), tempE);
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return events;
+//    }
 
     public ArrayList<Event> getEventsArrayListThroughDate(String date) {
         ArrayList<Event> events = new ArrayList<>();
@@ -542,20 +545,20 @@ public class EventRepository {
         return events;
     }
 
-    public Date getEventStartDateTimeByReminder(Reminder r) {
-        Calendar calendarDate = Calendar.getInstance();
-        Calendar calendarTime = Calendar.getInstance();
-        try {
-            calendarDate.setTime(CalendarUtil.sdfDayMonthYear.parse(allEvents.get(r.getEventId()).getNgayBatDau()));
-            calendarTime.setTime(CalendarUtil.sdfTime.parse(allEvents.get(r.getEventId()).getGioBatDau()));
-
-            calendarDate.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
-            calendarDate.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return calendarDate.getTime();
-    }
+//    public Date getEventStartDateTimeByReminder(Reminder r) {
+//        Calendar calendarDate = Calendar.getInstance();
+//        Calendar calendarTime = Calendar.getInstance();
+//        try {
+//            calendarDate.setTime(CalendarUtil.sdfDayMonthYear.parse(allEvents.get(r.getEventId()).getNgayBatDau()));
+//            calendarTime.setTime(CalendarUtil.sdfTime.parse(allEvents.get(r.getEventId()).getGioBatDau()));
+//
+//            calendarDate.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
+//            calendarDate.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return calendarDate.getTime();
+//    }
 
     //----------------------------------------------------------------------------------------------
     // CONFLICT
@@ -574,31 +577,34 @@ public class EventRepository {
                     .get());
         }
 
-        Log.d("debug", "here2");
+//        Log.d("debug", "here2");
 
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
         allTasks.addOnSuccessListener(querySnapshots -> {
             HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
-            Log.d("debug", "here3");
-            Log.d("debug", "snapshots size = " + querySnapshots.size());
+//            Log.d("debug", "here3");
+//            Log.d("debug", "snapshots size = " + querySnapshots.size());
             for (QuerySnapshot documentSnapshots : querySnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
-                    Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
+//                    Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
                     long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
                     if (docEndMili >= startMili) {
                         String docEventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
-                        if (!docEventId.equals(eventId)) {
+                        if (docEventId != null && !docEventId.equals(eventId)) {
                             String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
                             if (conflictMap.get(employeeId) == null) {
-                                conflictMap.put(employeeId, new ArrayList<String>());
+                                conflictMap.put(employeeId, new ArrayList<>());
                             }
-                            conflictMap.get(employeeId).add(docEventId);
+                            ArrayList<String> arr = conflictMap.get(employeeId);
+                            if (arr != null) {
+                                arr.add(docEventId);
+                            }
                         }
                     }
 
                 }
             }
-            Log.d("debug", "here4");
+//            Log.d("debug", "here4");
 
             callback.onCallback(conflictMap);
         });
@@ -617,25 +623,25 @@ public class EventRepository {
         }
 
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
-        allTasks.addOnSuccessListener(new OnSuccessListener<List<QuerySnapshot>>() {
-            @Override
-            public void onSuccess(List<QuerySnapshot> querySnapshots) {
-                HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
-                for (QuerySnapshot documentSnapshots : querySnapshots) {
-                    for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
-                        long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
-                        if (docEndMili >= startMili) {
-                            String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
-                            if (conflictMap.get(employeeId) == null) {
-                                conflictMap.put(employeeId, new ArrayList<String>());
-                            }
-                            conflictMap.get(employeeId).add((String) documentSnapshot.get(Constants.SALARY_EVENT_ID));
+        allTasks.addOnSuccessListener(querySnapshots -> {
+            HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
+            for (QuerySnapshot documentSnapshots : querySnapshots) {
+                for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+                    long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
+                    if (docEndMili >= startMili) {
+                        String employeeId = (String) documentSnapshot.get(Constants.SALARY_EMPLOYEE_ID);
+                        if (conflictMap.get(employeeId) == null) {
+                            conflictMap.put(employeeId, new ArrayList<>());
                         }
-
+                        ArrayList<String> arr = conflictMap.get(employeeId);
+                        if (arr != null) {
+                            arr.add((String) documentSnapshot.get(Constants.SALARY_EVENT_ID));
+                        }
                     }
+
                 }
-                callback.onCallback(conflictMap);
             }
+            callback.onCallback(conflictMap);
         });
     }
 
@@ -682,9 +688,9 @@ public class EventRepository {
         });
     }
 
-    private interface MyEventCallback {
-        void onCallback(HashMap<String, Event> eventList);
-    }
+//    private interface MyEventCallback {
+//        void onCallback(HashMap<String, Event> eventList);
+//    }
 
     public interface MyConflictEventCallback {
         void onCallback(HashMap<String, ArrayList<String>> conflictMap);

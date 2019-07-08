@@ -5,10 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +56,7 @@ public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLo
         int id = item.getItemId();
 
         if (id == R.id.view_employee_action_delete) {
-            Log.d("debug", "deleting " + employee.getId());
+//            Log.d("debug", "deleting " + employee.getId());
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")

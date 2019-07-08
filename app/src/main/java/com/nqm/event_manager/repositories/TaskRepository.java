@@ -1,6 +1,6 @@
 package com.nqm.event_manager.repositories;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.firebase.firestore.EventListener;
@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -23,7 +23,7 @@ public class TaskRepository {
 
     static TaskRepository instance;
     private IOnDataLoadComplete listener;
-    private HashMap<String, Task> allTasks;
+    private HashMap<String, EventTask> allTasks;
 
     private TaskRepository() {
 //        allTasks = new HashMap<>();
@@ -47,7 +47,7 @@ public class TaskRepository {
                             Log.w("debug", "Schedule collection listen failed.", e);
                             return;
                         }
-                        HashMap<String, Task> tasks = new HashMap<>();
+                        HashMap<String, EventTask> tasks = new HashMap<>();
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             if (queryDocumentSnapshots.size() > 0) {
                                 Map<String, Object> data = doc.getData();
@@ -55,14 +55,14 @@ public class TaskRepository {
                                 if (data.get(Constants.TASK_ORDER) != null) {
                                     order = Integer.parseInt((String) data.get(Constants.TASK_ORDER));
                                 }
-                                Task tempTask = new Task(doc.getId(),
+                                EventTask tempEventTask = new EventTask(doc.getId(),
                                         (String) data.get(Constants.TASK_EVENT_ID),
                                         (String) data.get(Constants.TASK_DATE),
                                         (String) data.get(Constants.TASK_TIME),
                                         (String) data.get(Constants.TASK_CONTENT),
                                         Boolean.parseBoolean((String) data.get(Constants.TASK_IS_DONE)),
                                         order);
-                                tasks.put(tempTask.getId(), tempTask);
+                                tasks.put(tempEventTask.getId(), tempEventTask);
                             }
                         }
                         allTasks = tasks;
@@ -75,45 +75,45 @@ public class TaskRepository {
         this.listener = listener;
     }
 
-    public HashMap<String, Task> getAllTasks() {
+    public HashMap<String, EventTask> getAllTasks() {
         return allTasks;
     }
 
     //----------------------------------------------------------------------------------------------
 
-    public ArrayList<Task> getTasksInArrayListByEventId(String eventId) {
-        ArrayList<Task> tasks = new ArrayList<>();
-        for (Task task : allTasks.values()) {
-            if (task.getEventId().equals(eventId)) {
-                tasks.add(task);
+    public ArrayList<EventTask> getTasksInArrayListByEventId(String eventId) {
+        ArrayList<EventTask> eventTasks = new ArrayList<>();
+        for (EventTask eventTask : allTasks.values()) {
+            if (eventTask.getEventId().equals(eventId)) {
+                eventTasks.add(eventTask);
             }
         }
-        return tasks;
+        return eventTasks;
     }
 
     public ArrayList<String> getTasksIdsByEventId(String eventId) {
         ArrayList<String> tasksIds = new ArrayList<>();
-        for (Task task : allTasks.values()) {
-            if (task.getEventId().equals(eventId)) {
-                tasksIds.add(task.getId());
+        for (EventTask eventTask : allTasks.values()) {
+            if (eventTask.getEventId().equals(eventId)) {
+                tasksIds.add(eventTask.getId());
             }
         }
         return tasksIds;
     }
     //----------------------------------------------------------------------------------------------
-    static public void sortTasksByOrder(ArrayList<Task> tasks) {
-        Collections.sort(tasks, new Comparator<Task>() {
+    static public void sortTasksByOrder(ArrayList<EventTask> eventTasks) {
+        Collections.sort(eventTasks, new Comparator<EventTask>() {
             @Override
-            public int compare(Task t1, Task t2) {
+            public int compare(EventTask t1, EventTask t2) {
                 return t1.getOrder() - t2.getOrder();
             }
         });
     }
 
-    public static void sortTasksByStartDateTime(ArrayList<Task> tasks) {
-        Collections.sort(tasks, new Comparator<Task>() {
+    public static void sortTasksByStartDateTime(ArrayList<EventTask> eventTasks) {
+        Collections.sort(eventTasks, new Comparator<EventTask>() {
             @Override
-            public int compare(Task t1, Task t2) {
+            public int compare(EventTask t1, EventTask t2) {
                 int compareResult = 0;
                 try {
                     String t1Date = t1.getDate();
@@ -140,7 +140,7 @@ public class TaskRepository {
                         }
                     }
                 } catch (Exception e) {
-                    Log.d("debug", "exception sort task by start date time");
+//                    Log.d("debug", "exception sort task by start date time");
                     e.printStackTrace();
                 }
                 return compareResult;
@@ -150,6 +150,6 @@ public class TaskRepository {
 
     //----------------------------------------------------------------------------------------------
     private interface MyTaskCallback {
-        void onCallback(HashMap<String, Task> taskList);
+        void onCallback(HashMap<String, EventTask> taskList);
     }
 }

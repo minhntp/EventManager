@@ -85,7 +85,9 @@ public class EmployeeRepository {
                                     (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
                             employees.put(tempEmployee.getId(), tempEmployee);
-                            specialities.add(tempEmployee.getChuyenMon());
+                            if(!specialities.contains(tempEmployee.getChuyenMon())) {
+                                specialities.add(tempEmployee.getChuyenMon());
+                            }
                         }
                         allEmployees = employees;
                         this.specialities = specialities;

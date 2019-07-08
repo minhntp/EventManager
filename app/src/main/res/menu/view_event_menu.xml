@@ -24,5 +24,11 @@
         android:icon="@drawable/ic_menu_send"
         android:orderInCategory="1"
         android:title="Gửi thông tin sự kiện"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/view_event_action_copy"
+        android:icon="@drawable/ic_copy"
+        android:orderInCategory="1"
+        android:title="Sao chép"
+        app:showAsAction="ifRoom" />
 </menu>

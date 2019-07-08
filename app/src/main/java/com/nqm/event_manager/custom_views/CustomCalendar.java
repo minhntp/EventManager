@@ -2,8 +2,6 @@ package com.nqm.event_manager.custom_views;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.adapters.CalendarGridRecyclerAdapter;
 import com.nqm.event_manager.adapters.CustomCalendarGridAdapter;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 
@@ -173,7 +170,7 @@ public class CustomCalendar extends LinearLayout implements IOnCustomCalendarIte
     }
 
     public void updateView() {
-        Log.d("debug", "custom calendar update data and notify of gridAdapter");
+//        Log.d("debug", "custom calendar update data and notify of gridAdapter");
         gridAdapter.updateData();
         gridAdapter.notifyDataSetChanged();
 

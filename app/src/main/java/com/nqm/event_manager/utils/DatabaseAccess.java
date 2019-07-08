@@ -2,6 +2,7 @@ package com.nqm.event_manager.utils;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.repositories.DefaultEmployeeRepository;
 import com.nqm.event_manager.repositories.DefaultReminderRepository;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -38,6 +39,7 @@ public class DatabaseAccess {
         SalaryRepository.getInstance().setListener(listener);
         ScheduleRepository.getInstance().setListener(listener);
         TaskRepository.getInstance().setListener(listener);
+        DefaultEmployeeRepository.getInstance().setListener(listener);
     }
 
     public static boolean isAllDataLoaded() {
@@ -48,7 +50,8 @@ public class DatabaseAccess {
                 (ReminderRepository.getInstance().getAllReminders() != null) &&
                 (SalaryRepository.getInstance().getAllSalaries() != null) &&
                 (ScheduleRepository.getInstance().getAllSchedules() != null) &&
-                (TaskRepository.getInstance().getAllTasks() != null));
+                (TaskRepository.getInstance().getAllTasks() != null)) &&
+                (DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null);
     }
 
 }

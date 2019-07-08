@@ -2,11 +2,14 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +17,29 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.nqm.event_manager.R;
+import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
+import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
+import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
+import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Reminder;
+import com.nqm.event_manager.repositories.DefaultEmployeeRepository;
 import com.nqm.event_manager.repositories.DefaultReminderRepository;
+import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderItemClicked,
-        IOnSelectReminderItemClicked {
+        IOnSelectReminderItemClicked, IOnEditEmployeeItemClicked, IOnSelectEmployeeItemClicked {
 
     CustomListView editReminderListView;
     EditReminderAdapter editReminderAdapter;
@@ -39,7 +52,20 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     Button selectReminderOkButton;
 
     ArrayList<Reminder> selectedReminders;
-    boolean isRemindersChanged;
+
+    ArrayList<String> selectedEmployeesIds;
+    Button selectEmployeeButton;
+    EditEmployeeAddEventAdapter editEmployeeAdapter;
+    RecyclerView editEmployeeRecyclerView;
+
+    ArrayList<Employee> employees;
+    Dialog selectEmployeeDialog;
+    Button selectEmployeeOkButton;
+    SearchView selectEmployeeSearchView;
+    RecyclerView selectEmployeeRecyclerView;
+    SelectEmployeeAddEventAdapter selectEmployeeAdapter;
+
+    boolean isRemindersChanged, isEmployeesChanged;
 
     Activity context;
 
@@ -67,6 +93,8 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     private void connectViews(View view) {
         selectReminderButton = view.findViewById(R.id.more_settings_add_reminder_button);
         editReminderListView = view.findViewById(R.id.more_settings_reminder_list_view);
+        selectEmployeeButton = view.findViewById(R.id.more_settings_add_employee_button);
+        editEmployeeRecyclerView = view.findViewById(R.id.more_settings_employee_recycler_view);
     }
 
     private void init() {
@@ -77,8 +105,9 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editReminderListView.setAdapter(editReminderAdapter);
 
         DefaultReminderRepository.getInstance().setListener(this);
-        ArrayList<Integer> defaultReminders = DefaultReminderRepository.getInstance().getDefaultReminders();
-        if (defaultReminders.size() > 0) {
+        ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
+                .getDefaultReminders().values());
+        if (defaultReminders != null && defaultReminders.size() > 0) {
             for (int minute : defaultReminders) {
                 selectedReminders.add(new Reminder("", "", minute, ""));
             }
@@ -87,6 +116,24 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
         initSelectReminderDialog();
         isRemindersChanged = false;
+
+        selectedEmployeesIds = new ArrayList<>();
+        editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, new HashMap<>());
+        editEmployeeAdapter.setListener(this);
+        editEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
+        editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+        DefaultReminderRepository.getInstance().setListener(this);
+        HashMap<String, String> defaultEmployeesIds = DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds();
+        if (defaultEmployeesIds != null && defaultEmployeesIds.size() > 0) {
+            for (String id : defaultEmployeesIds.values()) {
+                selectedEmployeesIds.add(id);
+            }
+            editEmployeeAdapter.notifyDataSetChanged();
+        }
+
+        initSelectEmployeeDialog();
     }
 
     private void initSelectReminderDialog() {
@@ -115,6 +162,49 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
     }
 
+    private void initSelectEmployeeDialog() {
+        selectEmployeeDialog = new Dialog(context);
+        selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
+
+        //Connect views
+        selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
+        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.add_schedule_ok_button);
+
+        employees = EmployeeRepository.getInstance().getEmployeesBySearchString("");
+        selectEmployeeAdapter = new SelectEmployeeAddEventAdapter(selectedEmployeesIds,
+                employees);
+        selectEmployeeAdapter.setListener(this);
+        selectEmployeeRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        selectEmployeeRecyclerView.setAdapter(selectEmployeeAdapter);
+        selectEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
+
+        //SEARCH employees
+        selectEmployeeSearchView = selectEmployeeDialog.findViewById(R.id.select_employee_search_view);
+        selectEmployeeSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
+                employees.clear();
+                employees.addAll(resultEmployees);
+                selectEmployeeAdapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+
+        //Add events
+        selectEmployeeOkButton.setOnClickListener(view -> {
+//            editEmployeeAdapter.notifyDataSetChanged();
+            selectEmployeeDialog.dismiss();
+        });
+
+        selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.notifyDataSetChanged());
+    }
+
     private void addEvents() {
         selectReminderButton.setOnClickListener(v -> {
             if (!context.isFinishing()) {
@@ -125,12 +215,26 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
                 }
             }
         });
+
+        selectEmployeeButton.setOnClickListener(v -> {
+            showSelectEmployeeDialog();
+        });
     }
 
+    private void showSelectEmployeeDialog() {
+        if (!context.isFinishing()) {
+            selectEmployeeAdapter.notifyDataSetChanged();
+            selectEmployeeDialog.show();
+            if (selectEmployeeDialog.getWindow() != null) {
+                selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
+            }
+        }
+    }
 
     @Override
     public void notifyOnLoadComplete() {
-        ArrayList<Integer> defaultReminders = DefaultReminderRepository.getInstance().getDefaultReminders();
+        ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
+                .getDefaultReminders().values());
         if (defaultReminders.size() > 0) {
             selectedReminders.clear();
             for (int minute : defaultReminders) {
@@ -176,6 +280,34 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         if (isRemindersChanged) {
             DefaultReminderRepository.getInstance().updateDefaultReminders(selectedReminders);
         }
+        if (isEmployeesChanged) {
+            DefaultEmployeeRepository.getInstance().updateDefaultEmployees(selectedEmployeesIds);
+        }
         super.onPause();
+    }
+
+    @Override
+    public void onDeleteButtonClicked(String employeeId) {
+        selectedEmployeesIds.remove(employeeId);
+//        conflictsMap.remove(employeeId);
+        editEmployeeAdapter.notifyDataSetChanged();
+        isEmployeesChanged = true;
+    }
+
+    @Override
+    public void onListItemClicked(String employeeId) {
+        //do nothing
+    }
+
+    @Override
+    public void onCheckBoxClicked(String employeeId, boolean isChecked) {
+        if (isChecked) {
+            selectedEmployeesIds.add(employeeId);
+//            conflictsMap.put(employeeId, null);
+        } else {
+            selectedEmployeesIds.remove(employeeId);
+//            conflictsMap.remove(employeeId);
+        }
+        isEmployeesChanged = true;
     }
 }

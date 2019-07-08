@@ -2,32 +2,34 @@ package com.nqm.event_manager.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.ManageSalaryFragment;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
-import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     Toolbar toolbar;
+    TextView userNameTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,7 @@ public class RootActivity extends AppCompatActivity
         if (!DatabaseAccess.isAllDataLoaded()) {
             Intent splashIntent = new Intent(this, SplashActivity.class);
             startActivity(splashIntent);
-            Log.d("debug", "right after start splash at RootActivity");
+//            Log.d("debug", "right after start splash at RootActivity");
             finish();
         }
         setContentView(R.layout.activity_root);
@@ -67,6 +69,23 @@ public class RootActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        userNameTextView = navigationView.getHeaderView(0).findViewById(R.id.nav_user_name_text_view);
+        String userDisplayName = LogInActivity.firebaseAuth.getCurrentUser().getEmail();
+        userNameTextView.setText(userDisplayName);
+        userNameTextView.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ic_error)
+                    .setTitle("Bạn có muốn đăng xuất?")
+                    .setPositiveButton("Đồng ý", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(this, LogInActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+        });
+//        Toast.makeText(this, "user display name = " + userDisplayName, Toast.LENGTH_SHORT).show();
 
         //open event management as default.
         openManageEventFragment();

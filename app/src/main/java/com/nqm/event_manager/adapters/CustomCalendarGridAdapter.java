@@ -161,7 +161,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             }
             cellDataArrayList.add(new CellData(day, numberOfEvents));
         }
-        Log.d("debug", "calendar adapter update data");
+//        Log.d("debug", "calendar adapter update data");
     }
 
     private boolean isSelectedDay(int day) {
@@ -205,7 +205,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-        Log.d("debug", "calendar adapter notifyDataSetChanged");
+//        Log.d("debug", "calendar adapter notifyDataSetChanged");
     }
 
     //------------------------------------------------------------------

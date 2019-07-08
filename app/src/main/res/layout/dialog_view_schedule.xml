@@ -18,7 +18,7 @@
         android:background="@color/colorPrimary"
         android:textColor="@color/textPrimaryColor" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/view_schedule_dialog_recycler_view"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"

@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,7 +20,7 @@ import com.nqm.event_manager.adapters.SendEventSectionAdapter;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
@@ -232,10 +232,10 @@ public class SendEventInfo extends AppCompatActivity {
 
         cb = sectionListView.getChildAt(5).findViewById(R.id.send_event_select_item_checkbox);
         if (cb.isChecked()) {
-            ArrayList<Task> tasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
-            TaskRepository.sortTasksByOrder(tasks);
+            ArrayList<EventTask> eventTasks = TaskRepository.getInstance().getTasksInArrayListByEventId(eventId);
+            TaskRepository.sortTasksByOrder(eventTasks);
             contentStringBuilder.append("Công việc:\n");
-            for (Task t : tasks) {
+            for (EventTask t : eventTasks) {
                 contentStringBuilder.append("\t").append("+ ").append(t.getDate());
                 if (!t.getTime().isEmpty()) {
                     contentStringBuilder.append("  ").append(t.getTime());

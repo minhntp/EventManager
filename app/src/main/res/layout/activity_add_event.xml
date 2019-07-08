@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.AddEventActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/add_event_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -16,7 +16,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/add_event_toolbar">
@@ -260,7 +260,7 @@
                         android:textSize="@dimen/sub_text_button" />
                 </RelativeLayout>
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/add_event_edit_employee_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Chọn nhân sự"
+                    android:text="@string/select_employees"
                     android:textSize="@dimen/sub_text_button" />
 
                 <LinearLayout
@@ -361,10 +361,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="50dp"
-                    android:text="Thêm nhắc nhở"
+                    android:text="@string/select_reminders"
                     android:textSize="@dimen/sub_text_button" />
             </LinearLayout>
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

@@ -5,9 +5,9 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -15,16 +15,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
 import com.nqm.event_manager.interfaces.IOnItemDraggedOrSwiped;
-import com.nqm.event_manager.models.Task;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
@@ -66,14 +64,14 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    tasks.get(getAdapterPosition()).setContent(s.toString());
+                    eventTasks.get(getAdapterPosition()).setContent(s.toString());
                 }
             });
 
             dateEditText.setOnClickListener(v -> {
                 try {
                     final int position = getAdapterPosition();
-                    calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(tasks.get(position).getDate()));
+                    calendarOfTask.setTime(CalendarUtil.sdfDayMonthYear.parse(eventTasks.get(position).getDate()));
                     int d = calendarOfTask.get(Calendar.DAY_OF_MONTH);
                     int m = calendarOfTask.get(Calendar.MONTH);
                     int y = calendarOfTask.get(Calendar.YEAR);
@@ -81,7 +79,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                         calendarOfTask.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         calendarOfTask.set(Calendar.MONTH, month);
                         calendarOfTask.set(Calendar.YEAR, year);
-                        tasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendarOfTask.getTime()));
+                        eventTasks.get(position).setDate(CalendarUtil.sdfDayMonthYear.format(calendarOfTask.getTime()));
                         notifyItemChanged(position);
                     }, y, m, d);
                     dpd.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
@@ -96,9 +94,9 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                 int hourOfDay = 12;
                 int minute = 0;
                 calendarOfTask = Calendar.getInstance();
-                if (!(tasks.get(position).getTime().isEmpty())) {
+                if (!(eventTasks.get(position).getTime().isEmpty())) {
                     try {
-                        calendarOfTask.setTime(CalendarUtil.sdfTime.parse(tasks.get(position).getTime()));
+                        calendarOfTask.setTime(CalendarUtil.sdfTime.parse(eventTasks.get(position).getTime()));
                         hourOfDay = calendarOfTask.get(Calendar.HOUR_OF_DAY);
                         minute = calendarOfTask.get(Calendar.MINUTE);
                     } catch (Exception e) {
@@ -108,7 +106,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                 new TimePickerDialog(context, (timePicker, hour, minute1) -> {
                     calendarOfTask.set(Calendar.HOUR_OF_DAY, hour);
                     calendarOfTask.set(Calendar.MINUTE, minute1);
-                    tasks.get(position).setTime(CalendarUtil.sdfTime.format(calendarOfTask.getTime()));
+                    eventTasks.get(position).setTime(CalendarUtil.sdfTime.format(calendarOfTask.getTime()));
                     notifyItemChanged(position);
                 }, hourOfDay, minute, false).show();
             });
@@ -116,7 +114,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
             checkBox.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
-                    tasks.get(position).setDone(checkBox.isChecked());
+                    eventTasks.get(position).setDone(checkBox.isChecked());
                     listener.onEditTaskItemCheckBoxClicked(checkBox.isChecked());
                     notifyItemChanged(position);
                 }
@@ -124,15 +122,15 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
         }
     }
 
-    private ArrayList<Task> tasks;
+    private ArrayList<EventTask> eventTasks;
     private ItemTouchHelper itemTouchHelper;
     private IOnEditTaskItemClicked listener;
     private Calendar calendarOfTask = Calendar.getInstance();
     private Calendar calendarOfCurrentTime = Calendar.getInstance();
     private Context context;
 
-    public EditTaskAdapter(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+    public EditTaskAdapter(ArrayList<EventTask> eventTasks) {
+        this.eventTasks = eventTasks;
     }
 
     public void setListener(IOnEditTaskItemClicked listener) {
@@ -151,7 +149,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        Task t = tasks.get(i);
+        EventTask t = eventTasks.get(i);
 
         EditText dateEditText = viewHolder.dateEditText;
         TextView dowTextView = viewHolder.dowTextView;
@@ -210,21 +208,21 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return eventTasks.size();
     }
 
     //ITEM DRAGGED OT SWIPED CALLBACK
     @Override
     public void onViewDragged(int oldPosition, int newPosition) {
-        Task tempTask = new Task(tasks.get(oldPosition));
-        tasks.remove(oldPosition);
-        tasks.add(newPosition, tempTask);
+        EventTask tempEventTask = new EventTask(eventTasks.get(oldPosition));
+        eventTasks.remove(oldPosition);
+        eventTasks.add(newPosition, tempEventTask);
         notifyItemMoved(oldPosition, newPosition);
     }
 
     @Override
     public void onViewSwiped(int position) {
-        tasks.remove(position);
+        eventTasks.remove(position);
         listener.onEditTaskItemRemoved();
         notifyItemRemoved(position);
     }

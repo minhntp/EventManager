@@ -1,20 +1,11 @@
 package com.nqm.event_manager.repositories;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Salary;
@@ -25,13 +16,9 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class SalaryRepository {
     private static SalaryRepository instance;
@@ -162,7 +149,7 @@ public class SalaryRepository {
 
     public void updateSalaries(ArrayList<Salary> salaries) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
-        Log.d("debug", "salaries size = " + salaries.size());
+//        Log.d("debug", "salaries size = " + salaries.size());
         for (int i = 0; i < salaries.size(); i++) {
             DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION).document(salaries.get(i).getSalaryId());
@@ -170,7 +157,7 @@ public class SalaryRepository {
             Map<String, Object> salaryData = new HashMap<>();
             salaryData.put(Constants.SALARY_SALARY, "" + salaries.get(i).getSalary());
             salaryData.put(Constants.SALARY_PAID, Boolean.toString(salaries.get(i).isPaid()));
-            Log.d("debug", "amount = " + salaries.get(i).getSalary());
+//            Log.d("debug", "amount = " + salaries.get(i).getSalary());
             batch.update(salaryDocRef, salaryData);
         }
 
@@ -209,7 +196,7 @@ public class SalaryRepository {
     public boolean isSalaryPaid(String employeeId, String eventId) {
         boolean isPaid = false;
         for (Salary s : allSalaries.values()) {
-            Log.d("debug", "looping to find out if salary is paid");
+//            Log.d("debug", "looping to find out if salary is paid");
             if (s.getEmployeeId().equals(employeeId) && s.getEventId().equals(eventId)) {
                 isPaid = s.isPaid();
                 break;

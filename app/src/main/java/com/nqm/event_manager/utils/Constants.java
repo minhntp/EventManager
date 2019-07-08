@@ -49,6 +49,9 @@ public class Constants {
     public static String REMINDER_MINUTE = "phut";
     public static String REMINDER_TIME = "thoigian";
 
+    public static String DEFAULT_EMPLOYEE_COLLECTION = "nhanvienmacdinh";
+    public static String EMPLOYEE_ID = "id";
+
     public static String BOOT_COMPLETE = "khoidong";
     public static String BOOT_COMPLETED = "hoantat";
     public static String BOOT_TIME = "thoigian";
@@ -64,6 +67,7 @@ public class Constants {
     public static String INTENT_SELECTED_DATE = "selectedDate";
 
     public static String DEFAULT_REMINDER_COLLECTION = "nhacnhomacdinh";
+    public static String DEBUG = "debug";
 
 
 }
