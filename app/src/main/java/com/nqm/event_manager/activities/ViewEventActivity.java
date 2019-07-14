@@ -217,49 +217,77 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
         //Xóa sự kiện
         if (id == R.id.view_event_action_delete_event) {
 //            Log.d("debug", "deleting " + eventId);
-            new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.ic_error)
-                    .setTitle("Xóa sự kiện")
-                    .setMessage("Bạn có chắc chắn không?")
-                    .setPositiveButton("Có", (dialog, which) -> {
-                        DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener);
-                        EventRepository.getInstance().deleteEventFromDatabase(eventId);
-                        context.finish();
-                    })
-                    .setNegativeButton("Không", null)
-                    .show();
+            deleteEvent();
             return true;
         }
 
         //Chỉnh sửa lương
         if (id == R.id.view_event_action_edit_salaries) {
-            if (allSalariesArePaid()) {
-                Toast.makeText(context, "Không có bản lương nào hoặc tất cả các bản lương đều " +
-                        "đã được trả", Toast.LENGTH_LONG).show();
-            } else {
-                Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
-                intent.putExtra("eventId", eventId);
-                startActivity(intent);
-            }
+            editSalaries();
             return true;
         }
 
         //Chỉnh sửa sự kiện
         if (id == R.id.view_event_action_edit_event) {
-            Intent intent = new Intent(this, EditEventActivity.class);
-            intent.putExtra("eventId", eventId);
-            startActivity(intent);
+            editEvent();
             return true;
         }
 
         //Gửi thông báo
         if (id == R.id.view_event_action_send_notification) {
-            Intent intent = new Intent(this, SendEventInfo.class);
-            intent.putExtra("eventId", eventId);
-            startActivity(intent);
+            sendNotification();
             return true;
         }
+
+        if (id == R.id.view_event_action_copy) {
+            copyEvent();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteEvent() {
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.ic_error)
+                .setTitle("Xóa sự kiện")
+                .setMessage("Bạn có chắc chắn không?")
+                .setPositiveButton("Có", (dialog, which) -> {
+                    DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener);
+                    EventRepository.getInstance().deleteEventFromDatabase(eventId);
+                    context.finish();
+                })
+                .setNegativeButton("Không", null)
+                .show();
+    }
+
+    private void editSalaries() {
+        if (allSalariesArePaid()) {
+            Toast.makeText(context, "Không có bản lương nào hoặc tất cả các bản lương đều " +
+                    "đã được trả", Toast.LENGTH_LONG).show();
+        } else {
+            Intent intent = new Intent(this, EditSalaryFromViewEventActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
+        }
+    }
+
+    private void editEvent() {
+        Intent intent = new Intent(this, EditEventActivity.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
+
+    private void sendNotification() {
+        Intent intent = new Intent(this, SendEventInfo.class);
+        intent.putExtra("eventId", eventId);
+        startActivity(intent);
+    }
+
+    private void copyEvent() {
+        Intent intent = new Intent(this, AddEventActivity.class);
+        intent.putExtra(Constants.INTENT_EVENT_ID, eventId);
+        startActivity(intent);
+        finish();
     }
 
     private boolean allSalariesArePaid() {

@@ -85,5 +85,10 @@
     <string name="select_default_reminders">Chọn nhắc nhở mặc định</string>
     <string name="select_employees">Chọn nhân sự</string>
     <string name="select_reminders">Chọn nhắc nhở</string>
+    <string name="menu_copy">Copy</string>
+    <string name="menu_send_event_info">Gửi thông tin sự kiện</string>
+    <string name="menu_edit_event">Chỉnh sửa sự kiện</string>
+    <string name="menu_edit_salary">Chỉnh sửa lương</string>
+    <string name="menu_delete_event">Xóa sự kiện</string>
 
 </resources>

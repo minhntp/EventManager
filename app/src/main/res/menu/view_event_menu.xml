@@ -5,30 +5,30 @@
         android:id="@+id/view_event_action_delete_event"
         android:icon="@drawable/ic_delete"
         android:orderInCategory="4"
-        android:title="Xóa sự kiện"
+        android:title="@string/menu_delete_event"
         app:showAsAction="always" />
     <item
         android:id="@+id/view_event_action_edit_salaries"
         android:icon="@drawable/ic_money"
         android:orderInCategory="2"
-        android:title="Chỉnh sửa lương"
+        android:title="@string/menu_edit_salary"
         app:showAsAction="always" />
     <item
         android:id="@+id/view_event_action_edit_event"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="3"
-        android:title="Chỉnh sửa sự kiện"
+        android:title="@string/menu_edit_event"
         app:showAsAction="always" />
     <item
         android:id="@+id/view_event_action_send_notification"
         android:icon="@drawable/ic_menu_send"
         android:orderInCategory="1"
-        android:title="Gửi thông tin sự kiện"
+        android:title="@string/menu_send_event_info"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/view_event_action_copy"
         android:icon="@drawable/ic_copy"
         android:orderInCategory="1"
-        android:title="Sao chép"
+        android:title="@string/menu_copy"
         app:showAsAction="ifRoom" />
 </menu>

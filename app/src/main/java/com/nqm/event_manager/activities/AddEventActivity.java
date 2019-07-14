@@ -51,6 +51,7 @@ import com.nqm.event_manager.repositories.DefaultEmployeeRepository;
 import com.nqm.event_manager.repositories.DefaultReminderRepository;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.ReminderRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -132,6 +133,8 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     TextView selectedDowTextView;
     EditText selectedDateEditText;
 
+    String copiedEventId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -140,6 +143,11 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         connectViews();
         init();
         addEvents();
+
+        copiedEventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
+        if (copiedEventId != null && !copiedEventId.isEmpty()) {
+            fillCopyEventInfo();
+        }
     }
 
     @Override
@@ -563,6 +571,35 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         });
     }
 
+    private void fillCopyEventInfo() {
+        Event copiedEvent = EventRepository.getInstance().getEventByEventId(copiedEventId);
+
+        titleAutoCompleteTextView.setText(copiedEvent.getTen());
+        startDateEditText.setText(copiedEvent.getNgayBatDau());
+        endDateEditText.setText(copiedEvent.getNgayKetThuc());
+        startTimeEditText.setText(copiedEvent.getGioBatDau());
+        endTimeEditText.setText(copiedEvent.getGioKetThuc());
+        locationAutoCompleteTextView.setText(copiedEvent.getDiaDiem());
+
+        selectedEmployeesIds.clear();
+        selectedEmployeesIds.addAll(EmployeeRepository.getInstance().getEmployeesIdsByEventId(copiedEventId));
+        editEmployeeAdapter.notifyDataSetChanged();
+
+        noteEditText.setText(copiedEvent.getGhiChu());
+
+        eventTasks.clear();
+        eventTasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(copiedEventId));
+        editTaskAdapter.notifyDataSetChanged();
+
+        schedules.clear();
+        schedules.addAll(ScheduleRepository.getInstance().getSchedulesInArrayListByEventId(copiedEventId));
+        editScheduleAdapter.notifyDataSetChanged();
+
+        selectedReminders.clear();
+        selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(copiedEventId));
+        editReminderAdapter.notifyDataSetChanged();
+    }
+
     private void showDatePickerDialog() {
         //Make sure start date + start time < end date + end time
         try {
@@ -893,7 +930,6 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
 //        Log.d("debug", "selected date changed");
     }
-
 
     //----------------------------------------------------------------------------------------------
 }
