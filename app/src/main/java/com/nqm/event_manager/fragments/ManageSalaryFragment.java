@@ -169,13 +169,26 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
                 Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
 
-                if (startDate.compareTo(endDate) > 0) {
-                    if (selectedDateEditText == startDateEditText) {
-                        endDateEditText.setText(selectedDate);
-                    } else {
-                        startDateEditText.setText(selectedDate);
+//                if (startDate.compareTo(endDate) > 0) {
+//                    if (selectedDateEditText == startDateEditText) {
+//                        endDateEditText.setText(selectedDate);
+//                    } else {
+//                        startDateEditText.setText(selectedDate);
+//                    }
+//                }
+
+                if (selectedDateEditText == startDateEditText) {
+                    calendar.setTime(startDate);
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                    endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                } else {
+                    if (endDate.before(startDate)) {
+                        calendar.setTime(endDate);
+                        calendar.set(Calendar.DAY_OF_MONTH, 1);
+                        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     }
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

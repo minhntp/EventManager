@@ -186,6 +186,7 @@ public class LogInActivity extends AppCompatActivity {
 
             Toast.makeText(this, user.getEmail(), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, SplashActivity.class));
+            finish();
         } else {
 //            mStatusTextView.setText(R.string.signed_out);
 //            mDetailTextView.setText(null);

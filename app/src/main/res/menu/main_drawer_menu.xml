@@ -9,13 +9,13 @@
             android:icon="@drawable/ic_event"
             android:title="Quản lý sự kiện" />
         <item
-            android:id="@+id/nav_employee"
-            android:icon="@drawable/ic_account_circle"
-            android:title="Quản lý nhân viên" />
-        <item
             android:id="@+id/nav_calculate_salaries"
             android:icon="@drawable/ic_money"
             android:title="Quản lý lương" />
+        <item
+            android:id="@+id/nav_employee"
+            android:icon="@drawable/ic_account_circle"
+            android:title="Quản lý nhân viên" />
         <item android:title="Thêm">
             <menu>
                 <item

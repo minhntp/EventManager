@@ -58,7 +58,7 @@
             android:name=".activities.ViewEmployeeActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".activities.CalculateSalaryForSingleEmployeeActivity"
+            android:name=".activities.CalculateSalaryForOneEmployeeActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.ViewEventActivity"

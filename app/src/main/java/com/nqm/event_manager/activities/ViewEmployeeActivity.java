@@ -9,7 +9,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,7 +83,7 @@ public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLo
         }
 
         if (id == R.id.view_employee_action_salary) {
-            Intent intent = new Intent(this, CalculateSalaryForSingleEmployeeActivity.class);
+            Intent intent = new Intent(this, CalculateSalaryForOneEmployeeActivity.class);
             intent.putExtra("employeeId", employee.getId());
             startActivity(intent);
             return true;
