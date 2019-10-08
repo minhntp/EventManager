@@ -18,6 +18,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CalculateSalaryAdapter extends BaseAdapter {
     private final Activity context;
@@ -69,8 +70,12 @@ public class CalculateSalaryAdapter extends BaseAdapter {
         Event event = EventRepository.getInstance().getAllEvents().get(salary.getEventId());
         if (event != null) {
             try {
-                startDateTextView.setText(CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
-                        .parse(event.getNgayBatDau())));
+                Date startDate = CalendarUtil.sdfDayMonthYear.parse(event.getNgayBatDau());
+                String toText = CalendarUtil.sdfDayMonth.format(startDate) + "\n" +
+                        CalendarUtil.dayOfWeekInVietnamese(event.getNgayBatDau());
+                startDateTextView.setText(toText);
+//                startDateTextView.setText(CalendarUtil.sdfDayMonth.format(CalendarUtil.sdfDayMonthYear
+//                        .parse(event.getNgayBatDau())));
             } catch (Exception e) {
                 e.printStackTrace();
             }
