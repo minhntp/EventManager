@@ -55,7 +55,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:inputType="number"
-            android:textSize="@dimen/salary_amount_edit_text" />
+            android:textSize="@dimen/salary_amount_edit_text"/>
 
         <CheckBox
             android:id="@+id/calculate_salaries_list_item_paid_checkbox"
