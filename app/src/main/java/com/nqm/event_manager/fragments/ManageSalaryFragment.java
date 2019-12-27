@@ -3,6 +3,7 @@ package com.nqm.event_manager.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -49,7 +50,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     CustomListView resultListView;
     EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
     Spinner selectEmployeeSpinner;
-    TextView numberOfEventsTextView, sumTextView;
+    TextView numberOfEventsTextView, sumTextView, employeeNumOfEventsTextView;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -137,6 +138,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
         numberOfEventsTextView = view.findViewById(R.id.fragment_manage_salary_number_of_events_text_view);
         sumTextView = view.findViewById(R.id.fragment_manage_salary_sum_text_view);
+        employeeNumOfEventsTextView = view.findViewById((R.id.fragment_manage_salary_employee_number_of_events_text_view));
     }
 
     private void initDatePickerDialog() {
@@ -337,6 +339,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 }
             }
         }
+        employeeNumOfEventsTextView.setText(String.valueOf(selectedSalaries.size()));
         sum = paid + unpaid;
 
         sumEditText.setText(String.valueOf(sum));
@@ -385,9 +388,27 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
-        Intent intent = new Intent(getContext(), ViewEventActivity.class);
-        intent.putExtra("eventId", eventId);
-        startActivity(intent);
+        new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_save)
+                .setTitle("Lưu thông tin đã nhập?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveChanges(false);
+                        Intent intent = new Intent(getContext(), ViewEventActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getContext(), ViewEventActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        startActivity(intent);
+                    }
+                })
+                .show();
     }
 
     @Override
