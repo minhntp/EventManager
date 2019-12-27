@@ -3,6 +3,7 @@ package com.nqm.event_manager.activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
@@ -337,9 +338,27 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
 
     @Override
     public void onCalculateSalaryItemClicked(String eventId) {
-        Intent intent = new Intent(this, ViewEventActivity.class);
-        intent.putExtra("eventId", eventId);
-        startActivity(intent);
+        new androidx.appcompat.app.AlertDialog.Builder(context)
+                .setIcon(R.drawable.ic_save)
+                .setTitle("Lưu thông tin đã nhập?")
+                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        saveChanges(false);
+                        Intent intent = new Intent(context, ViewEventActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(context, ViewEventActivity.class);
+                        intent.putExtra("eventId", eventId);
+                        startActivity(intent);
+                    }
+                })
+                .show();
     }
 
     @Override

@@ -395,7 +395,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         saveChanges(false);
-                        Intent intent = new Intent(getContext(), ViewEventActivity.class);
+                        Intent intent = new Intent(context, ViewEventActivity.class);
                         intent.putExtra("eventId", eventId);
                         startActivity(intent);
                     }
@@ -403,7 +403,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(getContext(), ViewEventActivity.class);
+                        Intent intent = new Intent(context, ViewEventActivity.class);
                         intent.putExtra("eventId", eventId);
                         startActivity(intent);
                     }
