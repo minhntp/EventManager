@@ -339,7 +339,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 }
             }
         }
-        employeeNumOfEventsTextView.setText(String.valueOf(selectedSalaries.size()));
+        employeeNumOfEventsTextView.setText(String.format(getResources().getString(R.string.num_of_events), selectedSalaries.size()));
         sum = paid + unpaid;
 
         sumEditText.setText(String.valueOf(sum));

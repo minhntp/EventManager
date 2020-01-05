@@ -44,6 +44,7 @@
     <string name="task_still_valid">Còn %1$d ngày</string>
 
     <string name="salary_num_of_events">Tìm thấy %1$d bản lương trong %2$d sự kiện</string>
+    <string name="num_of_events">%1$d sự kiện</string>
     <string name="salary_no_salaries">Không tìm thấy bản lương nào</string>
     <!--<string name="email_address_array_item">%1$s,</string>-->
     <string name="event_fragment_list_title">Sự kiện trong ngày %1$s</string>

@@ -1,10 +1,9 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.CalculateSalaryForOneEmployeeActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.CalculateSalaryForOneEmployeeActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/calculate_salary_single_toolbar"
@@ -24,14 +23,17 @@
         android:layout_marginRight="10dp">
 
         <LinearLayout
-            android:id="@+id/calculate_salary_single_above_layout"
+            android:id="@+id/calculate_salary_single_top_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/calculate_salary_single_info_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -64,6 +66,7 @@
                         android:textSize="@dimen/info_list_item" />
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
@@ -72,64 +75,88 @@
                 android:background="@color/divider" />
 
             <LinearLayout
+                android:id="@+id/calculate_salary_single_date_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="10">
+                android:weightSum="2">
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_time" />
+                    android:orientation="vertical">
 
-                <TextView
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_calendar" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="9"
+                            android:text="Ngày bắt đầu"
+                            android:textSize="@dimen/section_title"
+                            android:textStyle="italic" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/calculate_salary_single_start_date_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:textSize="@dimen/date_edit_text" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
-                    android:text="Ngày bắt đầu"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="italic"/>
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/calculate_salary_single_start_date_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:textSize="@dimen/date_edit_text" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:weightSum="10">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_time" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="9"
-                    android:text="Ngày kết thúc"
-                    android:textSize="@dimen/section_title"
-                    android:textStyle="italic"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:weightSum="10">
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_calendar" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="9"
+                            android:text="Ngày kết thúc"
+                            android:textSize="@dimen/section_title"
+                            android:textStyle="italic" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/calculate_salary_single_end_date_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:textSize="@dimen/date_edit_text" />
+                </LinearLayout>
+
+
             </LinearLayout>
-
-            <EditText
-                android:id="@+id/calculate_salary_single_end_date_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:textSize="@dimen/date_edit_text" />
 
             <Button
                 android:id="@+id/calculate_salary_single_calculate_button"
@@ -138,16 +165,25 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Tính"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/calculate_salary_single_top_layout"
+            android:layout_above="@id/calculate_salary_single_total_layout"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/calculate_salary_single_number_of_events_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:background="@drawable/custom_calendar_grid_item_background"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/custom_calendar_grid_item_background"
                 android:gravity="center"
                 android:textColor="@color/textPrimaryColor"
                 android:textSize="@dimen/section_title"
@@ -159,29 +195,21 @@
                 android:layout_marginBottom="2dp"
                 android:background="@color/divider" />
 
-            <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Kết quả"-->
-            <!--android:textSize="15sp"-->
-            <!--android:textStyle="italic" />-->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.nqm.event_manager.custom_views.CustomListView
+                    android:id="@+id/calculate_salary_single_result_list_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </androidx.core.widget.NestedScrollView>
 
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/calculate_salary_single_calculate_layout"
-            android:layout_below="@id/calculate_salary_single_above_layout">
-
-            <com.nqm.event_manager.custom_views.CustomListView
-                android:id="@+id/calculate_salary_single_result_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </androidx.core.widget.NestedScrollView>
-
         <LinearLayout
-            android:id="@+id/calculate_salary_single_calculate_layout"
+            android:id="@+id/calculate_salary_single_total_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/calculate_salary_single_save_layout"
@@ -281,7 +309,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Lưu thay đổi"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button" />
 
             <Button
                 android:id="@+id/calculate_salary_single_pay_all_button"
@@ -291,7 +319,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="Thanh toán tất cả"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button" />
         </LinearLayout>
 
     </RelativeLayout>
