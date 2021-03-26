@@ -25,7 +25,7 @@ import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.fragments.MoreSettingsFragment;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
-public class RootActivity extends AppCompatActivity
+public class RootActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     Toolbar toolbar;

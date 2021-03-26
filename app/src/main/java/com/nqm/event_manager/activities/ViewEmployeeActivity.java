@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
@@ -23,13 +22,13 @@ import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
-public class ViewEmployeeActivity extends AppCompatActivity implements IOnDataLoadComplete {
+public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadComplete {
 
     public static IOnDataLoadComplete thisListener;
     Activity context;
     Employee employee;
     String employeeId;
-    TextView nameTextView, specialityTextView, phoneNumberTextView, dateOfBirthTextView,
+    TextView surMiddleNameTextView, nameTextView, specialityTextView, phoneNumberTextView, dateOfBirthTextView,
             emailTextView, cmndTextView;
     ImageButton callButton, messageButton, emailButton;
     Toolbar toolbar;

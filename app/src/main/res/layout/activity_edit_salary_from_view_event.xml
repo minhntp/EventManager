@@ -28,7 +28,7 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <com.nqm.event_manager.custom_views.CustomListView
+            <ListView
                 android:id="@+id/edit_salary_from_view_event_salary_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

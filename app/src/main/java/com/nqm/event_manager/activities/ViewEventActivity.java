@@ -48,7 +48,7 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class ViewEventActivity extends AppCompatActivity implements IOnViewSalaryItemClicked,
+public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItemClicked,
         IOnDataLoadComplete, IOnEditReminderItemClicked, IOnSelectReminderItemClicked {
     Activity context;
 
@@ -61,7 +61,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
 
     ArrayList<Salary> salaries;
     ViewSalaryAdapter viewSalaryAdapter;
-    CustomListView salaryListView;
+    ListView salaryListView;
 
     Dialog viewTaskDialog;
     ArrayList<EventTask> eventTasks;
@@ -79,7 +79,7 @@ public class ViewEventActivity extends AppCompatActivity implements IOnViewSalar
     Button scheduleBackButton;
 
     ArrayList<Reminder> selectedReminders;
-    CustomListView editReminderListView;
+    ListView editReminderListView;
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 

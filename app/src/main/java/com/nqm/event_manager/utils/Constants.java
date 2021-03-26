@@ -17,7 +17,7 @@ public class Constants {
     public static String EMPLOYEE_IDENTITY = "cmnd";
     public static String EMPLOYEE_DEVICE_ID = "deviceid";
     public static String EMPLOYEE_EMAIL = "email";
-    public static String EMPLOYEE_NAME = "hoten";
+    public static String EMPLOYEE_FULLNAME = "hoten";
     public static String EMPLOYEE_PASSWORD = "matkhau";
     public static String EMPLOYEE_DAY_OF_BIRTH = "ngaysinh";
     public static String EMPLOYEE_PHONE_NUMBER = "sdt";

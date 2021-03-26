@@ -2,11 +2,15 @@ package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,14 +28,36 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     private final Activity context;
     IOnCalculateSalaryItemClicked listener;
     private ArrayList<Salary> resultSalaries;
+    private int renderedCount = 0;
     private Resources res;
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        int beforeAmount = 0;
+        int changedAmount = -0;
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            beforeAmount = Integer.parseInt(s.toString());
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                    changedAmount = Integer.parseInt(s.toString()) - beforeAmount;
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            changedAmount = Integer.parseInt(s.toString()) - beforeAmount;
+            listener.onCalculateSalaryItemSelectedAmountChanged(changedAmount);
+        }
+    };
 
     public CalculateSalaryAdapter(Activity context, ArrayList<Salary> resultSalaries) {
         this.context = context;
         this.resultSalaries = resultSalaries;
+        renderedCount = 0;
         res = context.getResources();
     }
-
 
     public void setListener(IOnCalculateSalaryItemClicked listener) {
         this.listener = listener;
@@ -56,6 +82,11 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.list_item_calculate_salary, parent, false);
+        }
+
+        renderedCount++;
+        if (renderedCount == resultSalaries.size()) {
+            listener.renderedAllElements();
         }
 
         //Connect views
@@ -93,10 +124,15 @@ public class CalculateSalaryAdapter extends BaseAdapter {
             }
 
             //Add events
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onCalculateSalaryItemClicked(salary.getEventId());
+            view.setOnClickListener(v -> listener.onCalculateSalaryItemClicked(salary.getEventId()));
+
+            paidCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    listener.onCalculateSalaryItemChecked(Integer.parseInt(salaryEditText.getText().toString()));
+                    salaryEditText.addTextChangedListener(textWatcher);
+                } else {
+                    listener.onCalculateSalaryItemChecked(-1 * Integer.parseInt(salaryEditText.getText().toString()));
+                    salaryEditText.removeTextChangedListener(textWatcher);
                 }
             });
         }
@@ -106,6 +142,7 @@ public class CalculateSalaryAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(ArrayList<Salary> resultSalaries) {
         this.resultSalaries = resultSalaries;
+        renderedCount = 0;
         super.notifyDataSetChanged();
     }
 }

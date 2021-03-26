@@ -2,7 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +19,7 @@ import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
-public class ShowConflictActivity extends AppCompatActivity implements IOnConflictEventItemClicked {
+public class ShowConflictActivity extends BaseActivity implements IOnConflictEventItemClicked {
 
     Toolbar toolbar;
 

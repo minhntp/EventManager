@@ -20,7 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2">
+            android:weightSum="2"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -33,6 +34,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
+                    android:labelFor="@id/fragment_manage_salary_start_date_edit_text"
                     android:weightSum="10">
 
                     <ImageView
@@ -40,13 +42,14 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:src="@drawable/ic_calendar" />
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="@string/start_date" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="9"
-                        android:text="Ngày bắt đầu"
+                        android:text="@string/start_date"
                         android:textSize="@dimen/section_title"
                         android:textStyle="italic" />
                 </LinearLayout>
@@ -56,7 +59,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textSize="@dimen/date_edit_text" />
+                    android:textSize="@dimen/date_edit_text"
+                    android:importantForAutofill="no"
+                    android:inputType="date" />
             </LinearLayout>
 
             <LinearLayout
@@ -70,6 +75,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
+                    android:labelFor="@id/fragment_manage_salary_end_date_edit_text"
                     android:weightSum="10">
 
                     <ImageView
@@ -77,13 +83,14 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:src="@drawable/ic_calendar" />
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="@string/end_date" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="9"
-                        android:text="Ngày kết thúc"
+                        android:text="@string/end_date"
                         android:textSize="@dimen/section_title"
                         android:textStyle="italic" />
                 </LinearLayout>
@@ -93,7 +100,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:textSize="@dimen/date_edit_text" />
+                    android:textSize="@dimen/date_edit_text"
+                    android:importantForAutofill="no"
+                    android:inputType="date" />
             </LinearLayout>
 
         </LinearLayout>
@@ -104,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Tính"
+            android:text="@string/calculate"
             android:textSize="@dimen/sub_text_button" />
     </LinearLayout>
 
@@ -141,13 +150,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_employee" />
+                android:src="@drawable/ic_employee"
+                android:contentDescription="@string/employee" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="9"
-                android:text="Nhân viên"
+                android:text="@string/employee"
                 android:textSize="@dimen/section_title"
                 android:textStyle="italic" />
         </LinearLayout>
@@ -185,20 +195,11 @@
             android:layout_marginBottom="2dp"
             android:background="@color/divider" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/fragment_manage_salary_result_text_view"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:text="Kết quả"-->
-        <!--android:textSize="15sp"-->
-        <!--android:textStyle="italic" />-->
-
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <com.nqm.event_manager.custom_views.CustomListView
+            <ListView
                 android:id="@+id/fragment_manage_salary_result_list_view"
 
                 android:layout_width="match_parent"
@@ -224,16 +225,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="5">
+            android:weightSum="10">
 
             <TextView
                 android:id="@+id/fragment_manage_salary_sum_text_view"
+                android:labelFor="@id/fragment_manage_salary_sum_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:focusableInTouchMode="true"
                 android:gravity="center"
-                android:text="Tổng cộng"
+                android:text="@string/sum"
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
@@ -244,7 +246,32 @@
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#0037FF"
-                android:textSize="@dimen/salary_amount_edit_text" />
+                android:textSize="@dimen/salary_amount_edit_text"
+                android:importantForAutofill="no"
+                android:inputType="number" />
+
+            <TextView
+                android:id="@+id/fragment_manage_salary_selected_amount_text_view"
+                android:labelFor="@id/fragment_manage_salary_selected_amount_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:text="@string/selectedAmount"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <EditText
+                android:id="@+id/fragment_manage_salary_selected_amount_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="false"
+                android:textColor="@color/selectedAmount"
+                android:textSize="@dimen/salary_amount_edit_text"
+                android:importantForAutofill="no"
+                android:inputType="number" />
         </LinearLayout>
 
         <LinearLayout
@@ -255,10 +282,11 @@
 
             <TextView
                 android:layout_width="0dp"
+                android:labelFor="@id/fragment_manage_salary_paid_edit_text"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:text="Đã trả"
+                android:text="@string/paid"
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
@@ -269,14 +297,17 @@
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#AE00FF19"
-                android:textSize="@dimen/salary_amount_edit_text" />
+                android:textSize="@dimen/salary_amount_edit_text"
+                android:importantForAutofill="no"
+                android:inputType="number" />
 
             <TextView
                 android:layout_width="0dp"
+                android:labelFor="@id/fragment_manage_salary_unpaid_edit_text"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:text="Chưa trả"
+                android:text="@string/unpaid"
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
@@ -287,7 +318,9 @@
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#FF0000"
-                android:textSize="@dimen/salary_amount_edit_text" />
+                android:textSize="@dimen/salary_amount_edit_text"
+                android:importantForAutofill="no"
+                android:inputType="number" />
         </LinearLayout>
     </LinearLayout>
 
@@ -306,7 +339,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="Lưu thay đổi"
+            android:text="@string/save_changes"
             android:textSize="@dimen/sub_text_button" />
 
         <Button
@@ -316,7 +349,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:text="Thanh toán tất cả"
+            android:text="@string/pay_all"
             android:textSize="@dimen/sub_text_button" />
     </LinearLayout>
 </RelativeLayout>

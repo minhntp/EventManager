@@ -9,7 +9,7 @@ import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
-public class SplashActivity2 extends AppCompatActivity implements IOnDataLoadComplete {
+public class SplashActivity2 extends BaseActivity implements IOnDataLoadComplete {
 
     String eventId;
 

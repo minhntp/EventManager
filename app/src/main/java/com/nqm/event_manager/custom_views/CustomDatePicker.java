@@ -146,7 +146,7 @@ public class CustomDatePicker extends LinearLayout implements IOnCustomCalendarI
 
     }
 
-    public String getSelectedDate() {
+    public String getSelectedDateString() {
         return CalendarUtil.sdfDayMonthYear.format(gridAdapter.getSelectedDate());
     }
 

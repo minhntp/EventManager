@@ -3,23 +3,22 @@ package com.nqm.event_manager.activities;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
 import com.nqm.event_manager.custom_views.CustomDatePicker;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
@@ -31,6 +30,7 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
+import com.nqm.event_manager.utils.StringUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
+public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
 
     Context context;
@@ -47,11 +47,12 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
     TextView datePickerDialogDateTextView;
     CustomDatePicker datePicker;
     Button datePickerDialogOkButton, datePickerDialogCancelButton;
-    EditText selectedDateEditText;
+    String selectedDateText;
+    String clickedEditText;
 
     Button calculateButton, payAllButton, saveButton;
-    CustomListView resultListView;
-    EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
+    ListView resultListView;
+    EditText startDateEditText, endDateEditText, sumEditText, selectedAmountEditText, paidEditText, unpaidEditText;
     TextView numberOfEventsTextView, sumTextView, nameTextView, specialityTextView;
     ImageView profileImageView;
 
@@ -59,6 +60,7 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
 
     ArrayList<Salary> resultSalaries;
     int resultEventsSize;
+    int selectedAmount = 0;
 
     CalculateSalaryAdapter calculateSalaryAdapter;
 
@@ -92,6 +94,7 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
         startDateEditText = findViewById(R.id.calculate_salary_single_start_date_edit_text);
         endDateEditText = findViewById(R.id.calculate_salary_single_end_date_edit_text);
         sumEditText = findViewById(R.id.calculate_salary_single_sum_edit_text);
+        selectedAmountEditText = findViewById(R.id.calculate_salary_single_selected_amount_edit_text);
         paidEditText = findViewById(R.id.calculate_salary_single_paid_edit_text);
         unpaidEditText = findViewById(R.id.calculate_salary_single_unpaid_edit_text);
 
@@ -160,32 +163,31 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
         datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
 
         datePickerDialogOkButton.setOnClickListener(v -> {
-            String selectedDate = datePicker.getSelectedDate();
-            selectedDateEditText.setText(selectedDate);
+            selectedDateText = datePicker.getSelectedDateString();
             try {
+                Date selectedDate = CalendarUtil.sdfDayMonthYear.parse(selectedDateText);
                 Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
                 Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-//
-//                if (startDate.compareTo(endDate) > 0) {
-//                    if (selectedDateEditText == startDateEditText) {
-//                        endDateEditText.setText(selectedDate);
-//                    } else {
-//                        startDateEditText.setText(selectedDate);
-//                    }
-//                }
 
-                if (selectedDateEditText == startDateEditText) {
-                    calendar.setTime(startDate);
-                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                    endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                if (clickedEditText.equals(StringUtil.startDateEditText)) {
+                    // startDate clicked
+                    if (!selectedDate.before(endDate)) {
+                        // Set startDate = selectedDate, endDate = last day_of_month of startDate
+                        calendar.setTime(selectedDate);
+                        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                    }
+                    startDateEditText.setText(selectedDateText);
                 } else {
-                    if (endDate.before(startDate)) {
-                        calendar.setTime(endDate);
+                    // endDate clicked
+                    if (!selectedDate.after(startDate)) {
+                        // Set endDate = selectedDate, startDate = first day_of_month of endDate
+                        calendar.setTime(selectedDate);
                         calendar.set(Calendar.DAY_OF_MONTH, 1);
                         startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     }
+                    endDateEditText.setText(selectedDateText);
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -195,12 +197,14 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
 
     private void addEvents() {
         startDateEditText.setOnClickListener(v -> {
-            selectedDateEditText = startDateEditText;
+            clickedEditText = StringUtil.startDateEditText;
+            selectedDateText = startDateEditText.getText().toString();
             showDatePickerDialog();
         });
 
         endDateEditText.setOnClickListener(v -> {
-            selectedDateEditText = endDateEditText;
+            clickedEditText = StringUtil.endDateEditText;
+            selectedDateText = endDateEditText.getText().toString();
             showDatePickerDialog();
         });
 
@@ -232,7 +236,7 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
 
     private void showDatePickerDialog() {
         try {
-            Date dateFromEditText = CalendarUtil.sdfDayMonthYear.parse(selectedDateEditText.getText().toString());
+            Date dateFromEditText = CalendarUtil.sdfDayMonthYear.parse(selectedDateText);
             datePicker.setViewDate(dateFromEditText);
             datePicker.setSelectedDate(dateFromEditText);
             String txt = CalendarUtil.sdfDayOfWeek.format(dateFromEditText) +
@@ -308,11 +312,7 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
                 resultSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
             }
 
-            if (isPaidCheckBox.isChecked() || payAll) {
-                resultSalaries.get(i).setPaid(true);
-            } else {
-                resultSalaries.get(i).setPaid(false);
-            }
+            resultSalaries.get(i).setPaid(isPaidCheckBox.isChecked() || payAll);
         }
 
         SalaryRepository.getInstance().updateSalaries(resultSalaries);
@@ -341,24 +341,36 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
                 .setTitle("Lưu thông tin đã nhập?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        saveChanges(false);
-                        Intent intent = new Intent(context, ViewEventActivity.class);
-                        intent.putExtra("eventId", eventId);
-                        startActivity(intent);
-                    }
+                .setPositiveButton("Đồng ý", (dialog, which) -> {
+                    saveChanges(false);
+                    Intent intent = new Intent(context, ViewEventActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
                 })
-                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(context, ViewEventActivity.class);
-                        intent.putExtra("eventId", eventId);
-                        startActivity(intent);
-                    }
+                .setNegativeButton("Hủy", (dialogInterface, i) -> {
+                    Intent intent = new Intent(context, ViewEventActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
                 })
                 .show();
+    }
+
+    @Override
+    public void onCalculateSalaryItemChecked(int amount) {
+        selectedAmount += amount;
+        selectedAmountEditText.setText(selectedAmount);
+    }
+
+    @Override
+    public void onCalculateSalaryItemSelectedAmountChanged(int changedAmount) {
+        selectedAmount += changedAmount;
+        selectedAmountEditText.setText(selectedAmount);
+    }
+
+    @Override
+    public void renderedAllElements() {
+        selectedAmount = 0;
+        selectedAmountEditText.setText(String.valueOf(selectedAmount));
     }
 
     @Override
@@ -372,4 +384,5 @@ public class CalculateSalaryForOneEmployeeActivity extends AppCompatActivity
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
 
     }
+
 }

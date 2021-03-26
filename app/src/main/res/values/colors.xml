@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#1976d2</color>
+    <color name="colorPrimaryForeground">#eee</color>
     <color name="colorPrimaryDark">#004ba0</color>
     <color name="colorPrimaryLight">#63a4ff</color>
     <color name="colorAccent">#1976d2</color>
+    <color name="colorError">#F44336</color>
     <color name="textPrimaryColor">#fff</color>
     <color name="textBlack">#444</color>
     <color name="buttonBackground">#00FFFFFF</color>
     <color name="conflictBackground">#9FFF0000</color>
     <color name="normalBackground">#00FFFFFF</color>
     <color name="divider">#bbb</color>
+    <color name="selectedAmount">#FF5722</color>
 </resources>

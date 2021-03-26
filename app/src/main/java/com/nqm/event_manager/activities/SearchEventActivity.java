@@ -19,7 +19,7 @@ import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 
-public class SearchEventActivity extends AppCompatActivity implements IOnSearchEventItemClicked,
+public class SearchEventActivity extends BaseActivity implements IOnSearchEventItemClicked,
         IOnDataLoadComplete {
 
 

@@ -3,10 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.RootActivity"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <com.nqm.event_manager.custom_views.CustomListView
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal">
+<!--    <com.nqm.event_manager.custom_views.CustomListView-->
+<!--        android:id="@+id/manage_employee_view_employee_list_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        android:layout_weight="1"/>-->
+    <ListView
         android:id="@+id/manage_employee_view_employee_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1"/>
 </LinearLayout>

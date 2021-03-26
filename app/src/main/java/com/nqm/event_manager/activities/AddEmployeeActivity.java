@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,12 +18,12 @@ import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.Calendar;
 
-public class AddEmployeeActivity extends AppCompatActivity {
+public class AddEmployeeActivity extends BaseActivity {
 
     Activity context;
 
     Toolbar toolbar;
-    EditText nameEditText, phoneNumberEditText, dateOfBirthEditText,
+    EditText surMiddleNameEditText, nameEditText, phoneNumberEditText, dateOfBirthEditText,
             emailEditText, cmndEditText;
     AutoCompleteTextView specialityAutoCompleteTextView;
     ArrayAdapter<String> specialityAdapter;
@@ -58,12 +57,11 @@ public class AddEmployeeActivity extends AppCompatActivity {
         }
 
         nameEditText = findViewById(R.id.add_employee_activity_name_edit_text);
-//        specialityEditText = findViewById(R.id.add_employee_activity_speciality_edit_text);
         specialityAutoCompleteTextView = findViewById(R.id.add_employee_speciality_auto_complete_text_view);
         phoneNumberEditText = findViewById(R.id.add_employee_activity_phone_number_edit_text);
         dateOfBirthEditText = findViewById(R.id.add_employee_activity_date_of_birth_edit_text);
         emailEditText = findViewById(R.id.add_employee_activity_email_edit_text);
-        cmndEditText = findViewById(R.id.add_employee_activity_cmnd_edit_text);
+        cmndEditText = findViewById(R.id.add_employee_activity_id_edit_text);
     }
 
     private void addEvents() {
@@ -126,12 +124,12 @@ public class AddEmployeeActivity extends AppCompatActivity {
         }
 
         Employee employee = new Employee("",
-                nameEditText.getText().toString(),
-                specialityAutoCompleteTextView.getText().toString(),
-                cmndEditText.getText().toString(),
-                dateOfBirthEditText.getText().toString(),
-                phoneNumberEditText.getText().toString(),
-                emailEditText.getText().toString());
+                nameEditText.getText().toString().trim(),
+                specialityAutoCompleteTextView.getText().toString().trim(),
+                cmndEditText.getText().toString().trim(),
+                dateOfBirthEditText.getText().toString().trim(),
+                phoneNumberEditText.getText().toString().trim(),
+                emailEditText.getText().toString().trim());
         EmployeeRepository.getInstance().addEmployee(employee);
         finish();
     }

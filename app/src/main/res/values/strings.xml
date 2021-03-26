@@ -92,4 +92,25 @@
     <string name="menu_edit_salary">Chỉnh sửa lương</string>
     <string name="menu_delete_event">Xóa sự kiện</string>
 
+    <!--    Tính lương Fragment  -->
+    <string name="start_date">Ngày bắt đầu</string>
+    <string name="end_date">Ngày kết thúc</string>
+    <string name="calculate">Tính</string>
+    <string name="employee">Nhân viên</string>
+    <string name="sum">Tổng cộng</string>
+    <string name="selectedAmount">Đã chọn</string>
+    <string name="paid">Đã trả</string>
+    <string name="unpaid">Chưa trả</string>
+    <string name="pay_all">Thanh toán tất cả</string>
+    <string name="save_changes">Lưu thay đổi</string>
+
+    <!--    Thông tin nhân viên  -->
+    <string name="sur_middle_name">Họ và tên đệm</string>
+    <string name="fullName">Họ và Tên</string>
+    <string name="speciality">Chuyên môn</string>
+    <string name="day_of_birth">Ngày sinh</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="email">Email</string>
+    <string name="id">CMND</string>
+
 </resources>

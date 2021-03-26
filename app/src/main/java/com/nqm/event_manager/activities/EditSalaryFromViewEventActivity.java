@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;
@@ -22,10 +23,10 @@ import com.nqm.event_manager.repositories.SalaryRepository;
 
 import java.util.ArrayList;
 
-public class EditSalaryFromViewEventActivity extends AppCompatActivity {
+public class EditSalaryFromViewEventActivity extends BaseActivity {
     Toolbar toolbar;
 
-    CustomListView salaryListView;
+    ListView salaryListView;
 
     ArrayList<Salary> salaries;
     EditSalaryAdapter editSalaryAdapter;

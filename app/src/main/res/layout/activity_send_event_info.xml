@@ -83,7 +83,7 @@
 
         </RelativeLayout>
 
-        <com.nqm.event_manager.custom_views.CustomListView
+        <ListView
             android:id="@+id/send_event_info_dialog_employee_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
 
         </RelativeLayout>
 
-        <com.nqm.event_manager.custom_views.CustomListView
+        <ListView
             android:id="@+id/send_event_info_dialog_section_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

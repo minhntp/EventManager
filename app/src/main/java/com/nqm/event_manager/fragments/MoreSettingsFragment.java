@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
@@ -41,12 +42,12 @@ import java.util.HashMap;
 public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderItemClicked,
         IOnSelectReminderItemClicked, IOnEditEmployeeItemClicked, IOnSelectEmployeeItemClicked {
 
-    CustomListView editReminderListView;
+    ListView editReminderListView;
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
     WindowManager.LayoutParams lWindowParams;
-    CustomListView selectReminderListView;
+    ListView selectReminderListView;
     SelectReminderAdapter selectReminderAdapter;
     Dialog selectReminderDialog;
     Button selectReminderOkButton;

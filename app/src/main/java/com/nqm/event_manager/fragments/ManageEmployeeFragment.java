@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
@@ -27,7 +28,8 @@ import java.util.ArrayList;
 public class ManageEmployeeFragment extends Fragment implements IOnDataLoadComplete, IOnManageEmployeeItemClicked {
 
     public static IOnDataLoadComplete thisListener;
-    CustomListView employeeListView;
+//    CustomListView employeeListView;
+    ListView employeeListView;
     ViewEmployeeListAdapter employeeAdapter;
     ArrayList<String> resultEmployeesIds;
     String searchString;

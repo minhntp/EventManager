@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +22,13 @@ import com.nqm.event_manager.utils.Constants;
 
 import java.util.Calendar;
 
-public class EditEmployeeActivity extends AppCompatActivity {
+public class EditEmployeeActivity extends BaseActivity {
     Activity context;
 
     Employee employee;
 
     Toolbar toolbar;
-    EditText nameEditText, phoneNumberEditText, dateOfBirthEditText,
+    EditText surMiddleNameEditText, nameEditText, phoneNumberEditText, dateOfBirthEditText,
             emailEditText, cmndEditText;
     AutoCompleteTextView specialityAutoCompleteTextView;
     ArrayAdapter<String> specialityAdapter;
@@ -149,12 +148,12 @@ public class EditEmployeeActivity extends AppCompatActivity {
         }
 
         Employee editedEmployee = new Employee(employee.getId(),
-                nameEditText.getText().toString(),
-                specialityAutoCompleteTextView.getText().toString(),
-                cmndEditText.getText().toString(),
-                dateOfBirthEditText.getText().toString(),
-                phoneNumberEditText.getText().toString(),
-                emailEditText.getText().toString());
+                nameEditText.getText().toString().trim(),
+                specialityAutoCompleteTextView.getText().toString().trim(),
+                cmndEditText.getText().toString().trim(),
+                dateOfBirthEditText.getText().toString().trim(),
+                phoneNumberEditText.getText().toString().trim(),
+                emailEditText.getText().toString().trim());
 
         EmployeeRepository.getInstance().setListener(ViewEmployeeActivity.thisListener);
         EmployeeRepository.getInstance().updateEmployee(editedEmployee);

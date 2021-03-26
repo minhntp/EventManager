@@ -17,6 +17,7 @@ import com.nqm.event_manager.activities.CalculateSalaryForOneEmployeeActivity;
 import com.nqm.event_manager.interfaces.IOnManageEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
 
     public ViewEmployeeListAdapter(Activity context, ArrayList<String> employeesIds) {
         this.context = context;
-        this.employeesIds = employeesIds;
+        this.employeesIds = EmployeeUtil.sortEmployeesByName(employeesIds);
     }
 
     @Override
@@ -160,7 +161,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     }
 
     public void notifyDataSetChanged(ArrayList<String> employeesIds) {
-        this.employeesIds = employeesIds;
+        this.employeesIds = EmployeeUtil.sortEmployeesByName(employeesIds);
         super.notifyDataSetChanged();
     }
 }

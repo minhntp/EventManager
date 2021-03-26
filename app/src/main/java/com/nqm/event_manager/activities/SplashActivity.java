@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SplashActivity extends AppCompatActivity implements IOnDataLoadComplete {
+public class SplashActivity extends BaseActivity implements IOnDataLoadComplete {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +31,6 @@ public class SplashActivity extends AppCompatActivity implements IOnDataLoadComp
         if (DatabaseAccess.isAllDataLoaded()) {
             startActivity(new Intent(this, RootActivity.class));
             finish();
-//            if (!alreadyRun) {
-//                updateSalaryTime();
-//                alreadyRun = true;
-//            }
         } else {
             DatabaseAccess.setDatabaseListener(this);
         }
@@ -45,10 +41,6 @@ public class SplashActivity extends AppCompatActivity implements IOnDataLoadComp
         if (DatabaseAccess.isAllDataLoaded()) {
             startActivity(new Intent(this, RootActivity.class));
             finish();
-//            if (!alreadyRun) {
-//                updateSalaryTime();
-//                alreadyRun = true;
-//            }
         }
     }
 

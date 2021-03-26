@@ -78,7 +78,7 @@ public class EmployeeRepository {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                             Map<String, Object> tempHashMap = doc.getData();
                             Employee tempEmployee = new Employee(doc.getId(),
-                                    (String) tempHashMap.get(Constants.EMPLOYEE_NAME),
+                                    (String) tempHashMap.get(Constants.EMPLOYEE_FULLNAME),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_SPECIALITY),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_IDENTITY),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_DAY_OF_BIRTH),
@@ -144,7 +144,7 @@ public class EmployeeRepository {
                 .collection(Constants.EMPLOYEE_COLLECTION).document();
 
         HashMap<String, String> employeeData = new HashMap<>();
-        employeeData.put(Constants.EMPLOYEE_NAME, employee.getHoTen());
+        employeeData.put(Constants.EMPLOYEE_FULLNAME, employee.getHoTen());
         employeeData.put(Constants.EMPLOYEE_SPECIALITY, employee.getChuyenMon());
         employeeData.put(Constants.EMPLOYEE_DAY_OF_BIRTH, employee.getNgaySinh());
         employeeData.put(Constants.EMPLOYEE_IDENTITY, employee.getCmnd());
@@ -179,7 +179,7 @@ public class EmployeeRepository {
                 .collection(Constants.EMPLOYEE_COLLECTION).document(employee.getId());
 
         HashMap<String, Object> employeeData = new HashMap<>();
-        employeeData.put(Constants.EMPLOYEE_NAME, employee.getHoTen());
+        employeeData.put(Constants.EMPLOYEE_FULLNAME, employee.getHoTen());
         employeeData.put(Constants.EMPLOYEE_SPECIALITY, employee.getChuyenMon());
         employeeData.put(Constants.EMPLOYEE_DAY_OF_BIRTH, employee.getNgaySinh());
         employeeData.put(Constants.EMPLOYEE_IDENTITY, employee.getCmnd());

@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,7 +33,6 @@ import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
 import com.nqm.event_manager.custom_views.CustomDatePicker;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
@@ -64,7 +63,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class AddEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
+public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnSelectReminderItemClicked, IOnEditReminderItemClicked,
         IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
     Activity context;
@@ -112,7 +111,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
     ItemTouchHelper editScheduleTouchHelper;
 
     ArrayList<Reminder> selectedReminders;
-    CustomListView reminderListView;
+    ListView reminderListView;
     Button selectReminderButton;
     EditReminderAdapter editReminderAdapter;
 
@@ -289,7 +288,7 @@ public class AddEventActivity extends AppCompatActivity implements IOnSelectEmpl
         datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
 
         datePickerDialogOkButton.setOnClickListener(v -> {
-            String selectedDate = datePicker.getSelectedDate();
+            String selectedDate = datePicker.getSelectedDateString();
             String selectedDow = CalendarUtil.dayOfWeekInVietnamese(selectedDate);
             selectedDateEditText.setText(selectedDate);
             selectedDowTextView.setText(selectedDow);

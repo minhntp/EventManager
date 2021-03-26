@@ -25,6 +25,37 @@
         android:layout_marginRight="5dp"
         android:orientation="vertical">
 
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:gravity="center"-->
+<!--            android:weightSum="19">-->
+
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@drawable/ic_name"-->
+<!--                android:layout_weight="1"/>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="6"-->
+<!--                android:text="@string/sur_middle_name"-->
+<!--                android:textSize="@dimen/section_title" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/view_employee_activity_sur_middle_name_text_view"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="12"-->
+<!--                android:clickable="false"-->
+<!--                android:textSize="@dimen/section_content" />-->
+<!--        </LinearLayout>-->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +75,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="Họ tên:"
+                android:text="@string/fullName"
                 android:textSize="@dimen/section_title" />
 
             <TextView
@@ -75,7 +106,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="Chuyên môn:"
+                android:text="@string/speciality"
                 android:textSize="@dimen/section_title" />
 
             <TextView
@@ -106,7 +137,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="Ngày sinh:"
+                android:text="@string/day_of_birth"
                 android:textSize="@dimen/section_title" />
 
             <TextView
@@ -137,7 +168,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="Số điện thoại:"
+                android:text="@string/phone_number"
                 android:textSize="@dimen/section_title" />
 
             <TextView
@@ -184,7 +215,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="Email:"
+                android:text="@string/email"
                 android:textSize="@dimen/section_title" />
 
             <TextView
@@ -223,7 +254,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="6"
-                android:text="CMND:"
+                android:text="@string/id"
                 android:textSize="@dimen/section_title" />
 
             <TextView

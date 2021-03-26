@@ -1,9 +1,14 @@
 package com.nqm.event_manager.utils;
 
+import java.text.Collator;
 import java.text.Normalizer;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class StringUtil {
+
+    public static Collator collatorVN = Collator.getInstance(new Locale("vi","VN"));
+
     static public String normalizeString(String s) {
         try {
             String tempS = Normalizer.normalize(s, Normalizer.Form.NFD);
@@ -14,4 +19,8 @@ public class StringUtil {
         }
         return "";
     }
+
+    static public String startDateEditText = "start date";
+    static public String endDateEditText = "end date";
+
 }

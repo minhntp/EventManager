@@ -1,6 +1,10 @@
 package com.nqm.event_manager.models;
 
-public class Employee {
+import android.util.Log;
+
+import com.nqm.event_manager.utils.StringUtil;
+
+public class Employee implements Comparable<Employee> {
     private String id;
     private String hoTen;
     private String chuyenMon;
@@ -89,5 +93,19 @@ public class Employee {
                 ", sdt='" + sdt + '\'' +
                 ", email='" + email + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Employee o) {
+        int lastIndex = hoTen.lastIndexOf(" ");
+        String thisName = lastIndex > -1 ? hoTen.substring(lastIndex + 1) : hoTen;
+        lastIndex = o.getHoTen().lastIndexOf(" ");
+        String oName = lastIndex > -1 ? o.getHoTen().substring(lastIndex + 1) : o.getHoTen();
+        if (thisName != null && oName != null) {
+//            return (thisName.compareToIgnoreCase(oName));
+            return StringUtil.collatorVN.compare(thisName, oName);
+        } else {
+            return 0;
+        }
     }
 }

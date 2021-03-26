@@ -6,13 +6,12 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -34,7 +33,6 @@ import com.nqm.event_manager.adapters.SelectEmployeeEditEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
 import com.nqm.event_manager.custom_views.CustomDatePicker;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
@@ -62,7 +60,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class EditEventActivity extends AppCompatActivity implements IOnSelectEmployeeItemClicked,
+public class EditEventActivity extends BaseActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnDataLoadComplete, IOnSelectReminderItemClicked,
         IOnEditReminderItemClicked, IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
     androidx.appcompat.widget.Toolbar toolbar;
@@ -112,7 +110,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
     ItemTouchHelper editScheduleTouchHelper;
 
     ArrayList<Reminder> selectedReminders;
-    CustomListView editReminderListView;
+    ListView editReminderListView;
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
@@ -297,7 +295,7 @@ public class EditEventActivity extends AppCompatActivity implements IOnSelectEmp
         datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
 
         datePickerDialogOkButton.setOnClickListener(v -> {
-            String selectedDate = datePicker.getSelectedDate();
+            String selectedDate = datePicker.getSelectedDateString();
             String selectedDow = CalendarUtil.dayOfWeekInVietnamese(selectedDate);
             selectedDateEditText.setText(selectedDate);
             selectedDowTextView.setText(selectedDow);
