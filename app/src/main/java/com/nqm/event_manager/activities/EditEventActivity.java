@@ -52,6 +52,7 @@ import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -443,7 +444,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             public boolean onQueryTextChange(String newText) {
                 ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
                 employees.clear();
-                employees.addAll(resultEmployees);
+                employees.addAll(EmployeeUtil.sortEmployeesByName(resultEmployees));
                 selectEmployeeAdapter.notifyDataSetChanged();
                 return true;
             }

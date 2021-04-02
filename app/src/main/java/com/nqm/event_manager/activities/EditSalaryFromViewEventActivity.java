@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
@@ -15,7 +17,6 @@ import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EventRepository;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 public class EditSalaryFromViewEventActivity extends BaseActivity {
     Toolbar toolbar;
 
-    ListView salaryListView;
+    RecyclerView salaryRecyclerView;
 
     ArrayList<Salary> salaries;
     EditSalaryAdapter editSalaryAdapter;
@@ -47,8 +48,13 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
         event = EventRepository.getInstance().getAllEvents().get(eventId);
         salaries = SalaryRepository.getInstance().getSalariesByEventId(eventId);
 
-        editSalaryAdapter = new EditSalaryAdapter(this, salaries);
-        salaryListView.setAdapter(editSalaryAdapter);
+        editSalaryAdapter = new EditSalaryAdapter(salaries);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        salaryRecyclerView.setLayoutManager(linearLayoutManager);
+
+        salaryRecyclerView.setAdapter(editSalaryAdapter);
+        salaryRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         addEvents();
     }
@@ -69,9 +75,9 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
     }
 
     private void saveSalaries() {
-        for (int i = 0; i < salaryListView.getChildCount(); i++) {
-            EditText salaryEditText = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
-            CheckBox isPaidCheckBox = salaryListView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
+        for (int i = 0; i < salaryRecyclerView.getChildCount(); i++) {
+            EditText salaryEditText = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
+            CheckBox isPaidCheckBox = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
 
 //            Log.d("debug", "salary = " + salaryEditText.getText().toString());
             if (salaryEditText.getText().toString().equals("")) {
@@ -96,7 +102,7 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        salaryListView = findViewById(R.id.edit_salary_from_view_event_salary_list_view);
+        salaryRecyclerView = findViewById(R.id.edit_salary_from_view_event_salary_recycler_view);
     }
 
     private void addEvents() {

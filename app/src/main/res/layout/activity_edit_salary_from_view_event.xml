@@ -16,22 +16,28 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/textPrimaryColor" />
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/edit_salary_toolbar">
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@id/edit_salary_toolbar">-->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:layout_marginBottom="20dp"
-            android:orientation="vertical">
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_margin="15dp"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:orientation="vertical">-->
 
-            <ListView
-                android:id="@+id/edit_salary_from_view_event_salary_list_view"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/edit_salary_from_view_event_salary_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </ScrollView>
+                android:layout_height="match_parent"
+                android:layout_below="@id/edit_salary_toolbar"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginVertical="5dp"/>
+
+<!--        </LinearLayout>-->
+
+<!--    </androidx.core.widget.NestedScrollView>-->
+
 </RelativeLayout>

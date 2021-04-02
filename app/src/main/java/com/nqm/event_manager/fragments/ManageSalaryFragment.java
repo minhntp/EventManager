@@ -115,7 +115,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         employeesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         selectEmployeeSpinner.setAdapter(employeesSpinnerAdapter);
 
-        calculateSalaryAdapter = new CalculateSalaryAdapter(context, selectedSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(selectedSalaries);
         calculateSalaryAdapter.setListener(this);
         resultListView.setAdapter(calculateSalaryAdapter);
 

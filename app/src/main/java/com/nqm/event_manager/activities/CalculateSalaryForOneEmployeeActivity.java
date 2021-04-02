@@ -134,7 +134,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
         resultSalaries = new ArrayList<>();
         resultEventsSize = 0;
-        calculateSalaryAdapter = new CalculateSalaryAdapter(this, resultSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(resultSalaries);
         calculateSalaryAdapter.setListener(this);
         resultListView.setAdapter(calculateSalaryAdapter);
     }

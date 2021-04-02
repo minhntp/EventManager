@@ -15,6 +15,7 @@ import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,11 +63,12 @@ public class EditEmployeeAddEventAdapter extends
 
     IOnEditEmployeeItemClicked listener;
     private ArrayList<String> selectedEmployeesIds;
+    // conflictMap: EmployeeId, ArrayList<EventIds>
     private HashMap<String, ArrayList<String>> conflictsMap;
 
     public EditEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds,
                                        HashMap<String, ArrayList<String>> conflictsMap) {
-        this.selectedEmployeesIds = selectedEmployeesIds;
+        this.selectedEmployeesIds = EmployeeUtil.sortEmployeesIdsByName(selectedEmployeesIds);
         this.conflictsMap = conflictsMap;
     }
 

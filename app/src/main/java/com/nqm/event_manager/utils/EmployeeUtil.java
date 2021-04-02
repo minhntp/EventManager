@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class EmployeeUtil {
 
-    public static ArrayList<String> sortEmployeesByName(ArrayList<String> employeesIds) {
+    public static ArrayList<String> sortEmployeesIdsByName(ArrayList<String> employeesIds) {
         ArrayList<Employee> employees = new ArrayList<Employee>();
         ArrayList<String> sortedIds = new ArrayList<String>();
 
@@ -24,5 +24,12 @@ public class EmployeeUtil {
         }
 
         return sortedIds;
+    }
+
+    public static ArrayList<Employee> sortEmployeesByName(ArrayList<Employee> employees) {
+
+        Collections.sort(employees);
+
+        return employees;
     }
 }

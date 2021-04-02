@@ -14,6 +14,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.SalaryRepository;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 
@@ -51,7 +52,7 @@ public class SelectEmployeeEditEventAdapter extends
     public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees,
                                           String eventId) {
         this.selectedEmployeesIds = selectedEmployeesIds;
-        this.employees = employees;
+        this.employees = EmployeeUtil.sortEmployeesByName(employees);
         this.eventId = eventId;
     }
 

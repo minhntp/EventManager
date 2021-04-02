@@ -28,7 +28,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
 
     public ViewEmployeeListAdapter(Activity context, ArrayList<String> employeesIds) {
         this.context = context;
-        this.employeesIds = EmployeeUtil.sortEmployeesByName(employeesIds);
+        this.employeesIds = EmployeeUtil.sortEmployeesIdsByName(employeesIds);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class ViewEmployeeListAdapter extends BaseAdapter {
     }
 
     public void notifyDataSetChanged(ArrayList<String> employeesIds) {
-        this.employeesIds = EmployeeUtil.sortEmployeesByName(employeesIds);
+        this.employeesIds = EmployeeUtil.sortEmployeesIdsByName(employeesIds);
         super.notifyDataSetChanged();
     }
 }

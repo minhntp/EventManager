@@ -268,7 +268,7 @@
                     android:id="@+id/edit_event_employee_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never" />
+                    android:nestedScrollingEnabled="false"/>
 
                 <Button
                     android:id="@+id/edit_event_add_employee_button"

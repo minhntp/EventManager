@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class CalculateSalaryAdapter extends BaseAdapter {
-    private final Activity context;
+//    private final Activity context;
     IOnCalculateSalaryItemClicked listener;
     private ArrayList<Salary> resultSalaries;
     private int renderedCount = 0;
-    private Resources res;
+//    private Resources res;
 
     private TextWatcher textWatcher = new TextWatcher() {
         int beforeAmount = 0;
@@ -52,11 +52,12 @@ public class CalculateSalaryAdapter extends BaseAdapter {
         }
     };
 
-    public CalculateSalaryAdapter(Activity context, ArrayList<Salary> resultSalaries) {
-        this.context = context;
+    public CalculateSalaryAdapter(ArrayList<Salary> resultSalaries) {
+//        this.context = context;
         this.resultSalaries = resultSalaries;
-        renderedCount = 0;
-        res = context.getResources();
+        Log.d("dbg", "CalculateSalaryAdapter: salaries size = " + resultSalaries.size());
+//        renderedCount = 0;
+//        res = context.getResources();
     }
 
     public void setListener(IOnCalculateSalaryItemClicked listener) {
@@ -81,13 +82,13 @@ public class CalculateSalaryAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View view, ViewGroup parent) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.list_item_calculate_salary, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_calculate_salary, parent, false);
         }
 
-        renderedCount++;
-        if (renderedCount == resultSalaries.size()) {
-            listener.renderedAllElements();
-        }
+//        renderedCount++;
+//        if (renderedCount == resultSalaries.size()) {
+//            listener.renderedAllElements();
+//        }
 
         //Connect views
         TextView startDateTextView = view.findViewById(R.id.calculate_salaries_list_item_date_text_view);
@@ -126,15 +127,15 @@ public class CalculateSalaryAdapter extends BaseAdapter {
             //Add events
             view.setOnClickListener(v -> listener.onCalculateSalaryItemClicked(salary.getEventId()));
 
-            paidCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    listener.onCalculateSalaryItemChecked(Integer.parseInt(salaryEditText.getText().toString()));
-                    salaryEditText.addTextChangedListener(textWatcher);
-                } else {
-                    listener.onCalculateSalaryItemChecked(-1 * Integer.parseInt(salaryEditText.getText().toString()));
-                    salaryEditText.removeTextChangedListener(textWatcher);
-                }
-            });
+//            paidCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                if (isChecked) {
+//                    listener.onCalculateSalaryItemChecked(Integer.parseInt(salaryEditText.getText().toString()));
+//                    salaryEditText.addTextChangedListener(textWatcher);
+//                } else {
+//                    listener.onCalculateSalaryItemChecked(-1 * Integer.parseInt(salaryEditText.getText().toString()));
+//                    salaryEditText.removeTextChangedListener(textWatcher);
+//                }
+//            });
         }
 
         return view;
@@ -142,6 +143,8 @@ public class CalculateSalaryAdapter extends BaseAdapter {
 
     public void notifyDataSetChanged(ArrayList<Salary> resultSalaries) {
         this.resultSalaries = resultSalaries;
+        Log.d("dbg", "CalculateSalaryAdapter: salaries size = " + resultSalaries.size());
+
         renderedCount = 0;
         super.notifyDataSetChanged();
     }

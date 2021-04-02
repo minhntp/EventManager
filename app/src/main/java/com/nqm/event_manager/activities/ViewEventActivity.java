@@ -5,11 +5,10 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -25,7 +24,6 @@ import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.adapters.ViewSalaryAdapter;
 import com.nqm.event_manager.adapters.ViewScheduleAdapter;
 import com.nqm.event_manager.adapters.ViewTaskAdapter;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
@@ -61,7 +59,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
     ArrayList<Salary> salaries;
     ViewSalaryAdapter viewSalaryAdapter;
-    ListView salaryListView;
+    RecyclerView salaryRecyclerView;
 
     Dialog viewTaskDialog;
     ArrayList<EventTask> eventTasks;
@@ -120,7 +118,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         locationEditText = findViewById(R.id.view_event_location_text_view);
         noteEditText = findViewById(R.id.view_event_note_text_view);
 
-        salaryListView = findViewById(R.id.view_event_salaries_list_view);
+        salaryRecyclerView = findViewById(R.id.view_event_salaries_list_view);
 
         editReminderListView = findViewById(R.id.view_event_edit_reminder_list_view);
         selectReminderButton = findViewById(R.id.view_event_select_reminder_button);
@@ -136,9 +134,12 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 //        if (salaries == null) {
 //            salaries = new ArrayList<>();
 //        }
-        viewSalaryAdapter = new ViewSalaryAdapter(this, salaries);
+        viewSalaryAdapter = new ViewSalaryAdapter(salaries);
         viewSalaryAdapter.setListener(this);
-        salaryListView.setAdapter(viewSalaryAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        salaryRecyclerView.setLayoutManager(linearLayoutManager);
+        salaryRecyclerView.setAdapter(viewSalaryAdapter);
 
         initViewTaskDialog();
 
