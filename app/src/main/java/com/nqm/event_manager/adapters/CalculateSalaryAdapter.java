@@ -54,6 +54,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
 //        notifyDataSetChanged();
 //    }
     public void customNotifyDataSetChanged() {
+        Log.d("dbg", "customNotifyDataSetChanged: new size = " + salaries.size());
         notifyDataSetChanged();
         editedAmountArray.clear();
         checkedArray.clear();

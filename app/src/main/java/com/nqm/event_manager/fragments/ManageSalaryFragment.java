@@ -304,6 +304,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         resultSalaries.addAll(SalaryRepository.getInstance()
                 .getSalariesByStartDateEndDate(startDateEditText.getText().toString(),
                         endDateEditText.getText().toString()));
+
         ArrayList<String> eventsIds = new ArrayList<>();
         for (Salary s : resultSalaries) {
             if (!eventsIds.contains(s.getEventId())) {

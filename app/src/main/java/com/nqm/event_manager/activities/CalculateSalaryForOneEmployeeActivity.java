@@ -54,6 +54,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     Button calculateButton, payAllButton, saveButton, selectedAmountButton;
     RecyclerView resultRecyclerView;
+    CalculateSalaryAdapter calculateSalaryAdapter;
     EditText startDateEditText, endDateEditText, sumEditText, selectedAmountEditText, paidEditText, unpaidEditText;
     TextView numberOfEventsTextView, sumTextView, nameTextView, specialityTextView;
     ImageView profileImageView;
@@ -64,7 +65,6 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     int resultEventsSize;
     int selectedAmount = 0;
 
-    CalculateSalaryAdapter calculateSalaryAdapter;
 
     //    String startDate, endDate;
     String selectedEmployeeId = "";
@@ -139,7 +139,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         resultEventsSize = 0;
         calculateSalaryAdapter = new CalculateSalaryAdapter(resultSalaries);
         calculateSalaryAdapter.setListener(this);
-        resultRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        resultRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         resultRecyclerView.setAdapter(calculateSalaryAdapter);
     }
 
@@ -281,9 +281,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     }
 
     private void getResultSalaries() {
-        resultSalaries = SalaryRepository.getInstance()
+        resultSalaries.clear();
+        resultSalaries.addAll(SalaryRepository.getInstance()
                 .getSalariesByStartDateAndEndDateAndEmployeeId(startDateEditText.getText().toString(),
-                        endDateEditText.getText().toString(), selectedEmployeeId);
+                        endDateEditText.getText().toString(), selectedEmployeeId));
 
         ArrayList<String> resultEventIds = new ArrayList<>();
         for (Salary s : resultSalaries) {
