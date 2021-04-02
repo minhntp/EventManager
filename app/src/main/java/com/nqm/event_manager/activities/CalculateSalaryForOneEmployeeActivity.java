@@ -5,16 +5,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
@@ -46,12 +48,12 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     Dialog datePickerDialog;
     TextView datePickerDialogDateTextView;
     CustomDatePicker datePicker;
-    Button datePickerDialogOkButton, datePickerDialogCancelButton;
+    Button datePickerDialogTodayButton, datePickerDialogOkButton, datePickerDialogCancelButton;
     String selectedDateText;
     String clickedEditText;
 
-    Button calculateButton, payAllButton, saveButton;
-    ListView resultListView;
+    Button calculateButton, payAllButton, saveButton, selectedAmountButton;
+    RecyclerView resultRecyclerView;
     EditText startDateEditText, endDateEditText, sumEditText, selectedAmountEditText, paidEditText, unpaidEditText;
     TextView numberOfEventsTextView, sumTextView, nameTextView, specialityTextView;
     ImageView profileImageView;
@@ -88,8 +90,9 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         calculateButton = findViewById(R.id.calculate_salary_single_calculate_button);
         payAllButton = findViewById(R.id.calculate_salary_single_pay_all_button);
         saveButton = findViewById(R.id.calculate_salary_single_save_button);
+        selectedAmountButton = findViewById(R.id.calculate_salary_single_selected_amount_button);
 
-        resultListView = findViewById(R.id.calculate_salary_single_result_list_view);
+        resultRecyclerView = findViewById(R.id.calculate_salary_single_result_recycler_view);
 
         startDateEditText = findViewById(R.id.calculate_salary_single_start_date_edit_text);
         endDateEditText = findViewById(R.id.calculate_salary_single_end_date_edit_text);
@@ -136,7 +139,8 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         resultEventsSize = 0;
         calculateSalaryAdapter = new CalculateSalaryAdapter(resultSalaries);
         calculateSalaryAdapter.setListener(this);
-        resultListView.setAdapter(calculateSalaryAdapter);
+        resultRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        resultRecyclerView.setAdapter(calculateSalaryAdapter);
     }
 
     private void initDatePickerDialog() {
@@ -145,6 +149,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
         datePickerDialogDateTextView = datePickerDialog.findViewById(R.id.custom_date_picker_dialog_date_text_view);
         datePicker = datePickerDialog.findViewById(R.id.custom_date_picker_calendar_view);
+        datePickerDialogTodayButton = datePickerDialog.findViewById(R.id.custom_date_picker_today_button);
         datePickerDialogCancelButton = datePickerDialog.findViewById(R.id.custom_date_picker_cancel_button);
         datePickerDialogOkButton = datePickerDialog.findViewById(R.id.custom_date_picker_ok_button);
 
@@ -159,6 +164,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         });
 
         datePicker.setListener(this);
+
+        datePickerDialogTodayButton.setOnClickListener(v -> {
+            datePicker.setViewDate(Calendar.getInstance().getTime());
+        });
 
         datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
 
@@ -213,24 +222,43 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             showResult();
         });
 
+        selectedAmountButton.setOnClickListener(v -> {
+            selectedAmount = 0;
+
+            for(Salary s : resultSalaries) {
+                if(!s.isPaid() && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null
+                        && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) == true) {
+                    int amount = (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) ?
+                            calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) : s.getSalary();
+                    selectedAmount += amount;
+                }
+            }
+
+            selectedAmountEditText.setText(String.valueOf(selectedAmount));
+        });
+
         saveButton.setOnClickListener(v -> new AlertDialog.Builder(context)
                 .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(false))
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(false))
                 .setNegativeButton("Không", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
-                    calculateSalaryAdapter.notifyDataSetChanged();
+                    calculateSalaryAdapter.customNotifyDataSetChanged();
+                    selectedAmount = 0;
+                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
                 }).show());
 
         payAllButton.setOnClickListener(v -> new AlertDialog.Builder(context)
                 .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(true))
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(true))
                 .setNegativeButton("Không", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
-                    calculateSalaryAdapter.notifyDataSetChanged();
+                    calculateSalaryAdapter.customNotifyDataSetChanged();
+                    selectedAmount = 0;
+                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
                 }).show());
     }
 
@@ -276,7 +304,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             numberOfEventsTextView.setText(getResources().getString(R.string.salary_no_salaries));
         }
 
-        calculateSalaryAdapter.notifyDataSetChanged(resultSalaries);
+        calculateSalaryAdapter.customNotifyDataSetChanged();
 
         boolean allSalariesPaid = true;
         int sum, paid = 0, unpaid = 0;
@@ -295,24 +323,41 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         paidEditText.setText(String.valueOf(paid));
         unpaidEditText.setText(String.valueOf(unpaid));
 
+        selectedAmount = 0;
+        selectedAmountEditText.setText(String.valueOf(selectedAmount));
+
         saveButton.setEnabled(!allSalariesPaid);
         payAllButton.setEnabled(!allSalariesPaid);
     }
 
-    private void saveChanges(boolean payAll) {
-        for (int i = 0; i < resultListView.getChildCount(); i++) {
-            EditText salaryEditText = resultListView.getChildAt(i)
-                    .findViewById(R.id.calculate_salaries_list_item_salary_edit_text);
-            CheckBox isPaidCheckBox = resultListView.getChildAt(i)
-                    .findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
+//    private void saveChanges(boolean payAll) {
+//        for (int i = 0; i < resultRecyclerView.getChildCount(); i++) {
+//            EditText salaryEditText = resultRecyclerView.getChildAt(i)
+//                    .findViewById(R.id.calculate_salaries_list_item_salary_edit_text);
+//            CheckBox isPaidCheckBox = resultRecyclerView.getChildAt(i)
+//                    .findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
+//
+//            if (salaryEditText.getText().toString().equals("")) {
+//                resultSalaries.get(i).setSalary(0);
+//            } else {
+//                resultSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
+//            }
+//
+//            resultSalaries.get(i).setPaid(isPaidCheckBox.isChecked() || payAll);
+//        }
+//
+//        SalaryRepository.getInstance().updateSalaries(resultSalaries);
+//        showResult();
+//    }
 
-            if (salaryEditText.getText().toString().equals("")) {
-                resultSalaries.get(i).setSalary(0);
-            } else {
-                resultSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
+    private void saveChanges2(boolean payAll) {
+        for (Salary s : resultSalaries) {
+            if (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) {
+                s.setSalary(calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()));
             }
-
-            resultSalaries.get(i).setPaid(isPaidCheckBox.isChecked() || payAll);
+            if (calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null) {
+                s.setPaid(calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) || payAll);
+            }
         }
 
         SalaryRepository.getInstance().updateSalaries(resultSalaries);
@@ -342,7 +387,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
                 .setIcon(R.drawable.ic_save)
                 .setTitle("Lưu thông tin đã nhập?")
                 .setPositiveButton("Đồng ý", (dialog, which) -> {
-                    saveChanges(false);
+                    saveChanges2(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
@@ -355,23 +400,24 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
                 .show();
     }
 
-    @Override
-    public void onCalculateSalaryItemChecked(int amount) {
-        selectedAmount += amount;
-        selectedAmountEditText.setText(selectedAmount);
-    }
+//    @Override
+//    public void onCalculateSalaryItemCheckboxTouched(int amount) {
+//        selectedAmount += amount;
+//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
+//    }
+//
+//    @Override
+//    public void onCalculateSalaryItemSelectedAmountChanged(int increasedAmount) {
+//        selectedAmount += increasedAmount;
+//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
+//    }
 
-    @Override
-    public void onCalculateSalaryItemSelectedAmountChanged(int changedAmount) {
-        selectedAmount += changedAmount;
-        selectedAmountEditText.setText(selectedAmount);
-    }
-
-    @Override
-    public void renderedAllElements() {
-        selectedAmount = 0;
-        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-    }
+//    @Override
+//    public void dataSetChanged() {
+//        Log.d("dbg", "dataSetChanged. resetting selected amount...");
+//        selectedAmount = 0;
+//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
+//    }
 
     @Override
     public void notifyOnLoadComplete() {

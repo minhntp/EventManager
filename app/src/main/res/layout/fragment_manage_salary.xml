@@ -114,7 +114,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/calculate"
-            android:textSize="@dimen/sub_text_button" />
+            android:textSize="@dimen/sub_text_button"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <LinearLayout
@@ -199,7 +200,7 @@
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent">-->
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/fragment_manage_salary_result_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -249,17 +250,16 @@
                 android:importantForAutofill="no"
                 android:inputType="number" />
 
-            <TextView
-                android:id="@+id/fragment_manage_salary_selected_amount_text_view"
+            <Button
+                android:id="@+id/fragment_manage_salary_selected_amount_button"
                 android:labelFor="@id/fragment_manage_salary_selected_amount_edit_text"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:focusableInTouchMode="true"
                 android:gravity="center"
                 android:text="@string/selectedAmount"
-                android:textSize="15sp"
-                android:textStyle="italic" />
+                android:textSize="@dimen/dialog_button_small"/>
 
             <EditText
                 android:id="@+id/fragment_manage_salary_selected_amount_edit_text"
@@ -339,7 +339,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="@string/save_changes"
-            android:textSize="@dimen/sub_text_button" />
+            android:textSize="@dimen/sub_text_button"
+            android:textStyle="bold"/>
 
         <Button
             android:id="@+id/fragment_manage_salary_pay_all_button"
@@ -349,6 +350,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="@string/pay_all"
-            android:textSize="@dimen/sub_text_button" />
+            android:textSize="@dimen/sub_text_button"
+            android:textStyle="bold"/>
     </LinearLayout>
 </RelativeLayout>

@@ -113,4 +113,7 @@
     <string name="email">Email</string>
     <string name="id">CMND</string>
 
+    <!--    DIALOG DATE PICKER  -->
+    <string name="today">Ngày hôm nay</string>
+
 </resources>

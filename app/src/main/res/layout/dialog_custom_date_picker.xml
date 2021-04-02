@@ -3,23 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@color/colorPrimary">-->
-
         <TextView
-            android:background="@color/colorPrimary"
-            android:layout_alignParentTop="true"
             android:id="@+id/custom_date_picker_dialog_date_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="27sp"
             android:textColor="@color/textPrimaryColor"
+            android:background="@color/colorPrimary"
             android:gravity="center"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_marginBottom="3dp"/>
+            android:layout_marginBottom="3dp"
+            android:layout_alignParentTop="true" />
 
     <!--</LinearLayout>-->
 
@@ -37,7 +32,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/custom_date_picker_calendar_view"
         android:orientation="horizontal"
-        android:weightSum="2">
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/custom_date_picker_today_button"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/today"
+            android:textSize="@dimen/dialog_button_small" />
 
         <Button
             android:id="@+id/custom_date_picker_cancel_button"
@@ -47,7 +52,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="Hủy bỏ"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dialog_button_normal" />
 
         <Button
             android:id="@+id/custom_date_picker_ok_button"
@@ -57,6 +62,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="OK"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dialog_button_normal" />
     </LinearLayout>
+
 </RelativeLayout>
