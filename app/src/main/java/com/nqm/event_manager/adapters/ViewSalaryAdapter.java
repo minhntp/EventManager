@@ -15,6 +15,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnViewSalaryItemClicked;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
     private ArrayList<Salary> salaries;
 
     public ViewSalaryAdapter(ArrayList<Salary> salaries) {
+        EmployeeUtil.sortSalariesByEmployeesNames(salaries);
         this.salaries = salaries;
     }
 
@@ -31,15 +33,17 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
         this.listener = listener;
     }
 
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortSalariesByEmployeesNames(salaries);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_view_salary, parent, false);
-        ViewHolder vh = new ViewHolder(view, position -> {
-            listener.onViewSalaryItemClicked(salaries.get(position).getEmployeeId());
-        });
 
-        return vh;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -62,11 +66,9 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
         TextView chuyenMonTextView;
         TextView luongTextView;
         CheckBox daThanhToanCheckBox;
-        IOnClick innerListener;
 
-        public ViewHolder(@NonNull View itemView, IOnClick innerListener) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.innerListener = innerListener;
 
             hoTenTextView = itemView.findViewById(R.id.view_salary_employee_name_text_view);
             chuyenMonTextView = itemView.findViewById(R.id.view_salary_employee_speciality_text_view);
@@ -74,77 +76,8 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
             daThanhToanCheckBox = itemView.findViewById(R.id.view_salary_paid_checkbox);
 
             itemView.setOnClickListener(v -> {
-                innerListener.onClick(getLayoutPosition());
+                listener.onViewSalaryItemClicked(salaries.get(getLayoutPosition()).getEmployeeId());
             });
         }
     }
 }
-
-interface IOnClick {
-    void onClick(int position);
-}
-
-//public class ViewSalaryAdapter extends BaseAdapter {
-//
-//    private final Activity context;
-//    IOnViewSalaryItemClicked listener;
-//    private ArrayList<Salary> salaries;
-//
-//    public ViewSalaryAdapter(Activity context, ArrayList<Salary> salaries) {
-//        this.context = context;
-//        this.salaries = salaries;
-//    }
-//
-//    @Override
-//    public int getCount() {
-//        return salaries.size();
-//    }
-//
-//    @Override
-//    public Salary getItem(int i) {
-//        return salaries.get(i);
-//    }
-//
-//    @Override
-//    public long getItemId(int i) {
-//        return i;
-//    }
-//
-//    @Override
-//    public View getView(final int position, View view, ViewGroup parent) {
-//        if (view == null) {
-//            view = LayoutInflater.from(context).inflate(R.layout.list_item_view_salary, parent, false);
-//        }
-//
-//        TextView hoTenTextView = view.findViewById(R.id.view_salary_employee_name_text_view);
-//        TextView chuyenMonTextView = view.findViewById(R.id.view_salary_employee_speciality_text_view);
-//        TextView luongTextView = view.findViewById(R.id.view_salary_salary_text_view);
-//        CheckBox daThanhToanCheckBox = view.findViewById(R.id.view_salary_paid_checkbox);
-//
-//        //SHOW DATA
-//        final String employeeId = getItem(position).getEmployeeId();
-//        hoTenTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getHoTen());
-//        chuyenMonTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getChuyenMon());
-//        luongTextView.setText(String.valueOf(getItem(position).getSalary()));
-//        daThanhToanCheckBox.setChecked(getItem(position).isPaid());
-//
-//        //ADD EVENTS
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                listener.onViewSalaryItemClicked(employeeId);
-//            }
-//        });
-//
-//        return view;
-//    }
-//
-//    public void setListener(IOnViewSalaryItemClicked listener) {
-//        this.listener = listener;
-//    }
-//
-//    public void notifyDataSetChanged(ArrayList<Salary> salaries) {
-//        this.salaries = salaries;
-//        super.notifyDataSetChanged();
-//    }
-//}

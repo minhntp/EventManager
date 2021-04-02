@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,13 +78,13 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
     Button scheduleBackButton;
 
     ArrayList<Reminder> selectedReminders;
-    ListView editReminderListView;
+    RecyclerView editReminderRecyclerView;
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
     Dialog selectReminderDialog;
     ListView selectReminderListView;
-    Button selecReminderOkButton;
+    Button selectReminderOkButton;
     SelectReminderAdapter selectReminderAdapter;
     boolean isRemindersChanged;
 
@@ -120,7 +121,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         salaryRecyclerView = findViewById(R.id.view_event_salaries_list_view);
 
-        editReminderListView = findViewById(R.id.view_event_edit_reminder_list_view);
+        editReminderRecyclerView = findViewById(R.id.view_event_edit_reminder_recycler_view);
         selectReminderButton = findViewById(R.id.view_event_select_reminder_button);
     }
 
@@ -150,9 +151,12 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 //        if (selectedReminders == null) {
 //            selectedReminders = new ArrayList<>();
 //        }
-        editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
+        editReminderAdapter = new EditReminderAdapter(selectedReminders);
         editReminderAdapter.setListener(this);
-        editReminderListView.setAdapter(editReminderAdapter);
+        LinearLayoutManager linearLayoutManagerReminder = new LinearLayoutManager(this);
+        linearLayoutManagerReminder.setOrientation(RecyclerView.VERTICAL);
+        editReminderRecyclerView.setLayoutManager(linearLayoutManagerReminder);
+        editReminderRecyclerView.setAdapter(editReminderAdapter);
 
         initSelectReminderDialog();
         isRemindersChanged = false;
@@ -365,19 +369,19 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         //Connect views
         selectReminderListView = selectReminderDialog.findViewById(R.id.select_reminder_list_view);
-        selecReminderOkButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
+        selectReminderOkButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
 
         selectReminderAdapter = new SelectReminderAdapter(this, selectedReminders);
         selectReminderAdapter.setListener(this);
         selectReminderListView.setAdapter(selectReminderAdapter);
 
         //Add events
-        selecReminderOkButton.setOnClickListener(view -> {
-//                editReminderAdapter.notifyDataSetChanged();
+        selectReminderOkButton.setOnClickListener(view -> {
+//            editReminderAdapter.customNotifyDataSetChanged();
             selectReminderDialog.dismiss();
         });
 
-        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.customNotifyDataSetChanged());
 
     }
 
@@ -410,7 +414,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         salaries.clear();
         salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
-        viewSalaryAdapter.notifyDataSetChanged();
+        viewSalaryAdapter.customNotifyDataSetChanged();
 
         eventTasks.clear();
         eventTasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
@@ -426,7 +430,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         selectedReminders.clear();
         selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
-        editReminderAdapter.notifyDataSetChanged();
+        editReminderAdapter.customNotifyDataSetChanged();
 
         super.onResume();
     }
@@ -446,7 +450,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         salaries.clear();
         salaries.addAll(SalaryRepository.getInstance().getSalariesByEventId(eventId));
-        viewSalaryAdapter.notifyDataSetChanged();
+        viewSalaryAdapter.customNotifyDataSetChanged();
 
         eventTasks.clear();
         eventTasks.addAll(TaskRepository.getInstance().getTasksInArrayListByEventId(eventId));
@@ -462,7 +466,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         selectedReminders.clear();
         selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
-        editReminderAdapter.notifyDataSetChanged();
+        editReminderAdapter.customNotifyDataSetChanged();
     }
 
     @Override
@@ -470,7 +474,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         for (Reminder r : selectedReminders) {
             if (r.getMinute() == minute) {
                 selectedReminders.remove(r);
-                editReminderAdapter.notifyDataSetChanged();
+                editReminderAdapter.customNotifyDataSetChanged();
                 return;
             }
         }

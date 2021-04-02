@@ -52,7 +52,8 @@ public class SelectEmployeeEditEventAdapter extends
     public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees,
                                           String eventId) {
         this.selectedEmployeesIds = selectedEmployeesIds;
-        this.employees = EmployeeUtil.sortEmployeesByName(employees);
+        EmployeeUtil.sortEmployeesByName(employees);
+        this.employees = employees;
         this.eventId = eventId;
     }
 
@@ -81,17 +82,6 @@ public class SelectEmployeeEditEventAdapter extends
 
         nameTextView.setText(employee.getHoTen());
         specialityTextView.setText(employee.getChuyenMon());
-
-//        selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
-
-//        SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, isPaid -> {
-//            if (isPaid) {
-//                selectCheckBox.setVisibility(View.INVISIBLE);
-//            } else {
-//                selectCheckBox.setVisibility(View.VISIBLE);
-//                selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
-//            }
-//        });
 
         boolean isPaid = SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId);
         if (isPaid) {

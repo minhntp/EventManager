@@ -254,8 +254,8 @@
                         android:textStyle="bold" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <ListView
-                    android:id="@+id/view_event_edit_reminder_list_view"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/view_event_edit_reminder_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

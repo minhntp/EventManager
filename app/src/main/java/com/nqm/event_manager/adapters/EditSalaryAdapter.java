@@ -19,6 +19,7 @@ import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
+import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 
@@ -27,8 +28,13 @@ public class EditSalaryAdapter extends RecyclerView.Adapter<EditSalaryAdapter.Vi
     private ArrayList<Salary> salaries;
 
     public EditSalaryAdapter(ArrayList<Salary> salaries) {
+        EmployeeUtil.sortSalariesByEmployeesNames(salaries);
         this.salaries = salaries;
-        Log.d("dbg", "EditSalaryAdapter: salaries.size() = "+ salaries.size());
+    }
+
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortSalariesByEmployeesNames(salaries);
+        notifyDataSetChanged();
     }
 
     @NonNull

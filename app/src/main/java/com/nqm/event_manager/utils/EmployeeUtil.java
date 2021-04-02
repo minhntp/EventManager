@@ -1,35 +1,63 @@
 package com.nqm.event_manager.utils;
 
+import android.util.Log;
+
+import com.google.common.collect.Lists;
 import com.nqm.event_manager.models.Employee;
+import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class EmployeeUtil {
 
-    public static ArrayList<String> sortEmployeesIdsByName(ArrayList<String> employeesIds) {
-        ArrayList<Employee> employees = new ArrayList<Employee>();
-        ArrayList<String> sortedIds = new ArrayList<String>();
-
+    public static void sortEmployeesIdsByNameNew(ArrayList<String> employeesIds) {
+        Log.d("dbg", "sorted employees by name ");
+        Log.d("dbg", "before:");
         for (String id : employeesIds) {
-            employees.add(EmployeeRepository.getInstance().getAllEmployees().get(id));
+            Log.d("dbg", EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
         }
 
-        Collections.sort(employees);
-
-        for (Employee e : employees) {
-            sortedIds.add(e.getId());
+        employeesIds.sort((id1, id2) ->
+                EmployeeRepository.getInstance().getAllEmployees().get(id1).compareTo(
+                        EmployeeRepository.getInstance().getAllEmployees().get(id2)
+                ));
+        Log.d("dbg", "after:");
+        for (String id : employeesIds) {
+            Log.d("dbg", EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
         }
 
-        return sortedIds;
     }
 
-    public static ArrayList<Employee> sortEmployeesByName(ArrayList<Employee> employees) {
+//    public static ArrayList<String> sortEmployeesIdsByName(ArrayList<String> employeesIds) {
+//        ArrayList<Employee> employees = new ArrayList<Employee>();
+//        ArrayList<String> sortedIds = new ArrayList<String>();
+//
+//        for (String id : employeesIds) {
+//            employees.add(EmployeeRepository.getInstance().getAllEmployees().get(id));
+//        }
+//
+//        Collections.sort(employees);
+//
+//        for (Employee e : employees) {
+//            sortedIds.add(e.getId());
+//        }
+//
+//        return sortedIds;
+//    }
 
+    public static void sortEmployeesByName(ArrayList<Employee> employees) {
         Collections.sort(employees);
+    }
 
-        return employees;
+    public static void sortSalariesByEmployeesNames(ArrayList<Salary> salaries) {
+        salaries.sort((s1, s2) -> {
+            Employee e1 = EmployeeRepository.getInstance().getAllEmployees().get(s1.getEmployeeId());
+            Employee e2 = EmployeeRepository.getInstance().getAllEmployees().get(s2.getEmployeeId());
+            return e1.compareTo(e2);
+        });
     }
 }

@@ -3,6 +3,8 @@ package com.nqm.event_manager.adapters;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,12 +50,24 @@ public class SelectEmployeeAddEventAdapter extends
     private IOnSelectEmployeeItemClicked listener;
 
     public SelectEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees) {
-        this.selectedEmployeesIds = EmployeeUtil.sortEmployeesIdsByName(selectedEmployeesIds);
+//        EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
+        this.selectedEmployeesIds = selectedEmployeesIds;
+        EmployeeUtil.sortEmployeesByName(employees);
         this.employees = employees;
     }
 
     public void setListener(IOnSelectEmployeeItemClicked listener) {
         this.listener = listener;
+    }
+
+//    public void setSelectedEmployeesIds(ArrayList<String> selectedEmployeesIds) {
+//        this.selectedEmployeesIds = EmployeeUtil.sortEmployeesIdsByName(selectedEmployeesIds);
+//    }
+
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortEmployeesByName(employees);
+        notifyDataSetChanged();
+        Log.d("dbg", "data set changed.\nselectedEmployeesIds.size():\n"+selectedEmployeesIds.size());
     }
 
     @NonNull

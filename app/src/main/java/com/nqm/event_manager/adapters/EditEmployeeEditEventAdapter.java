@@ -40,7 +40,7 @@ public class EditEmployeeEditEventAdapter extends
 
             deleteButton.setOnClickListener(v -> {
                 if (listener != null) {
-                    int position = getAdapterPosition();
+                    int position = getLayoutPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onDeleteButtonClicked(selectedEmployeesIds.get(position));
                     }
@@ -49,7 +49,7 @@ public class EditEmployeeEditEventAdapter extends
 
             View.OnClickListener itemClickListener = v -> {
                 if (listener != null) {
-                    int position = getAdapterPosition();
+                    int position = getLayoutPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onListItemClicked(selectedEmployeesIds.get(position));
                     }
@@ -70,6 +70,7 @@ public class EditEmployeeEditEventAdapter extends
     public EditEmployeeEditEventAdapter(String eventId, ArrayList<String> selectedEmployeesIds,
                                         HashMap<String, ArrayList<String>> conflictsMap) {
         this.eventId = eventId;
+        EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
         this.selectedEmployeesIds = selectedEmployeesIds;
         this.conflictsMap = conflictsMap;
     }
@@ -78,17 +79,14 @@ public class EditEmployeeEditEventAdapter extends
         this.listener = listener;
     }
 
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-//        Context context = viewGroup.getContext();
-//        if (context == null) {
-//            context = (Activity) viewGroup.getContext();
-//        }
-
-//        View employeeView = LayoutInflater.from(context)
-//                .inflate(R.layout.list_item_edit_employee, viewGroup, false);
-
         View employeeView = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.list_item_edit_employee, viewGroup, false);
 
@@ -114,17 +112,6 @@ public class EditEmployeeEditEventAdapter extends
 
             viewHolder.nameTextView.setText(employee.getHoTen());
             viewHolder.specialityTextView.setText(employee.getChuyenMon());
-
-            /*SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId, new SalaryRepository.MyIsPaidSalaryCallback() {
-                @Override
-                public void onCallback(boolean isPaid) {
-                    if (isPaid) {
-                        viewHolder.deleteButton.setVisibility(View.INVISIBLE);
-                    } else {
-                        viewHolder.deleteButton.setVisibility(View.VISIBLE);
-                    }
-                }
-            });*/
 
             boolean isPaid = SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId);
             if (isPaid) {

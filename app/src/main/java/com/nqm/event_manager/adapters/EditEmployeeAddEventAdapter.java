@@ -39,7 +39,7 @@ public class EditEmployeeAddEventAdapter extends
 
             deleteButton.setOnClickListener(v -> {
                 if (listener != null) {
-                    int position = getAdapterPosition();
+                    int position = getLayoutPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onDeleteButtonClicked(selectedEmployeesIds.get(position));
                     }
@@ -48,7 +48,7 @@ public class EditEmployeeAddEventAdapter extends
 
             View.OnClickListener itemClickListener = v -> {
                 if (listener != null) {
-                    int position = getAdapterPosition();
+                    int position = getLayoutPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onListItemClicked(selectedEmployeesIds.get(position));
                     }
@@ -63,12 +63,13 @@ public class EditEmployeeAddEventAdapter extends
 
     IOnEditEmployeeItemClicked listener;
     private ArrayList<String> selectedEmployeesIds;
-    // conflictMap: EmployeeId, ArrayList<EventIds>
+    // NOTE: conflictMap: EmployeeId, ArrayList<EventIds>
     private HashMap<String, ArrayList<String>> conflictsMap;
 
     public EditEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds,
                                        HashMap<String, ArrayList<String>> conflictsMap) {
-        this.selectedEmployeesIds = EmployeeUtil.sortEmployeesIdsByName(selectedEmployeesIds);
+        EmployeeUtil.sortEmployeesIdsByNameNew((selectedEmployeesIds));
+        this.selectedEmployeesIds = selectedEmployeesIds;
         this.conflictsMap = conflictsMap;
     }
 
@@ -76,13 +77,16 @@ public class EditEmployeeAddEventAdapter extends
         this.listener = listener;
     }
 
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        Context context = viewGroup.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        View employeeView = inflater.inflate(R.layout.list_item_edit_employee, viewGroup, false);
+        View employeeView = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.list_item_edit_employee, viewGroup, false);
 
         return new ViewHolder(employeeView);
     }

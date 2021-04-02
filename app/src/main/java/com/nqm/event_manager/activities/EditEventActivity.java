@@ -111,7 +111,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     ItemTouchHelper editScheduleTouchHelper;
 
     ArrayList<Reminder> selectedReminders;
-    ListView editReminderListView;
+    RecyclerView editReminderRecyclerView;
     EditReminderAdapter editReminderAdapter;
     Button selectReminderButton;
 
@@ -203,7 +203,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
         editEmployeeRecyclerView = findViewById(R.id.edit_event_employee_recycler_view);
 
-        editReminderListView = findViewById(R.id.edit_event_reminder_list_view);
+        editReminderRecyclerView = findViewById(R.id.edit_event_reminder_list_view);
         selectReminderButton = findViewById(R.id.edit_event_add_reminder_button);
     }
 
@@ -247,9 +247,12 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         initSelectEmployeeDialog();
 
         selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
-        editReminderAdapter = new EditReminderAdapter(this, selectedReminders);
+        editReminderAdapter = new EditReminderAdapter(selectedReminders);
         editReminderAdapter.setListener(this);
-        editReminderListView.setAdapter(editReminderAdapter);
+        LinearLayoutManager linearLayoutManagerReminder = new LinearLayoutManager(this);
+        linearLayoutManagerReminder.setOrientation(RecyclerView.VERTICAL);
+        editReminderRecyclerView.setLayoutManager(linearLayoutManagerReminder);
+        editReminderRecyclerView.setAdapter(editReminderAdapter);
 
         initSelectReminderDialog();
     }
@@ -444,7 +447,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             public boolean onQueryTextChange(String newText) {
                 ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
                 employees.clear();
-                employees.addAll(EmployeeUtil.sortEmployeesByName(resultEmployees));
+                employees.addAll(resultEmployees);
                 selectEmployeeAdapter.notifyDataSetChanged();
                 return true;
             }
@@ -456,7 +459,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             selectEmployeeDialog.dismiss();
         });
 
-        selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.notifyDataSetChanged());
+        selectEmployeeDialog.setOnDismissListener(dialog -> editEmployeeAdapter.customNotifyDataSetChanged());
     }
 
     private void initSelectReminderDialog() {
@@ -473,11 +476,11 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
         //Add events
         selectReminderOkButton.setOnClickListener(view -> {
-//            editReminderAdapter.notifyDataSetChanged();
+//            editReminderAdapter.customNotifyDataSetChanged();
             selectReminderDialog.dismiss();
         });
 
-        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.notifyDataSetChanged());
+        selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.customNotifyDataSetChanged());
 
     }
 
@@ -616,7 +619,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                     eventId, conflictMap -> {
                         conflictsMap.clear();
                         conflictsMap.putAll(conflictMap);
-                        editEmployeeAdapter.notifyDataSetChanged();
+                        editEmployeeAdapter.customNotifyDataSetChanged();
                         conflictButton.setEnabled(true);
                     }
             );
@@ -748,7 +751,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     public void onDeleteButtonClicked(String employeeId) {
         selectedEmployeesIds.remove(employeeId);
         conflictsMap.remove(employeeId);
-        editEmployeeAdapter.notifyDataSetChanged();
+        editEmployeeAdapter.customNotifyDataSetChanged();
 //        selectEmployeeAdapter.notifyDataSetChanged();
     }
 
@@ -771,7 +774,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     public void notifyOnLoadComplete() {
         selectedReminders.clear();
         selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
-        editReminderAdapter.notifyDataSetChanged();
+        editReminderAdapter.customNotifyDataSetChanged();
     }
 
     //UPDATE EVENT
@@ -801,7 +804,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 //                        Log.d("debug", "here5 conflictMap size = " + conflictMap.size());
                         conflictsMap.clear();
                         conflictsMap.putAll(conflictMap);
-                        editEmployeeAdapter.notifyDataSetChanged();
+                        editEmployeeAdapter.customNotifyDataSetChanged();
                         boolean isConflictExist = false;
                         for (ArrayList<String> arr : conflictMap.values()) {
                             if (arr != null && arr.size() > 0) {
@@ -886,7 +889,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         for (Reminder r : selectedReminders) {
             if (r.getMinute() == minute) {
                 selectedReminders.remove(r);
-                editReminderAdapter.notifyDataSetChanged();
+                editReminderAdapter.customNotifyDataSetChanged();
                 return;
             }
         }

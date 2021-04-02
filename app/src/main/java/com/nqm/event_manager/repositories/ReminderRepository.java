@@ -339,12 +339,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
     //----------------------------------------------------------------------------------------------
     public static void sortReminder(ArrayList<Reminder> reminders) {
-        Collections.sort(reminders, new Comparator<Reminder>() {
-            @Override
-            public int compare(Reminder r1, Reminder r2) {
-                return r1.getMinute() - r2.getMinute();
-            }
-        });
+        Collections.sort(reminders, (r1, r2) -> r1.getMinute() - r2.getMinute());
     }
 
     public static void sortReminder(HashMap<Integer, Reminder> reminders) {
