@@ -30,6 +30,7 @@ public class LogInActivity extends BaseActivity {
 
         connectViews();
         addEvents();
+        signUpButton.setEnabled(false);
 
         firebaseAuth = FirebaseAuth.getInstance();
     }
