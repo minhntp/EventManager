@@ -141,8 +141,8 @@ public class DatePickerGridAdapter extends BaseAdapter {
         calendar.setTime(viewDate);
         calendar.set(Calendar.DAY_OF_MONTH, 1); //dayOfMonth starts from 1
 
-        // dayOfWeek = 1 (sunday) -> offSet = 6 -> offSet = dayOfWeek + 5 (only Sunday)
-        // dayOfWeek = 2 (monday) -> offSet = 0 -> offSet = dayOfWeek - 2 (same for other days)
+        // dayOfWeek of firstDayOfMonth= 1 (sunday) -> offSet = 6 -> offSet = dayOfWeek + 5 (only for Sunday)
+        // dayOfWeek of firstDayOfMonth = 2 (monday) -> offSet = 0 -> offSet = dayOfWeek - 2 (same for all other dayOfWeeks)
         int offSet;
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         if (dayOfWeek == Calendar.SUNDAY) {
@@ -151,20 +151,25 @@ public class DatePickerGridAdapter extends BaseAdapter {
             offSet = dayOfWeek - 2;
         }
         HashMap<String, ArrayList<String>> numberOfEventsMap = EventRepository.getInstance().getNumberOfEventsMap();
+
         for (int i = 0; i < 37; i++) {
             int day = i - offSet + 1;
             int numberOfEvents = 0;
             if (day > 0 && day <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
                 calendar.set(Calendar.DAY_OF_MONTH, day);
                 String dateString = CalendarUtil.sdfDayMonthYear.format(calendar.getTime());
-                ArrayList<String> arr = numberOfEventsMap.get(dateString);
-                if (arr != null) {
-                    int size = arr.size();
-                    if (!eventId.isEmpty() && arr.contains(eventId)) {
-                        numberOfEvents = size - 1;
-                    } else {
-                        numberOfEvents = size;
+                if (numberOfEventsMap != null) {
+                    ArrayList<String> arr = numberOfEventsMap.get(dateString);
+                    if (arr != null) {
+                        int size = arr.size();
+                        if (!eventId.isEmpty() && arr.contains(eventId)) {
+                            numberOfEvents = size - 1;
+                        } else {
+                            numberOfEvents = size;
+                        }
                     }
+                } else {
+                    numberOfEvents = 0;
                 }
             } else {
                 day = 0;
