@@ -1,5 +1,6 @@
 package com.nqm.event_manager.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEventActivity;
@@ -138,6 +140,13 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
     //Cập nhật danh sách sự kiện của ngày hiện tại khi mở ứng dụng
     @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ManageEventFragment: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
     public void notifyOnLoadComplete() {
         Date date = calendarView.getSelectedDate();
         mainViewEventAdapter.notifyDataSetChanged(date);
@@ -146,7 +155,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
 
     @Override
     public void onResume() {
-        DatabaseAccess.setDatabaseListener(this);
+        DatabaseAccess.setDatabaseListener(this, getContext());
 
         mainViewEventAdapter.notifyDataSetChanged(selectedDate);
         calendarView.updateView();

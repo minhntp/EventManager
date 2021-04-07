@@ -1,5 +1,7 @@
 package com.nqm.event_manager.utils;
 
+import android.content.Context;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.repositories.DefaultEmployeeRepository;
@@ -31,23 +33,23 @@ public class DatabaseAccess {
         return database;
     }
 
-    public static void setDatabaseListener(IOnDataLoadComplete listener) {
+    public static void setDatabaseListener(IOnDataLoadComplete listener, Context context) {
         DefaultReminderRepository.getInstance().setListener(listener);
         EmployeeRepository.getInstance().setListener(listener);
         EventRepository.getInstance().setListener(listener);
-        ReminderRepository.getInstance().setListener(listener);
+        ReminderRepository.getInstance(context).setListener(listener);
         SalaryRepository.getInstance().setListener(listener);
         ScheduleRepository.getInstance().setListener(listener);
         TaskRepository.getInstance().setListener(listener);
         DefaultEmployeeRepository.getInstance().setListener(listener);
     }
 
-    public static boolean isAllDataLoaded() {
+    public static boolean isAllDataLoaded(Context context) {
         return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
                 (EmployeeRepository.getInstance().getAllEmployees() != null) &&
                 (EventRepository.getInstance().getAllEvents() != null) &&
 //                (EventRepository.getInstance().getNumberOfEventsMap() != null) &&
-                (ReminderRepository.getInstance().getAllReminders() != null) &&
+                (ReminderRepository.getInstance(context).getAllReminders() != null) &&
                 (SalaryRepository.getInstance().getAllSalaries() != null) &&
                 (ScheduleRepository.getInstance().getAllSchedules() != null) &&
                 (TaskRepository.getInstance().getAllTasks() != null)) &&

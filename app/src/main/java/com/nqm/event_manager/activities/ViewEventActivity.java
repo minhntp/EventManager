@@ -2,6 +2,7 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -93,7 +94,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
 
-        DatabaseAccess.setDatabaseListener(this);
+        DatabaseAccess.setDatabaseListener(this, context);
 
         connectViews();
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
@@ -147,7 +148,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         initViewScheduleDialog();
         viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
-        selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
+        selectedReminders = ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(eventId);
 //        if (selectedReminders == null) {
 //            selectedReminders = new ArrayList<>();
 //        }
@@ -257,8 +258,8 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
                 .setTitle("Xóa sự kiện")
                 .setMessage("Bạn có chắc chắn không?")
                 .setPositiveButton("Có", (dialog, which) -> {
-                    DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener);
-                    EventRepository.getInstance().deleteEventFromDatabase(eventId);
+                    DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener, context);
+                    EventRepository.getInstance().deleteEventFromDatabase(eventId, context);
                     context.finish();
                 })
                 .setNegativeButton("Không", null)
@@ -407,7 +408,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
     @Override
     protected void onResume() {
-        DatabaseAccess.setDatabaseListener(this);
+        DatabaseAccess.setDatabaseListener(this, context);
 
         selectedEvent = EventRepository.getInstance().getAllEvents().get(eventId);
         fillInformation();
@@ -429,7 +430,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
         selectedReminders.clear();
-        selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
+        selectedReminders.addAll(ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(eventId));
         editReminderAdapter.customNotifyDataSetChanged();
 
         super.onResume();
@@ -441,6 +442,12 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
             saveRemindersToDatabase();
         }
         super.onPause();
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ViewEventActivity: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -465,7 +472,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         viewScheduleButton.setEnabled(!(schedules.size() == 0));
 
         selectedReminders.clear();
-        selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
+        selectedReminders.addAll(ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(eventId));
         editReminderAdapter.customNotifyDataSetChanged();
     }
 
@@ -515,6 +522,6 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
             calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
         }
-        ReminderRepository.getInstance().updateRemindersByEventId(selectedReminders, eventId);
+        ReminderRepository.getInstance(context).updateRemindersByEventId(selectedReminders, eventId);
     }
 }

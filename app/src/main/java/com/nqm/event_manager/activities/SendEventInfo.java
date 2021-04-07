@@ -33,7 +33,7 @@ public class SendEventInfo extends BaseActivity {
     Toolbar toolbar;
 
     Button selectAllEmployeesButton, deselectAllEmployeesButton, selectAllSectionsButton,
-            deselectAllSectionsButton, cancelButton, sendButton;
+            deselectAllSectionsButton, cancelButton, sendButton, sendEmailButton;
     ListView employeeListView, sectionListView;
     RadioGroup ccBccRadioGroup;
     RadioButton ccRadioButton, bccRadioButton;
@@ -66,6 +66,7 @@ public class SendEventInfo extends BaseActivity {
         deselectAllSectionsButton = findViewById(R.id.send_event_deselect_all_section_button);
         cancelButton = findViewById(R.id.send_event_info_dialog_cancel_button);
         sendButton = findViewById(R.id.send_event_info_dialog_send_button);
+        sendEmailButton = findViewById(R.id.send_event_info_dialog_send_email_button);
 
         employeeListView = findViewById(R.id.send_event_info_dialog_employee_list_view);
         sectionListView = findViewById(R.id.send_event_info_dialog_section_list_view);
@@ -101,83 +102,72 @@ public class SendEventInfo extends BaseActivity {
     }
 
     private void addEvents() {
-        selectAllEmployeesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < employeeListView.getChildCount(); i++) {
-                    CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
-                    cb.setChecked(true);
-                }
+        selectAllEmployeesButton.setOnClickListener(v -> {
+            for (int i = 0; i < employeeListView.getChildCount(); i++) {
+                CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
+                cb.setChecked(true);
             }
         });
 
-        deselectAllEmployeesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < employeeListView.getChildCount(); i++) {
-                    CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
-                    cb.setChecked(false);
-                }
+        deselectAllEmployeesButton.setOnClickListener(v -> {
+            for (int i = 0; i < employeeListView.getChildCount(); i++) {
+                CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
+                cb.setChecked(false);
             }
         });
 
-        selectAllSectionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < sectionListView.getChildCount(); i++) {
-                    CheckBox cb = sectionListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
-                    cb.setChecked(true);
-                }
+        selectAllSectionsButton.setOnClickListener(v -> {
+            for (int i = 0; i < sectionListView.getChildCount(); i++) {
+                CheckBox cb = sectionListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
+                cb.setChecked(true);
             }
         });
 
-        deselectAllSectionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (int i = 0; i < sectionListView.getChildCount(); i++) {
-                    CheckBox cb = sectionListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
-                    cb.setChecked(false);
-                }
+        deselectAllSectionsButton.setOnClickListener(v -> {
+            for (int i = 0; i < sectionListView.getChildCount(); i++) {
+                CheckBox cb = sectionListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
+                cb.setChecked(false);
             }
         });
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                context.finish();
-            }
-        });
+        cancelButton.setOnClickListener(v -> context.finish());
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stringBuilder = new StringBuilder();
+        sendEmailButton.setOnClickListener(v -> {
+            stringBuilder = new StringBuilder();
 
-                for (int i = 0; i < employeeListView.getChildCount(); i++) {
-                    CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
-                    if (cb.isChecked()) {
-                        Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
-                        if (employee != null) {
-                            stringBuilder.append(employee.getEmail()).append(",");
-                        }
+            for (int i = 0; i < employeeListView.getChildCount(); i++) {
+                CheckBox cb = employeeListView.getChildAt(i).findViewById(R.id.send_event_select_item_checkbox);
+                if (cb.isChecked()) {
+                    Employee employee = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
+                    if (employee != null) {
+                        stringBuilder.append(employee.getEmail()).append(",");
                     }
                 }
-                if (stringBuilder.length() > 0) {
-                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                }
-
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-                String mailto = "mailto:";
-                if (ccBccRadioGroup.getCheckedRadioButtonId() == R.id.send_event_cc_radio_button) {
-                    mailto += "?cc=" + stringBuilder.toString();
-                } else {
-                    mailto += "?bcc=" + stringBuilder.toString();
-                }
-                mailto += "&subject=" + Uri.encode(event.getTen() + " - " + event.getNgayBatDau());
-                mailto += "&body=" + Uri.encode(prepairContent());
-                emailIntent.setData(Uri.parse(mailto));
-                startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email:"));
             }
+            if (stringBuilder.length() > 0) {
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            }
+
+            // SEND EMAIL
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+            String mailto = "mailto:";
+            if (ccBccRadioGroup.getCheckedRadioButtonId() == R.id.send_event_cc_radio_button) {
+                mailto += "?cc=" + stringBuilder.toString();
+            } else {
+                mailto += "?bcc=" + stringBuilder.toString();
+            }
+            mailto += "&subject=" + Uri.encode(event.getTen() + " - " + event.getNgayBatDau());
+            mailto += "&body=" + Uri.encode(prepairContent());
+            emailIntent.setData(Uri.parse(mailto));
+            startActivity(Intent.createChooser(emailIntent, "Chọn ứng dụng gửi Email:"));
+        });
+
+        sendButton.setOnClickListener(v -> {
+            // SEND TEXT
+            Intent textIntent = new Intent(Intent.ACTION_SEND);
+            textIntent.putExtra(Intent.EXTRA_TEXT, prepairContent());
+            textIntent.setType("text/plain");
+            startActivity(Intent.createChooser(textIntent, "Chọn ứng dụng để gửi thông tin..."));
         });
     }
 

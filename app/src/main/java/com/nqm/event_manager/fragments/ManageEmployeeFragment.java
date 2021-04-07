@@ -1,5 +1,6 @@
 package com.nqm.event_manager.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
@@ -110,6 +112,12 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     }
 
     private void addEvents() {
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ManageEmployeeFragment: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

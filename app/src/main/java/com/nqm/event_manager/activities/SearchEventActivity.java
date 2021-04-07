@@ -1,7 +1,10 @@
 package com.nqm.event_manager.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -102,6 +105,12 @@ public class SearchEventActivity extends BaseActivity implements IOnSearchEventI
         resultEventsIds.addAll(EventRepository.getInstance().getEventsIdsBySearchString(searchString));
         eventAdapter.notifyDataSetChanged();
         super.onResume();
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "SearchEventActivity: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

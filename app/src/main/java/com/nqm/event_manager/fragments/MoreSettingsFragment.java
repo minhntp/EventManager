@@ -2,6 +2,7 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
@@ -238,6 +240,13 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
                 selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
             }
         }
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "MoreSettingsFragment: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

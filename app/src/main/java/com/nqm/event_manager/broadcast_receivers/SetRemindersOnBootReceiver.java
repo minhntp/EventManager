@@ -18,7 +18,12 @@ import java.util.Map;
 public class SetRemindersOnBootReceiver extends BroadcastReceiver implements IOnDataLoadComplete {
     @Override
     public void onReceive(Context context, Intent intent) {
-        DatabaseAccess.setDatabaseListener(this);
+        DatabaseAccess.setDatabaseListener(this, context);
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+
     }
 
     @Override

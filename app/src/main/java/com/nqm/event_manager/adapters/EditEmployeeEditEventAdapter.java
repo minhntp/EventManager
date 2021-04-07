@@ -100,7 +100,8 @@ public class EditEmployeeEditEventAdapter extends
         if (employee != null) {
             ArrayList<String> conflictEventsIds = conflictsMap.get(employee.getId());
             if (conflictEventsIds != null && conflictEventsIds.size() > 0) {
-                int color = EventManager.getAppContext().getColor(R.color.conflictBackground);
+//                int color = EventManager.getAppContext().getColor(R.color.conflictBackground);
+                int color = viewHolder.nameTextView.getContext().getColor(R.color.conflictBackground);
                 viewHolder.profileImageView.setBackgroundColor(color);
                 viewHolder.nameTextView.setBackgroundColor(color);
                 viewHolder.specialityTextView.setBackgroundColor(color);

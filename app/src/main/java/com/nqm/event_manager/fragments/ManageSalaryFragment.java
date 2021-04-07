@@ -3,6 +3,7 @@ package com.nqm.event_manager.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -471,7 +473,14 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 //    }
 
     @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ManageSalaryFragment: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void notifyOnLoadComplete() {
+
         getResultSalaries();
         updateEmployeesSpinner();
         showResult();

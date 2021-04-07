@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -419,6 +420,12 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 //        selectedAmount = 0;
 //        selectedAmountEditText.setText(String.valueOf(selectedAmount));
 //    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "CalculateSalaryForOneEmployeeActivity: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void notifyOnLoadComplete() {

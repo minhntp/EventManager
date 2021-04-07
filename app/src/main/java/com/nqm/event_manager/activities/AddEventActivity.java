@@ -595,7 +595,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
         editScheduleAdapter.notifyDataSetChanged();
 
         selectedReminders.clear();
-        selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(copiedEventId));
+        selectedReminders.addAll(ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(copiedEventId));
         editReminderAdapter.customNotifyDataSetChanged();
     }
 

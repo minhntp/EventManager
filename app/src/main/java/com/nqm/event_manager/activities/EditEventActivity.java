@@ -3,6 +3,7 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
@@ -209,7 +210,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
     private void init() {
         context = this;
-        ReminderRepository.getInstance().setListener(this);
+        ReminderRepository.getInstance(context).setListener(this);
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         event = EventRepository.getInstance().getAllEvents().get(eventId);
@@ -246,7 +247,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         initEditScheduleDialog();
         initSelectEmployeeDialog();
 
-        selectedReminders = ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId);
+        selectedReminders = ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(eventId);
         editReminderAdapter = new EditReminderAdapter(selectedReminders);
         editReminderAdapter.setListener(this);
         LinearLayoutManager linearLayoutManagerReminder = new LinearLayoutManager(this);
@@ -771,9 +772,15 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     //----------------------------------------------------------------------------------------------
 
     @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "EditEventActivity: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void notifyOnLoadComplete() {
         selectedReminders.clear();
-        selectedReminders.addAll(ReminderRepository.getInstance().getRemindersInArrayListByEventId(eventId));
+        selectedReminders.addAll(ReminderRepository.getInstance(context).getRemindersInArrayListByEventId(eventId));
         editReminderAdapter.customNotifyDataSetChanged();
     }
 
@@ -877,7 +884,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         }
 
         EventRepository.getInstance().updateEventToDatabase(changedEvent, deleteEmployeesIds,
-                addEmployeesIds, eventTasks, schedules, selectedReminders);
+                addEmployeesIds, eventTasks, schedules, selectedReminders, context);
         context.finish();
     }
     //----------------------------------------------------------------------------------------------

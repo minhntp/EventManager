@@ -1,6 +1,7 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -190,6 +191,12 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
         EmployeeRepository.getInstance().setListener(this);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
+    }
+
+    @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ViewEmployeeActivity: wrong notifyOnLoadComplete()",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

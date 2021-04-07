@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -12,7 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.nqm.event_manager.application.EventManager;
 import com.nqm.event_manager.broadcast_receivers.ReminderNotificationReceiver;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Event;
@@ -24,7 +24,6 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,21 +39,22 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
     //------------------------------------------------------------------------------------
 
-    private ReminderRepository() {
+    private ReminderRepository(Context context) {
 //        allReminders = new HashMap<>();
         EventRepository.getInstance().setListener(this);
-        alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
-        addListener();
+//        alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        addListener(context);
     }
 
-    static public ReminderRepository getInstance() {
+    static public ReminderRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new ReminderRepository();
+            instance = new ReminderRepository(context);
         }
         return instance;
     }
 
-    private void addListener() {
+    private void addListener(Context context) {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.REMINDER_COLLECTION)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -84,8 +84,9 @@ public class ReminderRepository implements IOnDataLoadComplete {
                         allReminders = reminders;
 //                        Log.d("debug", "all reminders size = " + allReminders.size());
                         if (reminders.size() > 0) {
-                            addAlarmForAllReminders();
+                            addAlarmForAllReminders(context);
                         }
+//                        listener.notifyOnLoadComplete();
                         listener.notifyOnLoadComplete();
                     }
                 });
@@ -95,15 +96,18 @@ public class ReminderRepository implements IOnDataLoadComplete {
         this.listener = listener;
     }
 
-    public void addAlarmForAllReminders() {
+    public void addAlarmForAllReminders(Context context) {
         if (EventRepository.getInstance().getAllEvents() == null || allReminders == null) {
             return;
         }
         //CANCEL OLD ALARMS
         for (int i = 0; i < numberOfSetAlarms; i++) {
-            Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
-                    i, intent, PendingIntent.FLAG_NO_CREATE);
+//            Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
+            Intent intent = new Intent(context, ReminderNotificationReceiver.class);
+//            PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
+//                    i, intent, PendingIntent.FLAG_NO_CREATE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, i, intent,
+                    PendingIntent.FLAG_NO_CREATE);
             if (pendingIntent != null) {
                 alarmManager.cancel(pendingIntent);
             }
@@ -129,7 +133,8 @@ public class ReminderRepository implements IOnDataLoadComplete {
             currentCalendar.set(Calendar.MILLISECOND, 0);
 
             if (reminderCalendar.compareTo(currentCalendar) >= 0) {
-                Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
+//                Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
+                Intent intent = new Intent(context, ReminderNotificationReceiver.class);
 //                Log.d("debug", "eventId" + r.getEventId());
                 String content = "Địa điểm: " + "\n" +
                         "\t" + event.getDiaDiem() + "\n" +
@@ -141,7 +146,9 @@ public class ReminderRepository implements IOnDataLoadComplete {
                 intent.putExtra(Constants.INTENT_EVENT_LOCATION, event.getDiaDiem());
                 intent.putExtra(Constants.INTENT_EVENT_CONTENT, content);
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
+//                PendingIntent pendingIntent = PendingIntent.getBroadcast(EventManager.getAppContext(),
+//                        requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                         requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCalendar.getTimeInMillis(), pendingIntent);
@@ -155,7 +162,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
     //------------------------------------------------------------------------------------
 
-    private ReminderRepository(final IOnDataLoadComplete listener) {
+    private ReminderRepository(final IOnDataLoadComplete listener, Context context) {
         this.listener = listener;
         addListener(new ReminderRepository.MyReminderCallback() {
             @Override
@@ -163,6 +170,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
                 if (reminderList != null) {
                     allReminders = reminderList;
                     if (ReminderRepository.this.listener != null) {
+//                        ReminderRepository.this.listener.notifyOnLoadComplete();
                         ReminderRepository.this.listener.notifyOnLoadComplete();
                     }
                 }
@@ -174,9 +182,9 @@ public class ReminderRepository implements IOnDataLoadComplete {
         }
     }
 
-    static public ReminderRepository getInstance(IOnDataLoadComplete listener) {
+    static public ReminderRepository getInstance(IOnDataLoadComplete listener, Context context) {
         if (instance == null) {
-            instance = new ReminderRepository(listener);
+            instance = new ReminderRepository(listener, context);
         }
         return instance;
     }
@@ -297,8 +305,13 @@ public class ReminderRepository implements IOnDataLoadComplete {
     }
 
     @Override
+    public void notifyOnLoadCompleteWithContext(Context context) {
+        Toast.makeText(context, "ReminderRepository: with context", Toast.LENGTH_SHORT).show();
+        addAlarmForAllReminders(context);
+    }
+
+    @Override
     public void notifyOnLoadComplete() {
-        addAlarmForAllReminders();
     }
 
     private interface MyReminderCallback {

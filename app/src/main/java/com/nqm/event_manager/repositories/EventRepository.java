@@ -1,5 +1,6 @@
 package com.nqm.event_manager.repositories;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Tasks;
@@ -271,7 +272,7 @@ public class EventRepository {
         batch.commit();
     }
 
-    public void deleteEventFromDatabase(final String eventId) {
+    public void deleteEventFromDatabase(final String eventId, Context context) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 
         DocumentReference eventDocRef = DatabaseAccess.getInstance().getDatabase()
@@ -290,7 +291,7 @@ public class EventRepository {
             batch.delete(scheduleDocRef);
         }
 
-        for (String reminderId : ReminderRepository.getInstance().getRemindersIdsByEventId(eventId)) {
+        for (String reminderId : ReminderRepository.getInstance(context).getRemindersIdsByEventId(eventId)) {
             DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.REMINDER_COLLECTION).document(reminderId);
             batch.delete(reminderDocRef);
@@ -309,7 +310,8 @@ public class EventRepository {
 
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
                                       ArrayList<String> addEmployeesIds, ArrayList<EventTask> eventTasks,
-                                      ArrayList<Schedule> schedules, ArrayList<Reminder> reminders) {
+                                      ArrayList<Schedule> schedules, ArrayList<Reminder> reminders,
+                                      Context context) {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
         long miliStart, miliEnd;
@@ -432,7 +434,7 @@ public class EventRepository {
             batch.set(addTaskDocRef, addTaskData);
         }
 
-        for (String reminderId : ReminderRepository.getInstance().getRemindersIdsByEventId(changedEvent.getId())) {
+        for (String reminderId : ReminderRepository.getInstance(context).getRemindersIdsByEventId(changedEvent.getId())) {
             DocumentReference reminderDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.REMINDER_COLLECTION).document(reminderId);
             batch.delete(reminderDocRef);

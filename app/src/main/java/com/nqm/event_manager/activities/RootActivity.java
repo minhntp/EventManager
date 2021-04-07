@@ -35,7 +35,7 @@ public class RootActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        FirebaseApp.initializeApp(this);
-        if (!DatabaseAccess.isAllDataLoaded()) {
+        if (!DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             Intent splashIntent = new Intent(this, SplashActivity.class);
             startActivity(splashIntent);
 //            Log.d("debug", "right after start splash at RootActivity");
