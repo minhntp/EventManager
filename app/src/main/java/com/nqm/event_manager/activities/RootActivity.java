@@ -70,7 +70,7 @@ public class RootActivity extends BaseActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         userNameTextView = navigationView.getHeaderView(0).findViewById(R.id.nav_user_name_text_view);
-        String userDisplayName = LogInActivity.firebaseAuth.getCurrentUser().getEmail();
+        String userDisplayName = LogInActivity.getFirebaseAuth().getCurrentUser().getEmail();
         userNameTextView.setText(userDisplayName);
         userNameTextView.setOnClickListener(v -> {
             new androidx.appcompat.app.AlertDialog.Builder(this)

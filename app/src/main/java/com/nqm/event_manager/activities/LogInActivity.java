@@ -20,8 +20,14 @@ public class LogInActivity extends BaseActivity {
     EditText emailEditText, passwordEditText;
     Button signUpButton, logInButton;
 
-    public static FirebaseAuth firebaseAuth;
-    public static FirebaseUser currentUser;
+    private static FirebaseAuth firebaseAuth;
+
+    public static FirebaseAuth getFirebaseAuth() {
+        if(firebaseAuth == null) {
+            firebaseAuth = FirebaseAuth.getInstance();
+        }
+        return firebaseAuth;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +63,7 @@ public class LogInActivity extends BaseActivity {
     @Override
     public void onStart() {
         super.onStart();
-        currentUser = firebaseAuth.getCurrentUser();
-        updateUI(currentUser);
+        updateUI(getFirebaseAuth().getCurrentUser());
     }
 
     private void createAccount(String email, String password) {
@@ -71,8 +76,7 @@ public class LogInActivity extends BaseActivity {
                     if (task.isSuccessful()) {
                         Toast.makeText(LogInActivity.this, "Đăng ký thành công",
                                 Toast.LENGTH_SHORT).show();
-                        currentUser = firebaseAuth.getCurrentUser();
-                        updateUI(currentUser);
+                        updateUI(firebaseAuth.getCurrentUser());
                     } else {
                         Toast.makeText(LogInActivity.this, "Đăng ký thất bại",
                                 Toast.LENGTH_SHORT).show();
