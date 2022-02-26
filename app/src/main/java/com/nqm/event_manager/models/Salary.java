@@ -12,6 +12,16 @@ public class Salary {
     public Salary() {
     }
 
+    public Salary(Salary s) {
+        this.salaryId = s.salaryId;
+        this.eventId = s.eventId;
+        this.employeeId = s.employeeId;
+        this.salary = s.salary;
+        this.paid = s.paid;
+        this.startMili = s.startMili;
+        this.endMili = s.endMili;
+    }
+
     public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid) {
         this.salaryId = salaryId;
         this.eventId = eventId;

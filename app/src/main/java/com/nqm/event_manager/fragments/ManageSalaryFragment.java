@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -69,7 +67,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     ArrayList<String> employeesIds;
     ArrayList<String> employeesInfo;
     ArrayList<Salary> resultSalaries;
-    ArrayList<Salary> selectedSalaries;
+    ArrayList<Salary> editedSalaries;
     int resultEventsSize;
     int selectedAmount = 0;
 
@@ -112,13 +110,13 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         employeesIds = new ArrayList<>();
         employeesInfo = new ArrayList<>();
         resultSalaries = new ArrayList<>();
-        selectedSalaries = new ArrayList<>();
+        editedSalaries = new ArrayList<>();
 
         employeesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, employeesInfo);
         employeesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         selectEmployeeSpinner.setAdapter(employeesSpinnerAdapter);
 
-        calculateSalaryAdapter = new CalculateSalaryAdapter(selectedSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(editedSalaries);
         calculateSalaryAdapter.setListener(this);
         resultRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
         resultRecyclerView.setAdapter(calculateSalaryAdapter);
@@ -245,39 +243,34 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         });
 
         selectedAmountButton.setOnClickListener(v -> {
-            selectedAmount = 0;
-
-            for(Salary s : selectedSalaries) {
-                if(!s.isPaid() && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null
-                        && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) == true) {
-                    int amount = (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) ?
-                            calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) : s.getSalary();
-                    selectedAmount += amount;
-                }
-            }
-
-            selectedAmountEditText.setText(String.valueOf(selectedAmount));
+            selectedAmountEditText.setText(String.valueOf(getSelectedAmount()));
         });
 
-        saveButton.setOnClickListener(v -> new AlertDialog.Builder(getContext())
-                .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
-                .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(false))
-                .setNegativeButton("Không", (dialog, which) -> {
-                    sumTextView.requestFocus();
-                    calculateSalaryAdapter.customNotifyDataSetChanged();
-                    selectedAmount = 0;
-                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-                }).show());
+        saveButton.setOnClickListener(v -> {
+//            int willPay, total, paid, unPaid;
+//            willPay = getSelectedAmount();
+
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Bạn có chắc chắn muốn lưu thay đổi?")
+//                    .setMessage()
+                    .setIcon(R.drawable.ic_error)
+                    .setPositiveButton("Lưu", (dialog, whichButton) -> saveChanges(false))
+                    .setNegativeButton("Hủy", (dialog, which) -> {
+                        sumTextView.requestFocus();
+                        calculateSalaryAdapter.notifyDataSetChanged();
+                        selectedAmount = 0;
+                        selectedAmountEditText.setText((String.valueOf(selectedAmount)));
+                    }).show();
+        });
 
         payAllButton.setOnClickListener(v -> new AlertDialog.Builder(getContext())
-                .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
+                .setTitle("Bạn có chắc chắn muốn thanh toán tất cả?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(true))
-                .setNegativeButton("Không", (dialog, which) -> {
+                .setPositiveButton("Thanh toán tất cả", (dialog, whichButton) -> saveChanges(true))
+                .setNegativeButton("Hủy", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
-                    calculateSalaryAdapter.customNotifyDataSetChanged();
+                    calculateSalaryAdapter.notifyDataSetChanged();
                     selectedAmount = 0;
                     selectedAmountEditText.setText((String.valueOf(selectedAmount)));
                 }).show());
@@ -358,27 +351,25 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             numberOfEventsTextView.setText(getResources().getString(R.string.salary_no_salaries));
         }
 
-//        calculateSalaryAdapter.customNotifyDataSetChanged(selectedSalaries);
-
-        boolean allSelectedSalariesPaid = true;
+        boolean isEditedSalariesPaid = true;
         int sum, paid = 0, unpaid = 0;
 
-        selectedSalaries.clear();
+        editedSalaries.clear();
         for (Salary s : resultSalaries) {
             if (s.getEmployeeId().equals(selectedEmployeeId)) {
-                selectedSalaries.add(s);
+                editedSalaries.add(new Salary(s));
                 if (s.isPaid()) {
                     paid += s.getSalary();
                 } else {
                     unpaid += s.getSalary();
-                    allSelectedSalariesPaid = false;
+                    isEditedSalariesPaid = false;
                 }
             }
         }
 
-        calculateSalaryAdapter.customNotifyDataSetChanged();
+        calculateSalaryAdapter.notifyDataSetChanged();
 
-        employeeNumOfEventsTextView.setText(String.format(getResources().getString(R.string.num_of_events), selectedSalaries.size()));
+        employeeNumOfEventsTextView.setText(String.format(getResources().getString(R.string.num_of_events), editedSalaries.size()));
         sum = paid + unpaid;
 
         sumEditText.setText(String.valueOf(sum));
@@ -388,42 +379,33 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         selectedAmount = 0;
         selectedAmountEditText.setText((String.valueOf(selectedAmount)));
 
-        saveButton.setEnabled(!allSelectedSalariesPaid);
-        payAllButton.setEnabled(!allSelectedSalariesPaid);
+        saveButton.setEnabled(!isEditedSalariesPaid);
+        payAllButton.setEnabled(!isEditedSalariesPaid);
     }
 
-//    private void saveChanges(boolean payAll) {
-//        for (int i = 0; i < selectedSalaries.size(); i++) {
-//            EditText salaryEditText = resultRecyclerView.getChildAt(i)
-//                    .findViewById(R.id.calculate_salaries_list_item_salary_edit_text);
-//            CheckBox isPaidCheckBox = resultRecyclerView.getChildAt(i)
-//                    .findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
-//
-//            if (salaryEditText.getText().toString().equals("")) {
-//                selectedSalaries.get(i).setSalary(0);
-//            } else {
-//                selectedSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
-//            }
-//
-//            selectedSalaries.get(i).setPaid(isPaidCheckBox.isChecked() || payAll);
-//        }
-//
-//        SalaryRepository.getInstance().updateSalaries(selectedSalaries);
-//        showResult();
-//    }
-
-    private void saveChanges2(boolean payAll) {
-        for (Salary s : selectedSalaries) {
-            if (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) {
-                s.setSalary(calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()));
+    private void saveChanges(boolean payAll) {
+        if (payAll) {
+            for (Salary s : editedSalaries) {
+                if(!s.isPaid()) {
+                    s.setPaid(true);
+                }
             }
-            if (calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null) {
-                s.setPaid(calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) || payAll);
+        }
+        SalaryRepository.getInstance().updateSalaries(editedSalaries);
+        showResult();
+    }
+
+    private int getSelectedAmount() {
+
+        int selectedAmount = 0;
+
+        for (Salary s : editedSalaries) {
+            if (s.isPaid()) {
+                selectedAmount += s.getSalary();
             }
         }
 
-        SalaryRepository.getInstance().updateSalaries(selectedSalaries);
-        showResult();
+        return selectedAmount;
     }
 
     @Override
@@ -445,7 +427,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 .setTitle("Chuyển đến Chi tiết sự kiện...")
                 .setMessage("Lưu thông tin đã nhập?")
                 .setPositiveButton("Lưu", (dialog, which) -> {
-                    saveChanges2(false);
+                    saveChanges(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
@@ -463,21 +445,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     public void onCalculateSalaryInputLayoutLongClicked(String salaryId) {
         SalaryRepository.getInstance().revertToNotPaid(salaryId);
     }
-
-//    @Override
-//    public void onCalculateSalaryItemCheckboxTouched(int amount) {
-//        Log.d("dbg", "checkbox touched. amount = " + amount);
-//
-//        selectedAmount += amount;
-//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-//    }
-
-//    @Override
-//    public void onCalculateSalaryItemSelectedAmountChanged(int increasedAmount) {
-//        Log.d("dbg", "amount increased = " + increasedAmount);
-//        selectedAmount += increasedAmount;
-//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-//    }
 
     @Override
     public void notifyOnLoadCompleteWithContext(Context context) {

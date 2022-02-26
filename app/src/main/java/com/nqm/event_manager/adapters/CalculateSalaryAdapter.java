@@ -3,14 +3,11 @@ package com.nqm.event_manager.adapters;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,44 +28,17 @@ import java.util.HashMap;
 public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalaryAdapter.ViewHolder> {
 
     IOnCalculateSalaryItemClicked listener;
-    ArrayList<Salary> salaries;
-
-    // <SalaryId, editedAmount>
-    HashMap<String, Integer> editedAmountArray;
-
-    // <SalaryId, checked>
-    HashMap<String, Boolean> checkedArray;
+    ArrayList<Salary> editedSalaries;
 
     int editedSum;
 
-    public CalculateSalaryAdapter(ArrayList<Salary> salaries) {
-        this.salaries = salaries;
-        editedAmountArray = new HashMap<>();
-        checkedArray = new HashMap<>();
+    public CalculateSalaryAdapter(ArrayList<Salary> editedSalaries) {
+        this.editedSalaries = editedSalaries;
         editedSum = 0;
     }
 
     public void setListener(IOnCalculateSalaryItemClicked listener) {
         this.listener = listener;
-    }
-
-    //    public void customNotifyDataSetChanged(ArrayList<Salary> resultSalaries) {
-//        this.resultSalaries = resultSalaries;
-//        notifyDataSetChanged();
-//    }
-    public void customNotifyDataSetChanged() {
-//        Log.d("dbg", "customNotifyDataSetChanged: new size = " + salaries.size());
-        notifyDataSetChanged();
-        editedAmountArray.clear();
-        checkedArray.clear();
-    }
-
-    public HashMap<String, Boolean> getCheckedArray() {
-        return checkedArray;
-    }
-
-    public HashMap<String, Integer> getEditedAmountArray() {
-        return editedAmountArray;
     }
 
     @NonNull
@@ -82,7 +52,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Salary salary = salaries.get(position);
+        Salary salary = editedSalaries.get(position);
         Event event = EventRepository.getInstance().getAllEvents().get(salary.getEventId());
         if (event != null) {
             try {
@@ -107,25 +77,16 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                 holder.paidCheckBox.setEnabled(true);
                 holder.salaryEditText.setEnabled(true);
 
-                if (editedAmountArray.get(salary.getSalaryId()) != null) {
-                    holder.salaryEditText.setText(String.valueOf(
-                            editedAmountArray.get(salaries.get(position).getSalaryId())));
-                } else {
-                    holder.salaryEditText.setText(String.valueOf(salary.getSalary()));
-                }
+                holder.salaryEditText.setText(String.valueOf(salary.getSalary()));
 
-                if (checkedArray.get(salary.getSalaryId()) != null) {
-                    holder.paidCheckBox.setChecked(checkedArray.get(salary.getSalaryId()) != null);
-                } else {
-                    holder.paidCheckBox.setChecked(salary.isPaid());
-                }
+                holder.paidCheckBox.setChecked(salary.isPaid());
             }
         }
     }
 
     @Override
     public int getItemCount() {
-        return salaries.size();
+        return editedSalaries.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -146,7 +107,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
 
             //Add events
             View.OnClickListener onClickListener = v -> {
-                listener.onCalculateSalaryItemClicked(salaries.get(getLayoutPosition()).getEventId());
+                listener.onCalculateSalaryItemClicked(editedSalaries.get(getLayoutPosition()).getEventId());
             };
 
             startDateTextView.setOnClickListener(onClickListener);
@@ -166,22 +127,22 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    int editedNumber = s.toString().equals("") ? 0 : Integer.parseInt(s.toString());
-                    editedAmountArray.put(salaries.get(getLayoutPosition()).getSalaryId(), editedNumber);
+                    int editedNumber = s.toString().isEmpty() ? 0 : Integer.parseInt(s.toString());
+                    editedSalaries.get(getLayoutPosition()).setSalary(editedNumber);
                 }
             });
 
-            paidCheckBox.setOnClickListener(v -> checkedArray.put(salaries.get(getLayoutPosition()).getSalaryId(), paidCheckBox.isChecked()));
+            paidCheckBox.setOnClickListener(view -> editedSalaries.get(getLayoutPosition()).setPaid(paidCheckBox.isChecked()));
 
             View.OnLongClickListener onLongClickListener = view -> {
                 if (!paidCheckBox.isEnabled()) {
                     new AlertDialog.Builder(view.getContext())
-                            .setTitle("Bạn có chắn chắn muốn sửa thành \"Chưa trả\"?")
+                            .setTitle("Bạn có chắc chắn muốn sửa thành \"Chưa trả\"?")
                             .setIcon(R.drawable.ic_error)
-                            .setPositiveButton("Có", (dialog, whichButton) ->
+                            .setPositiveButton("Sửa", (dialog, whichButton) ->
                                     listener.onCalculateSalaryInputLayoutLongClicked(
-                                            salaries.get(getLayoutPosition()).getSalaryId()))
-                            .setNegativeButton("Không", null).show();
+                                            editedSalaries.get(getLayoutPosition()).getSalaryId()))
+                            .setNegativeButton("Hủy", null).show();
                 }
                 return false;
             };

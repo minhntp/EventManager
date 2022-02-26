@@ -60,8 +60,8 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
-                    .setMessage("Bạn có chắc chắn không?")
-                    .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                    .setMessage("Bạn có chắc chắn muốn xóa nhân viên này?")
+                    .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             EmployeeRepository.getInstance().setListener(ManageEmployeeFragment.thisListener);
@@ -70,7 +70,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
                         }
 
                     })
-                    .setNegativeButton("Không", null)
+                    .setNegativeButton("Hủy", null)
                     .show();
             return true;
         }

@@ -61,6 +61,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     Calendar calendar = Calendar.getInstance();
 
     ArrayList<Salary> resultSalaries;
+    ArrayList<Salary> editedSalaries;
     int resultEventsSize;
     int selectedAmount = 0;
 
@@ -135,8 +136,9 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
         resultSalaries = new ArrayList<>();
+        editedSalaries = new ArrayList<>();
         resultEventsSize = 0;
-        calculateSalaryAdapter = new CalculateSalaryAdapter(resultSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(editedSalaries);
         calculateSalaryAdapter.setListener(this);
         resultRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         resultRecyclerView.setAdapter(calculateSalaryAdapter);
@@ -224,12 +226,9 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         selectedAmountButton.setOnClickListener(v -> {
             selectedAmount = 0;
 
-            for(Salary s : resultSalaries) {
-                if(!s.isPaid() && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null
-                        && calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) == true) {
-                    int amount = (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) ?
-                            calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) : s.getSalary();
-                    selectedAmount += amount;
+            for(Salary s : editedSalaries) {
+                if (s.isPaid()) {
+                    selectedAmount += s.getSalary();
                 }
             }
 
@@ -237,25 +236,25 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         });
 
         saveButton.setOnClickListener(v -> new AlertDialog.Builder(context)
-                .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
+                .setTitle("Bạn có chắc chắn muốn lưu thay đổi?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(false))
-                .setNegativeButton("Không", (dialog, which) -> {
+                .setPositiveButton("Lưu", (dialog, whichButton) -> saveChanges(false))
+                .setNegativeButton("Hủy", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
-                    calculateSalaryAdapter.customNotifyDataSetChanged();
+                    calculateSalaryAdapter.notifyDataSetChanged();
                     selectedAmount = 0;
                     selectedAmountEditText.setText((String.valueOf(selectedAmount)));
                 }).show());
 
         payAllButton.setOnClickListener(v -> new AlertDialog.Builder(context)
-                .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
+                .setTitle("Bạn có chắc chắn muốn thanh toán tất cả?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(true))
-                .setNegativeButton("Không", (dialog, which) -> {
+                .setPositiveButton("Thanh toán tất cả", (dialog, whichButton) -> saveChanges(true))
+                .setNegativeButton("Hủy", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
-                    calculateSalaryAdapter.customNotifyDataSetChanged();
+                    calculateSalaryAdapter.notifyDataSetChanged();
                     selectedAmount = 0;
                     selectedAmountEditText.setText((String.valueOf(selectedAmount)));
                 }).show());
@@ -304,19 +303,22 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             numberOfEventsTextView.setText(getResources().getString(R.string.salary_no_salaries));
         }
 
-        calculateSalaryAdapter.customNotifyDataSetChanged();
-
-        boolean allSalariesPaid = true;
+        boolean isEditedSalariesPaid = true;
         int sum, paid = 0, unpaid = 0;
 
+        editedSalaries.clear();
         for (Salary s : resultSalaries) {
+            editedSalaries.add(new Salary(s));
             if (s.isPaid()) {
                 paid += s.getSalary();
             } else {
                 unpaid += s.getSalary();
-                allSalariesPaid = false;
+                isEditedSalariesPaid = false;
             }
         }
+
+        calculateSalaryAdapter.notifyDataSetChanged();
+
         sum = paid + unpaid;
 
         sumEditText.setText(String.valueOf(sum));
@@ -326,41 +328,20 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         selectedAmount = 0;
         selectedAmountEditText.setText(String.valueOf(selectedAmount));
 
-        saveButton.setEnabled(!allSalariesPaid);
-        payAllButton.setEnabled(!allSalariesPaid);
+        saveButton.setEnabled(!isEditedSalariesPaid);
+        payAllButton.setEnabled(!isEditedSalariesPaid);
     }
 
-//    private void saveChanges(boolean payAll) {
-//        for (int i = 0; i < resultRecyclerView.getChildCount(); i++) {
-//            EditText salaryEditText = resultRecyclerView.getChildAt(i)
-//                    .findViewById(R.id.calculate_salaries_list_item_salary_edit_text);
-//            CheckBox isPaidCheckBox = resultRecyclerView.getChildAt(i)
-//                    .findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
-//
-//            if (salaryEditText.getText().toString().equals("")) {
-//                resultSalaries.get(i).setSalary(0);
-//            } else {
-//                resultSalaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
-//            }
-//
-//            resultSalaries.get(i).setPaid(isPaidCheckBox.isChecked() || payAll);
-//        }
-//
-//        SalaryRepository.getInstance().updateSalaries(resultSalaries);
-//        showResult();
-//    }
-
     private void saveChanges(boolean payAll) {
-        for (Salary s : resultSalaries) {
-            if (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) {
-                s.setSalary(calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()));
-            }
-            if (calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) != null) {
-                s.setPaid(calculateSalaryAdapter.getCheckedArray().get(s.getSalaryId()) || payAll);
+        if (payAll) {
+            for (Salary s : editedSalaries) {
+                if(!s.isPaid()) {
+                    s.setPaid(true);
+                }
             }
         }
 
-        SalaryRepository.getInstance().updateSalaries(resultSalaries);
+        SalaryRepository.getInstance().updateSalaries(editedSalaries);
         showResult();
     }
 
@@ -407,13 +388,6 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         SalaryRepository.getInstance().revertToNotPaid(salaryId);
 
     }
-
-//    @Override
-//    public void dataSetChanged() {
-//        Log.d("dbg", "dataSetChanged. resetting selected amount...");
-//        selectedAmount = 0;
-//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-//    }
 
     @Override
     public void notifyOnLoadCompleteWithContext(Context context) {
