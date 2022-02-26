@@ -44,14 +44,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class ManageSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked,
         IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
 
-    Button calculateButton, payAllButton, saveButton, selectedAmountButton;
+    Button calculateButton, payAllButton, saveButton;
     RecyclerView resultRecyclerView;
-    EditText startDateEditText, endDateEditText, sumEditText, selectedAmountEditText, paidEditText, unpaidEditText;
+    EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
     Spinner selectEmployeeSpinner;
     TextView numberOfEventsTextView, sumTextView, employeeNumOfEventsTextView;
 
@@ -66,10 +68,9 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     ArrayList<String> employeesIds;
     ArrayList<String> employeesInfo;
-    ArrayList<Salary> resultSalaries;
+    Map<String, Salary> resultSalaries;
     ArrayList<Salary> editedSalaries;
     int resultEventsSize;
-    int selectedAmount = 0;
 
     ArrayAdapter<String> employeesSpinnerAdapter;
     CalculateSalaryAdapter calculateSalaryAdapter;
@@ -109,7 +110,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
         employeesIds = new ArrayList<>();
         employeesInfo = new ArrayList<>();
-        resultSalaries = new ArrayList<>();
+        resultSalaries = new HashMap<>();
         editedSalaries = new ArrayList<>();
 
         employeesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, employeesInfo);
@@ -129,7 +130,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     private void connectViews(View view) {
         calculateButton = view.findViewById(R.id.fragment_manage_salary_calculate_button);
-        selectedAmountButton = view.findViewById(R.id.fragment_manage_salary_selected_amount_button);
         payAllButton = view.findViewById(R.id.fragment_manage_salary_pay_all_button);
         saveButton = view.findViewById(R.id.fragment_manage_salary_save_button);
 
@@ -138,7 +138,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         selectEmployeeSpinner = view.findViewById(R.id.fragment_manage_salary_employee_spinner);
 
         sumEditText = view.findViewById(R.id.fragment_manage_salary_sum_edit_text);
-        selectedAmountEditText = view.findViewById(R.id.fragment_manage_salary_selected_amount_edit_text);
         paidEditText = view.findViewById(R.id.fragment_manage_salary_paid_edit_text);
         unpaidEditText = view.findViewById(R.id.fragment_manage_salary_unpaid_edit_text);
         startDateEditText = view.findViewById(R.id.fragment_manage_salary_start_date_edit_text);
@@ -242,38 +241,9 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             }
         });
 
-        selectedAmountButton.setOnClickListener(v -> {
-            selectedAmountEditText.setText(String.valueOf(getSelectedAmount()));
-        });
+        saveButton.setOnClickListener(v -> confirmBeforeSaving(false));
 
-        saveButton.setOnClickListener(v -> {
-//            int willPay, total, paid, unPaid;
-//            willPay = getSelectedAmount();
-
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Bạn có chắc chắn muốn lưu thay đổi?")
-//                    .setMessage()
-                    .setIcon(R.drawable.ic_error)
-                    .setPositiveButton("Lưu", (dialog, whichButton) -> saveChanges(false))
-                    .setNegativeButton("Hủy", (dialog, which) -> {
-                        sumTextView.requestFocus();
-                        calculateSalaryAdapter.notifyDataSetChanged();
-                        selectedAmount = 0;
-                        selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-                    }).show();
-        });
-
-        payAllButton.setOnClickListener(v -> new AlertDialog.Builder(getContext())
-                .setTitle("Bạn có chắc chắn muốn thanh toán tất cả?")
-                .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Thanh toán tất cả", (dialog, whichButton) -> saveChanges(true))
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                    //Undo changes by reloading data
-                    sumTextView.requestFocus();
-                    calculateSalaryAdapter.notifyDataSetChanged();
-                    selectedAmount = 0;
-                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-                }).show());
+        payAllButton.setOnClickListener(v -> confirmBeforeSaving(true));
     }
 
     private void showDatePickerDialog() {
@@ -296,24 +266,24 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     private void getResultSalaries() {
         resultSalaries.clear();
-        resultSalaries.addAll(SalaryRepository.getInstance()
-                .getSalariesByStartDateEndDate(startDateEditText.getText().toString(),
+        resultSalaries.putAll(SalaryRepository.getInstance()
+                .getSalariesMapByStartDateEndDate(startDateEditText.getText().toString(),
                         endDateEditText.getText().toString()));
 
         ArrayList<String> eventsIds = new ArrayList<>();
-        for (Salary s : resultSalaries) {
+        for (Salary s : resultSalaries.values()) {
             if (!eventsIds.contains(s.getEventId())) {
                 eventsIds.add(s.getEventId());
             }
         }
         resultEventsSize = eventsIds.size();
-        SalaryRepository.sortSalariesByEventStartDate(resultSalaries);
+//        SalaryRepository.sortSalariesListByEventStartDate(resultSalaries);
     }
 
     private void updateEmployeesSpinner() {
         if (resultSalaries.size() > 0) {
             employeesIds.clear();
-            for (Salary s : resultSalaries) {
+            for (Salary s : resultSalaries.values()) {
                 String employeeId = s.getEmployeeId();
                 if (!employeesIds.contains(employeeId)) {
                     employeesIds.add(employeeId);
@@ -355,7 +325,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         int sum, paid = 0, unpaid = 0;
 
         editedSalaries.clear();
-        for (Salary s : resultSalaries) {
+        for (Salary s : resultSalaries.values()) {
             if (s.getEmployeeId().equals(selectedEmployeeId)) {
                 editedSalaries.add(new Salary(s));
                 if (s.isPaid()) {
@@ -367,6 +337,8 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             }
         }
 
+        SalaryRepository.getInstance().sortSalariesListByEventStartDate(editedSalaries);
+
         calculateSalaryAdapter.notifyDataSetChanged();
 
         employeeNumOfEventsTextView.setText(String.format(getResources().getString(R.string.num_of_events), editedSalaries.size()));
@@ -376,36 +348,47 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         paidEditText.setText(String.valueOf(paid));
         unpaidEditText.setText(String.valueOf(unpaid));
 
-        selectedAmount = 0;
-        selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-
         saveButton.setEnabled(!isEditedSalariesPaid);
         payAllButton.setEnabled(!isEditedSalariesPaid);
     }
 
+    private void confirmBeforeSaving(boolean payAll) {
+        int paid = 0, unpaid = 0;
+        for (Salary s : editedSalaries) {
+            if (!resultSalaries.get(s.getSalaryId()).isPaid()) {
+                if (payAll || s.isPaid()) {
+                    paid += s.getSalary();
+                } else {
+                    unpaid += s.getSalary();
+                }
+            }
+        }
+        String title = payAll ? "Bạn có chắc chắn muốn thanh toán tất cả?" : "Bạn có chắc chắn muốn lưu thay đổi?";
+        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid) + ": " + unpaid;
+        String positiveButton = payAll ? "Thanh toán tất cả" : "Lưu";
+
+        new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(R.drawable.ic_error)
+                .setPositiveButton(positiveButton, (dialog, whichButton) -> saveChanges(payAll))
+                .setNegativeButton("Hủy", (dialog, which) -> {
+                    sumTextView.requestFocus();
+                }).show();
+    }
+
     private void saveChanges(boolean payAll) {
+
         if (payAll) {
             for (Salary s : editedSalaries) {
-                if(!s.isPaid()) {
+                if (!s.isPaid()) {
                     s.setPaid(true);
                 }
             }
         }
+
         SalaryRepository.getInstance().updateSalaries(editedSalaries);
         showResult();
-    }
-
-    private int getSelectedAmount() {
-
-        int selectedAmount = 0;
-
-        for (Salary s : editedSalaries) {
-            if (s.isPaid()) {
-                selectedAmount += s.getSalary();
-            }
-        }
-
-        return selectedAmount;
     }
 
     @Override

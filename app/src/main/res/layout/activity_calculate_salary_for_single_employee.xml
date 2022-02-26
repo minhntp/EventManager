@@ -243,7 +243,7 @@
                     android:labelFor="@id/calculate_salary_single_sum_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
+                    android:layout_weight="5"
                     android:focusableInTouchMode="true"
                     android:gravity="center"
                     android:text="@string/sum"
@@ -254,34 +254,35 @@
                     android:id="@+id/calculate_salary_single_sum_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
+                    android:layout_weight="5"
                     android:enabled="false"
                     android:textColor="#0037FF"
                     android:textSize="@dimen/salary_amount_edit_text"
                     android:importantForAutofill="no"
-                    android:inputType="number" />
-
-                <Button
-                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                    android:id="@+id/calculate_salary_single_selected_amount_button"
-                    android:labelFor="@id/calculate_salary_single_selected_amount_edit_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
                     android:gravity="center"
-                    android:text="@string/selectedAmount"
-                    android:textSize="@dimen/dialog_button_small"/>
+                    android:inputType="number"/>
 
-                <EditText
-                    android:id="@+id/calculate_salary_single_selected_amount_edit_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:enabled="false"
-                    android:textColor="@color/selectedAmount"
-                    android:textSize="@dimen/salary_amount_edit_text"
-                    android:importantForAutofill="no"
-                    android:inputType="number" />
+<!--                <Button-->
+<!--                    style="@style/Widget.AppCompat.Button.Borderless.Colored"-->
+<!--                    android:id="@+id/calculate_salary_single_selected_amount_button"-->
+<!--                    android:labelFor="@id/calculate_salary_single_selected_amount_edit_text"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="3"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/selectedAmount"-->
+<!--                    android:textSize="@dimen/dialog_button_small"/>-->
+
+<!--                <EditText-->
+<!--                    android:id="@+id/calculate_salary_single_selected_amount_edit_text"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="2"-->
+<!--                    android:enabled="false"-->
+<!--                    android:textColor="@color/selectedAmount"-->
+<!--                    android:textSize="@dimen/salary_amount_edit_text"-->
+<!--                    android:importantForAutofill="no"-->
+<!--                    android:inputType="number" />-->
             </LinearLayout>
 
             <LinearLayout
@@ -309,6 +310,7 @@
                     android:textColor="#AE00FF19"
                     android:textSize="@dimen/salary_amount_edit_text"
                     android:importantForAutofill="no"
+                    android:gravity="center"
                     android:inputType="number"/>
 
                 <TextView
@@ -330,6 +332,7 @@
                     android:textColor="#FF0000"
                     android:textSize="@dimen/salary_amount_edit_text"
                     android:importantForAutofill="no"
+                    android:gravity="center"
                     android:inputType="number" />
             </LinearLayout>
 

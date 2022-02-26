@@ -98,9 +98,8 @@
     <string name="calculate">Tính</string>
     <string name="employee">Nhân viên</string>
     <string name="sum">Tổng cộng</string>
-    <string name="selectedAmount">Đã chọn</string>
     <string name="paid">Đã trả</string>
-    <string name="unpaid">Chưa trả</string>
+    <string name="unpaid">Còn lại</string>
     <string name="pay_all">Thanh toán tất cả</string>
     <string name="save_changes">Lưu thay đổi</string>
 

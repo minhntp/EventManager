@@ -13,5 +13,4 @@
     <color name="conflictBackground">#9FFF0000</color>
     <color name="normalBackground">#00FFFFFF</color>
     <color name="divider">#bbb</color>
-    <color name="selectedAmount">#FF5722</color>
 </resources>

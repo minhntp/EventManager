@@ -37,7 +37,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
@@ -51,19 +53,18 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     String selectedDateText;
     String clickedEditText;
 
-    Button calculateButton, payAllButton, saveButton, selectedAmountButton;
+    Button calculateButton, payAllButton, saveButton;
     RecyclerView resultRecyclerView;
     CalculateSalaryAdapter calculateSalaryAdapter;
-    EditText startDateEditText, endDateEditText, sumEditText, selectedAmountEditText, paidEditText, unpaidEditText;
+    EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
     TextView numberOfEventsTextView, sumTextView, nameTextView, specialityTextView;
     ImageView profileImageView;
 
     Calendar calendar = Calendar.getInstance();
 
-    ArrayList<Salary> resultSalaries;
+    Map<String, Salary> resultSalaries;
     ArrayList<Salary> editedSalaries;
     int resultEventsSize;
-    int selectedAmount = 0;
 
 
     //    String startDate, endDate;
@@ -90,14 +91,12 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         calculateButton = findViewById(R.id.calculate_salary_single_calculate_button);
         payAllButton = findViewById(R.id.calculate_salary_single_pay_all_button);
         saveButton = findViewById(R.id.calculate_salary_single_save_button);
-        selectedAmountButton = findViewById(R.id.calculate_salary_single_selected_amount_button);
 
         resultRecyclerView = findViewById(R.id.calculate_salary_single_result_recycler_view);
 
         startDateEditText = findViewById(R.id.calculate_salary_single_start_date_edit_text);
         endDateEditText = findViewById(R.id.calculate_salary_single_end_date_edit_text);
         sumEditText = findViewById(R.id.calculate_salary_single_sum_edit_text);
-        selectedAmountEditText = findViewById(R.id.calculate_salary_single_selected_amount_edit_text);
         paidEditText = findViewById(R.id.calculate_salary_single_paid_edit_text);
         unpaidEditText = findViewById(R.id.calculate_salary_single_unpaid_edit_text);
 
@@ -135,7 +134,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
         endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
-        resultSalaries = new ArrayList<>();
+        resultSalaries = new HashMap<>();
         editedSalaries = new ArrayList<>();
         resultEventsSize = 0;
         calculateSalaryAdapter = new CalculateSalaryAdapter(editedSalaries);
@@ -223,41 +222,9 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             showResult();
         });
 
-        selectedAmountButton.setOnClickListener(v -> {
-            selectedAmount = 0;
+        saveButton.setOnClickListener(v -> confirmBeforeSaving(false));
 
-            for(Salary s : editedSalaries) {
-                if (s.isPaid()) {
-                    selectedAmount += s.getSalary();
-                }
-            }
-
-            selectedAmountEditText.setText(String.valueOf(selectedAmount));
-        });
-
-        saveButton.setOnClickListener(v -> new AlertDialog.Builder(context)
-                .setTitle("Bạn có chắc chắn muốn lưu thay đổi?")
-                .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Lưu", (dialog, whichButton) -> saveChanges(false))
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                    //Undo changes by reloading data
-                    sumTextView.requestFocus();
-                    calculateSalaryAdapter.notifyDataSetChanged();
-                    selectedAmount = 0;
-                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-                }).show());
-
-        payAllButton.setOnClickListener(v -> new AlertDialog.Builder(context)
-                .setTitle("Bạn có chắc chắn muốn thanh toán tất cả?")
-                .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Thanh toán tất cả", (dialog, whichButton) -> saveChanges(true))
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                    //Undo changes by reloading data
-                    sumTextView.requestFocus();
-                    calculateSalaryAdapter.notifyDataSetChanged();
-                    selectedAmount = 0;
-                    selectedAmountEditText.setText((String.valueOf(selectedAmount)));
-                }).show());
+        payAllButton.setOnClickListener(v -> confirmBeforeSaving(true));
     }
 
     private void showDatePickerDialog() {
@@ -280,19 +247,19 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     private void getResultSalaries() {
         resultSalaries.clear();
-        resultSalaries.addAll(SalaryRepository.getInstance()
-                .getSalariesByStartDateAndEndDateAndEmployeeId(startDateEditText.getText().toString(),
+        resultSalaries.putAll(SalaryRepository.getInstance()
+                .getSalariesMapByStartDateAndEndDateAndEmployeeId(startDateEditText.getText().toString(),
                         endDateEditText.getText().toString(), selectedEmployeeId));
 
         ArrayList<String> resultEventIds = new ArrayList<>();
-        for (Salary s : resultSalaries) {
+        for (Salary s : resultSalaries.values()) {
             if (!resultEventIds.contains(s.getEventId())) {
                 resultEventIds.add(s.getEventId());
             }
         }
         resultEventsSize = resultEventIds.size();
 
-        SalaryRepository.sortSalariesByEventStartDate(resultSalaries);
+//        SalaryRepository.sortSalariesListByEventStartDate(resultSalaries);
     }
 
     public void showResult() {
@@ -307,7 +274,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         int sum, paid = 0, unpaid = 0;
 
         editedSalaries.clear();
-        for (Salary s : resultSalaries) {
+        for (Salary s : resultSalaries.values()) {
             editedSalaries.add(new Salary(s));
             if (s.isPaid()) {
                 paid += s.getSalary();
@@ -317,6 +284,8 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             }
         }
 
+        SalaryRepository.getInstance().sortSalariesListByEventStartDate(editedSalaries);
+
         calculateSalaryAdapter.notifyDataSetChanged();
 
         sum = paid + unpaid;
@@ -325,14 +294,37 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         paidEditText.setText(String.valueOf(paid));
         unpaidEditText.setText(String.valueOf(unpaid));
 
-        selectedAmount = 0;
-        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-
         saveButton.setEnabled(!isEditedSalariesPaid);
         payAllButton.setEnabled(!isEditedSalariesPaid);
     }
 
+    private void confirmBeforeSaving(boolean payAll) {
+        int paid = 0, unpaid = 0;
+        for (Salary s : editedSalaries) {
+            if (!resultSalaries.get(s.getSalaryId()).isPaid()) {
+                if (payAll || s.isPaid()) {
+                    paid += s.getSalary();
+                } else {
+                    unpaid += s.getSalary();
+                }
+            }
+        }
+        String title = payAll ? "Bạn có chắc chắn muốn thanh toán tất cả?" : "Bạn có chắc chắn muốn lưu thay đổi?";
+        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid) +": " +unpaid;
+        String positiveButton = payAll ? "Thanh toán tất cả" : "Lưu";
+
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(R.drawable.ic_error)
+                .setPositiveButton(positiveButton, (dialog, whichButton) -> saveChanges(payAll))
+                .setNegativeButton("Hủy", (dialog, which) -> {
+                    sumTextView.requestFocus();
+                }).show();
+    }
+
     private void saveChanges(boolean payAll) {
+
         if (payAll) {
             for (Salary s : editedSalaries) {
                 if(!s.isPaid()) {
