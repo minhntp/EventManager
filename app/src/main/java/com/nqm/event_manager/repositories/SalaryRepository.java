@@ -164,6 +164,13 @@ public class SalaryRepository {
         batch.commit();
     }
 
+    public void revertToNotPaid(String salaryId) {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.SALARY_COLLECTION)
+                .document(salaryId)
+                .update(Constants.SALARY_PAID, "false");
+    }
+
     public String getSalaryIdByEventIdAndEmployeeId(String eventId, String employeeId) {
         for (Salary s : allSalaries.values()) {
             if (s.getEventId().equals(eventId) &&

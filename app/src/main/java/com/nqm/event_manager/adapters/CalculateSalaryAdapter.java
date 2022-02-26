@@ -1,5 +1,6 @@
 package com.nqm.event_manager.adapters;
 
+import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -9,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,12 +52,12 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
         this.listener = listener;
     }
 
-//    public void customNotifyDataSetChanged(ArrayList<Salary> resultSalaries) {
+    //    public void customNotifyDataSetChanged(ArrayList<Salary> resultSalaries) {
 //        this.resultSalaries = resultSalaries;
 //        notifyDataSetChanged();
 //    }
     public void customNotifyDataSetChanged() {
-        Log.d("dbg", "customNotifyDataSetChanged: new size = " + salaries.size());
+//        Log.d("dbg", "customNotifyDataSetChanged: new size = " + salaries.size());
         notifyDataSetChanged();
         editedAmountArray.clear();
         checkedArray.clear();
@@ -104,15 +107,15 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                 holder.paidCheckBox.setEnabled(true);
                 holder.salaryEditText.setEnabled(true);
 
-                if(editedAmountArray.get(salary.getSalaryId()) != null) {
+                if (editedAmountArray.get(salary.getSalaryId()) != null) {
                     holder.salaryEditText.setText(String.valueOf(
                             editedAmountArray.get(salaries.get(position).getSalaryId())));
                 } else {
                     holder.salaryEditText.setText(String.valueOf(salary.getSalary()));
                 }
 
-                if(checkedArray.get(salary.getSalaryId()) != null) {
-                    holder.paidCheckBox.setChecked(checkedArray.get(salary.getSalaryId()));
+                if (checkedArray.get(salary.getSalaryId()) != null) {
+                    holder.paidCheckBox.setChecked(checkedArray.get(salary.getSalaryId()) != null);
                 } else {
                     holder.paidCheckBox.setChecked(salary.isPaid());
                 }
@@ -145,6 +148,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
             View.OnClickListener onClickListener = v -> {
                 listener.onCalculateSalaryItemClicked(salaries.get(getLayoutPosition()).getEventId());
             };
+
             startDateTextView.setOnClickListener(onClickListener);
             titleTextView.setOnClickListener(onClickListener);
             locationTextView.setOnClickListener(onClickListener);
@@ -167,54 +171,25 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                 }
             });
 
-            paidCheckBox.setOnClickListener(v -> {
-                checkedArray.put(salaries.get(getLayoutPosition()).getSalaryId(), paidCheckBox.isChecked());
-            });
+            paidCheckBox.setOnClickListener(v -> checkedArray.put(salaries.get(getLayoutPosition()).getSalaryId(), paidCheckBox.isChecked()));
 
-//            paidCheckBox.setOnClickListener(v -> {
-//                if (paidCheckBox.isChecked()) {
-//                    salaryEditText.addTextChangedListener(textWatcher);
-//                    String text = salaryEditText.getText().toString();
-//                    listener.onCalculateSalaryItemCheckboxTouched(text.equals("") ? 0 : Integer.parseInt(text));
-//                } else {
-//                    salaryEditText.removeTextChangedListener(textWatcher);
-//                    listener.onCalculateSalaryItemCheckboxTouched(-1 * Integer.parseInt(salaryEditText.getText().toString()));
-//                }
-//            });
+            View.OnLongClickListener onLongClickListener = view -> {
+                if (!paidCheckBox.isEnabled()) {
+                    new AlertDialog.Builder(view.getContext())
+                            .setTitle("Bạn có chắn chắn muốn sửa thành \"Chưa trả\"?")
+                            .setIcon(R.drawable.ic_error)
+                            .setPositiveButton("Có", (dialog, whichButton) ->
+                                    listener.onCalculateSalaryInputLayoutLongClicked(
+                                            salaries.get(getLayoutPosition()).getSalaryId()))
+                            .setNegativeButton("Không", null).show();
+                }
+                return false;
+            };
 
-//            Log.d("dbg", "renderedCount++: "+renderedCount);
-//            renderedCount++;
-//            if(renderedCount == getItemCount()) {
-//                listener.dataSetChanged();
-//            }
+            startDateTextView.setOnLongClickListener(onLongClickListener);
+            titleTextView.setOnLongClickListener(onLongClickListener);
+            locationTextView.setOnLongClickListener(onLongClickListener);
+
         }
-
-//        TextWatcher
-//                textWatcher = new TextWatcher() {
-//            int beforeAmount = 0;
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                if(paidCheckBox.isChecked()) {
-//                    beforeAmount = s.toString().equals("") ? 0 : Integer.parseInt(s.toString());
-//                }
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if(paidCheckBox.isChecked()) {
-//                    int afterAmount = s.toString().equals("") ? 0 : Integer.parseInt(s.toString());
-//                    int increasedAmount = afterAmount - beforeAmount;
-////                Log.d("dbg", "before amount =  " + beforeAmount);
-////                Log.d("dbg", "after amount =  " + afterAmount);
-////                Log.d("dbg", "increased amount =  " + increasedAmount);
-//                    listener.onCalculateSalaryItemSelectedAmountChanged(increasedAmount);
-//                }
-//            }
-//        };
-
     }
 }

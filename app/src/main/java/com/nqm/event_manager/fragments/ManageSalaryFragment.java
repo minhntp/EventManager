@@ -442,19 +442,26 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     public void onCalculateSalaryItemClicked(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
-                .setTitle("Lưu thông tin đã nhập?")
-                .setPositiveButton("Đồng ý", (dialog, which) -> {
+                .setTitle("Chuyển đến Chi tiết sự kiện...")
+                .setMessage("Lưu thông tin đã nhập?")
+                .setPositiveButton("Lưu", (dialog, which) -> {
                     saveChanges2(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
                 })
-                .setNegativeButton("Hủy", (dialogInterface, i) -> {
+                .setNegativeButton("Không lưu", (dialogInterface, i) -> {
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
                 })
+                .setNeutralButton("Hủy", null)
                 .show();
+    }
+
+    @Override
+    public void onCalculateSalaryInputLayoutLongClicked(String salaryId) {
+        SalaryRepository.getInstance().revertToNotPaid(salaryId);
     }
 
 //    @Override
@@ -480,7 +487,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     @Override
     public void notifyOnLoadComplete() {
-
         getResultSalaries();
         updateEmployeesSpinner();
         showResult();

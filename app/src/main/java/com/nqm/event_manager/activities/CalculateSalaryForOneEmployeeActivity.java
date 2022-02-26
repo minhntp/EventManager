@@ -5,10 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -241,7 +239,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         saveButton.setOnClickListener(v -> new AlertDialog.Builder(context)
                 .setTitle("Bạn có chắn chắn muốn lưu thay đổi?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(false))
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(false))
                 .setNegativeButton("Không", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
@@ -253,7 +251,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         payAllButton.setOnClickListener(v -> new AlertDialog.Builder(context)
                 .setTitle("Bạn có chắn chắn muốn thanh toán tất cả?")
                 .setIcon(R.drawable.ic_error)
-                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges2(true))
+                .setPositiveButton("Có", (dialog, whichButton) -> saveChanges(true))
                 .setNegativeButton("Không", (dialog, which) -> {
                     //Undo changes by reloading data
                     sumTextView.requestFocus();
@@ -352,7 +350,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 //        showResult();
 //    }
 
-    private void saveChanges2(boolean payAll) {
+    private void saveChanges(boolean payAll) {
         for (Salary s : resultSalaries) {
             if (calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()) != null) {
                 s.setSalary(calculateSalaryAdapter.getEditedAmountArray().get(s.getSalaryId()));
@@ -387,32 +385,28 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     public void onCalculateSalaryItemClicked(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
-                .setTitle("Lưu thông tin đã nhập?")
-                .setPositiveButton("Đồng ý", (dialog, which) -> {
-                    saveChanges2(false);
+                .setTitle("Chuyển đến Chi tiết sự kiện...")
+                .setMessage("Lưu thông tin đã nhập?")
+                .setPositiveButton("Lưu", (dialogInterface, i) -> {
+                    saveChanges(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
                 })
-                .setNegativeButton("Hủy", (dialogInterface, i) -> {
+                .setNeutralButton("Không lưu", (dialogInterface, i) -> {
                     Intent intent = new Intent(context, ViewEventActivity.class);
                     intent.putExtra("eventId", eventId);
                     startActivity(intent);
                 })
+                .setNegativeButton("Hủy", null)
                 .show();
     }
 
-//    @Override
-//    public void onCalculateSalaryItemCheckboxTouched(int amount) {
-//        selectedAmount += amount;
-//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-//    }
-//
-//    @Override
-//    public void onCalculateSalaryItemSelectedAmountChanged(int increasedAmount) {
-//        selectedAmount += increasedAmount;
-//        selectedAmountEditText.setText(String.valueOf(selectedAmount));
-//    }
+    @Override
+    public void onCalculateSalaryInputLayoutLongClicked(String salaryId) {
+        SalaryRepository.getInstance().revertToNotPaid(salaryId);
+
+    }
 
 //    @Override
 //    public void dataSetChanged() {
@@ -436,7 +430,6 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     @Override
     public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
-
     }
 
 }
