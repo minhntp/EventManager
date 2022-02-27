@@ -1,6 +1,9 @@
 package com.nqm.event_manager.models;
 
-public class Salary {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Salary implements Parcelable {
     private String salaryId;
     private String eventId;
     private String employeeId;
@@ -13,23 +16,11 @@ public class Salary {
     }
 
     public Salary(Salary s) {
-        this.salaryId = s.salaryId;
-        this.eventId = s.eventId;
-        this.employeeId = s.employeeId;
-        this.salary = s.salary;
-        this.paid = s.paid;
-        this.startMili = s.startMili;
-        this.endMili = s.endMili;
+        this(s.salaryId, s.eventId, s.employeeId, s.salary, s.paid, s.startMili, s.endMili);
     }
 
     public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid) {
-        this.salaryId = salaryId;
-        this.eventId = eventId;
-        this.employeeId = employeeId;
-        this.salary = salary;
-        this.paid = paid;
-        this.startMili = 0;
-        this.endMili = 0;
+        this(salaryId, eventId, employeeId, salary, paid, 0, 0);
     }
 
     public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid,
@@ -98,4 +89,44 @@ public class Salary {
     public void setPaid(boolean paid) {
         this.paid = paid;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    protected Salary(Parcel in) {
+        salaryId = in.readString();
+        eventId = in.readString();
+        employeeId = in.readString();
+        salary = in.readInt();
+        paid = in.readByte() != 0;
+        startMili = in.readLong();
+        endMili = in.readLong();
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(salaryId);
+        parcel.writeString(eventId);
+        parcel.writeString(employeeId);
+        parcel.writeInt(salary);
+        parcel.writeByte((byte) (paid ? 1 : 0));
+        parcel.writeLong(startMili);
+        parcel.writeLong(endMili);
+    }
+
+
+    public static final Creator<Salary> CREATOR = new Creator<Salary>() {
+        @Override
+        public Salary createFromParcel(Parcel in) {
+            return new Salary(in);
+        }
+
+        @Override
+        public Salary[] newArray(int size) {
+            return new Salary[size];
+        }
+    };
+
 }

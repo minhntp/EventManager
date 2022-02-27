@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.StringUtil;
 
 import java.text.ParseException;
@@ -408,7 +411,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
                 .setTitle("Chuyển đến Chi tiết sự kiện...")
-                .setMessage("Lưu thông tin đã nhập?")
+                .setMessage("Dữ liệu vừa nhập sẽ không được lưu.\nLưu thông tin đã nhập?")
                 .setPositiveButton("Lưu", (dialog, which) -> {
                     saveChanges(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);
@@ -446,4 +449,5 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
     }
+
 }

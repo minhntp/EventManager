@@ -3,6 +3,7 @@ package com.nqm.event_manager.adapters;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.nqm.event_manager.models.Event;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +50,11 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                 .inflate(R.layout.list_item_calculate_salary, parent, false);
 
         return new ViewHolder(view);
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
     }
 
     @Override

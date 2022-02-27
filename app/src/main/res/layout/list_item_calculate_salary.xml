@@ -51,7 +51,7 @@
         <EditText
             android:id="@+id/calculate_salaries_list_item_salary_edit_text"
             android:longClickable="true"
-            android:layout_width="80dp"
+            android:layout_width="@dimen/salary_edit_text"
             android:layout_height="match_parent"
             android:ellipsize="end"
             android:gravity="center"

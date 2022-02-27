@@ -67,6 +67,8 @@ public class Constants {
     public static String INTENT_SELECTED_DATE = "selectedDate";
 
     public static String DEFAULT_REMINDER_COLLECTION = "nhacnhomacdinh";
-    public static String DEBUG = "debug";
+    public static String DEBUG = "my-debugging-tag";
+
+    public static String EDITED_SALARIES = "editedSalaries";
 
 }

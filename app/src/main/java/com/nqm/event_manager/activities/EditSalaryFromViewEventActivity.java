@@ -3,6 +3,7 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -111,23 +112,8 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setIcon(R.drawable.ic_error)
-                .setTitle("Trở về mà không lưu?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        context.finish();
-                    }
-
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+        finish();
         return super.onSupportNavigateUp();
     }
 
-    @Override
-    public void onBackPressed() {
-        onSupportNavigateUp();
-    }
 }

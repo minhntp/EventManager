@@ -162,17 +162,18 @@ public class EditEmployeeActivity extends BaseActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setIcon(R.drawable.ic_error)
-                .setTitle("Trở về mà không lưu?")
-                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        context.finish();
-                    }
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+//        new androidx.appcompat.app.AlertDialog.Builder(this)
+//                .setIcon(R.drawable.ic_error)
+//                .setTitle("Trở về mà không lưu?")
+//                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        context.finish();
+//                    }
+//                })
+//                .setNegativeButton("Hủy", null)
+//                .show();
+        finish();
         return super.onSupportNavigateUp();
     }
 

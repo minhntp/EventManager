@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
         final String employeeId = salaries.get(position).getEmployeeId();
         holder.hoTenTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getHoTen());
         holder.chuyenMonTextView.setText(EmployeeRepository.getInstance().getAllEmployees().get(employeeId).getChuyenMon());
-        holder.luongTextView.setText(String.valueOf(salaries.get(position).getSalary()));
+        holder.luongEditText.setText(String.valueOf(salaries.get(position).getSalary()));
         holder.daThanhToanCheckBox.setChecked(salaries.get(position).isPaid());
     }
 
@@ -64,7 +65,7 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
 
         TextView hoTenTextView;
         TextView chuyenMonTextView;
-        TextView luongTextView;
+        EditText luongEditText;
         CheckBox daThanhToanCheckBox;
 
         public ViewHolder(@NonNull View itemView) {
@@ -72,7 +73,7 @@ public class ViewSalaryAdapter extends RecyclerView.Adapter<ViewSalaryAdapter.Vi
 
             hoTenTextView = itemView.findViewById(R.id.view_salary_employee_name_text_view);
             chuyenMonTextView = itemView.findViewById(R.id.view_salary_employee_speciality_text_view);
-            luongTextView = itemView.findViewById(R.id.view_salary_salary_text_view);
+            luongEditText = itemView.findViewById(R.id.view_salary_salary_edit_text);
             daThanhToanCheckBox = itemView.findViewById(R.id.view_salary_paid_checkbox);
 
             itemView.setOnClickListener(v -> {
