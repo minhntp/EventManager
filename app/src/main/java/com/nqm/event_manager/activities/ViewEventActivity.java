@@ -221,7 +221,6 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         //Xóa sự kiện
         if (id == R.id.view_event_action_delete_event) {
-//            Log.wtf("debug", "deleting " + eventId);
             deleteEvent();
             return true;
         }
@@ -255,7 +254,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Xóa sự kiện")
-                .setMessage("Bạn có chắc chắn muốn xóa sự kiện này?")
+                .setMessage("Bạn có chắc chắn muốn xóa sự kiện này và các bản lương?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
                     DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener, context);
                     EventRepository.getInstance().deleteEventFromDatabase(eventId, context);

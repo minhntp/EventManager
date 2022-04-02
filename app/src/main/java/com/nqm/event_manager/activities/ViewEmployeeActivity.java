@@ -59,7 +59,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
-                    .setMessage("Bạn có chắc chắn muốn xóa nhân viên này?")
+                    .setMessage("Bạn có chắn chắn muốn Xóa nhân viên này và các bản lương?")
                     .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
