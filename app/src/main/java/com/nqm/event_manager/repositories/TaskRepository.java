@@ -1,12 +1,8 @@
 package com.nqm.event_manager.repositories;
 
-import androidx.annotation.Nullable;
 import android.util.Log;
 
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -17,18 +13,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class TaskRepository {
 
     static TaskRepository instance;
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     private HashMap<String, EventTask> allTasks;
 
     private TaskRepository() {
-        listeners = new HashSet<>();
         addDatabaseSnapshotListener();
     }
 
@@ -66,14 +59,14 @@ public class TaskRepository {
                         }
                     }
                     allTasks = tasks;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });
     }
 
-    public void addListener(IOnDataLoadComplete listener) {
-        listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     public HashMap<String, EventTask> getAllTasks() {

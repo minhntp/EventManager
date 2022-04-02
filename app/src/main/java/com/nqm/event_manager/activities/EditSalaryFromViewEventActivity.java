@@ -1,20 +1,17 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;

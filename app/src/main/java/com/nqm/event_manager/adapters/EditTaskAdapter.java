@@ -5,9 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +16,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;

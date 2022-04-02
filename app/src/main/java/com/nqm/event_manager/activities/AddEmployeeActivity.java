@@ -3,15 +3,15 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;

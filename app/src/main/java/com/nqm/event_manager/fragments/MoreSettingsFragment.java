@@ -2,24 +2,21 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
@@ -110,7 +107,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editReminderRecyclerView.setLayoutManager(linearLayoutManagerReminder);
         editReminderRecyclerView.setAdapter(editReminderAdapter);
 
-        DefaultReminderRepository.getInstance().addListener(this);
+        DefaultReminderRepository.getInstance().setListener(this);
         ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
                 .getDefaultReminders().values());
         if (defaultReminders != null && defaultReminders.size() > 0) {
@@ -133,7 +130,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
-        DefaultReminderRepository.getInstance().addListener(this);
+        DefaultReminderRepository.getInstance().setListener(this);
         HashMap<String, String> defaultEmployeesIds = DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds();
         if (defaultEmployeesIds != null && defaultEmployeesIds.size() > 0) {
             for (String id : defaultEmployeesIds.values()) {

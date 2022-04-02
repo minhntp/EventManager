@@ -1,11 +1,7 @@
 package com.nqm.event_manager.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEventActivity;
@@ -23,7 +22,6 @@ import com.nqm.event_manager.activities.SearchEventActivity;
 import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.EventListAdapter;
 import com.nqm.event_manager.custom_views.CustomCalendar;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnCustomCalendarItemClicked;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.utils.CalendarUtil;

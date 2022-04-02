@@ -75,10 +75,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate_salary_for_single_employee);
 
-        EventRepository.getInstance().addListener(this);
-        EmployeeRepository.getInstance().addListener(this);
-        SalaryRepository.getInstance().addListener(this);
-        ScheduleRepository.getInstance().addListener(this);
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
 
         connectViews();
         init();
@@ -118,7 +118,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        SalaryRepository.getInstance().addListener(this);
+        SalaryRepository.getInstance().setListener(this);
 
         initDatePickerDialog();
 
@@ -324,10 +324,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     @Override
     protected void onResume() {
-        EventRepository.getInstance().addListener(this);
-        EmployeeRepository.getInstance().addListener(this);
-        SalaryRepository.getInstance().addListener(this);
-        ScheduleRepository.getInstance().addListener(this);
+        EventRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().setListener(this);
+        ScheduleRepository.getInstance().setListener(this);
         getResultSalaries();
         showResult();
         super.onResume();

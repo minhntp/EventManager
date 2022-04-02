@@ -1,16 +1,11 @@
 package com.nqm.event_manager.utils;
 
-import android.util.Log;
-
-import com.google.common.collect.Lists;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 public class EmployeeUtil {
 

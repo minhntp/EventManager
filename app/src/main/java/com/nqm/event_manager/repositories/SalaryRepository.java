@@ -18,20 +18,17 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class SalaryRepository {
     private static SalaryRepository instance;
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     private HashMap<String, Salary> allSalaries;
 
     //------------------------------------------------------------------------------------
 
     private SalaryRepository() {
-        listeners = new HashSet<>();
         addDatabaseSnapshotListener();
     }
 
@@ -46,7 +43,7 @@ public class SalaryRepository {
         if (instance == null) {
             instance = new SalaryRepository();
         }
-        instance.addListener(listener);
+        instance.setListener(listener);
         return instance;
     }
 
@@ -77,14 +74,14 @@ public class SalaryRepository {
                         }
                     }
                     allSalaries = salaries;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });
     }
 
-    public void addListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     //------------------------------------------------------------------------------------

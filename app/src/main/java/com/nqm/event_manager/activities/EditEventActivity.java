@@ -5,13 +5,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +17,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeEditEventAdapter;
@@ -209,7 +209,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
     private void init() {
         context = this;
-        ReminderRepository.getInstance(context).addListener(this);
+        ReminderRepository.getInstance(context).setListener(this);
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         event = EventRepository.getInstance().getAllEvents().get(eventId);
@@ -686,12 +686,6 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean onSupportNavigateUp() {
-//        new androidx.appcompat.app.AlertDialog.Builder(this)
-//                .setIcon(R.drawable.ic_error)
-//                .setTitle("Trở về mà không lưu?")
-//                .setPositiveButton("Đồng ý", (dialog, which) -> context.finish())
-//                .setNegativeButton("Hủy", null)
-//                .show();
         finish();
         return super.onSupportNavigateUp();
     }
@@ -753,7 +747,6 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         selectedEmployeesIds.remove(employeeId);
         conflictsMap.remove(employeeId);
         editEmployeeAdapter.customNotifyDataSetChanged();
-//        selectEmployeeAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -784,7 +777,6 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     private void checkAndUpdate() {
         startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
         endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
-//        Log.wtf(Constants.DEBUG, "entered checkAndUpdate()");
 
         try {
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
@@ -799,11 +791,8 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
             endMili = calendar.getTimeInMillis();
 
-//            Log.wtf(Constants.DEBUG, "entered checkAndUpdate() try catch");
-
             EventRepository.getInstance().getConflictEventsIdsEdit(startMili, endMili, selectedEmployeesIds,
                     eventId, conflictMap -> {
-//                        Log.wtf("debug", "here5 conflictMap size = " + conflictMap.size());
                         conflictsMap.clear();
                         conflictsMap.putAll(conflictMap);
                         editEmployeeAdapter.customNotifyDataSetChanged();
@@ -845,13 +834,11 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
         for (String employeeId : unchangedEmployeesIds) {
             if (!selectedEmployeesIds.contains(employeeId)) {
-                //Delete
                 deleteEmployeesIds.add(employeeId);
             }
         }
         for (String employeeId : selectedEmployeesIds) {
             if (!unchangedEmployeesIds.contains(employeeId)) {
-                //Add
                 addEmployeesIds.add(employeeId);
             }
         }
@@ -910,7 +897,6 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             for (Reminder r : selectedReminders) {
                 if (r.getMinute() == minute) {
                     selectedReminders.remove(r);
-//                    editReminderAdapter.notifyDataSetChanged();
                     return;
                 }
             }

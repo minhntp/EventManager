@@ -10,10 +10,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -24,15 +24,13 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class EventRepository {
 
     private static EventRepository instance;
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     private HashMap<String, Event> allEvents;
     private HashMap<String, ArrayList<String>> numberOfEventsMap;
     private ArrayList<String> titles;
@@ -41,7 +39,6 @@ public class EventRepository {
 
     //-------------------------------------------------------------------------------------------
     private EventRepository() {
-        listeners = new HashSet<>();
         addDatabaseSnapshotListener();
     }
     //-------------------------------------------------------------------------------------------
@@ -53,8 +50,8 @@ public class EventRepository {
         return instance;
     }
 
-    public void addListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     //-------------------------------------------------------------------------------------------
@@ -115,7 +112,7 @@ public class EventRepository {
                     numberOfEventsMap = numberOfEvents;
                     this.titles = titles;
                     this.locations = locations;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });

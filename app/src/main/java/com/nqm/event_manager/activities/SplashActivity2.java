@@ -1,11 +1,7 @@
 package com.nqm.event_manager.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;

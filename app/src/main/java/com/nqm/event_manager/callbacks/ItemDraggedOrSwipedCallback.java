@@ -1,9 +1,10 @@
 package com.nqm.event_manager.callbacks;
 
 import android.graphics.Canvas;
+
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.interfaces.IOnItemDraggedOrSwiped;
 

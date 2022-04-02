@@ -2,10 +2,6 @@ package com.nqm.event_manager.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
@@ -54,7 +55,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
         super.onViewCreated(view, savedInstanceState);
 
         thisListener = this;
-        EmployeeRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().setListener(this);
 
         connectViews(view);
 
@@ -120,7 +121,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
 
     @Override
     public void onResume() {
-        EmployeeRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().setListener(this);
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
         employeeAdapter.notifyDataSetChanged(resultEmployeesIds);

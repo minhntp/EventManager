@@ -17,8 +17,11 @@ public class DatabaseAccess {
 
     private static DatabaseAccess instance;
     private FirebaseFirestore database;
+    private static long createdTime = 0;
+    private static long dataLoadTime = 0;
 
     private DatabaseAccess() {
+        createdTime = System.currentTimeMillis();
         database = FirebaseFirestore.getInstance();
     }
 
@@ -34,38 +37,46 @@ public class DatabaseAccess {
     }
 
     public static void setDatabaseListener(IOnDataLoadComplete listener, Context context) {
-        System.out.println( "setDatabaseListener: ");
-        DefaultReminderRepository.getInstance().addListener(listener);
-        EmployeeRepository.getInstance().addListener(listener);
-        EventRepository.getInstance().addListener(listener);
-        ReminderRepository.getInstance(context).addListener(listener);
-        SalaryRepository.getInstance().addListener(listener);
-        ScheduleRepository.getInstance().addListener(listener);
-        TaskRepository.getInstance().addListener(listener);
-        DefaultEmployeeRepository.getInstance().addDatabaseSnapshotListener(listener);
+        System.out.println("DatabaseAccess: addDatabaseListener()");
+        DefaultReminderRepository.getInstance().setListener(listener);
+        EmployeeRepository.getInstance().setListener(listener);
+        EventRepository.getInstance().setListener(listener);
+        ReminderRepository.getInstance(context).setListener(listener);
+        SalaryRepository.getInstance().setListener(listener);
+        ScheduleRepository.getInstance().setListener(listener);
+        TaskRepository.getInstance().setListener(listener);
+        DefaultEmployeeRepository.getInstance().setListener(listener);
     }
 
     public static boolean isAllDataLoaded(Context context) {
-        System.out.println( "isAllDataLoaded: ");
-        System.out.println( "DefaultReminderRepository.getInstance().getDefaultReminders() != null: " + (DefaultReminderRepository.getInstance().getDefaultReminders() != null));
-        System.out.println( "EmployeeRepository.getInstance().getAllEmployees() != null: " + (EmployeeRepository.getInstance().getAllEmployees() != null));
-        System.out.println( "ReminderRepository.getInstance(context).getAllReminders() != null: " + (ReminderRepository.getInstance(context).getAllReminders() != null));
-        System.out.println( "SalaryRepository.getInstance().getAllSalaries() != null: " + (SalaryRepository.getInstance().getAllSalaries() != null));
-        System.out.println( "ScheduleRepository.getInstance().getAllSchedules() != null: " + (ScheduleRepository.getInstance().getAllSchedules() != null));
-        System.out.println( "TaskRepository.getInstance().getAllTasks() != null: " + (TaskRepository.getInstance().getAllTasks() != null));
-        System.out.println( "DefaultReminderRepository.getInstance().getDefaultReminders() != null: " + (DefaultReminderRepository.getInstance().getDefaultReminders() != null));
-        System.out.println( "DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null: " + (DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null));
 
+        boolean defaultRemindersLoaded = DefaultReminderRepository.getInstance().getDefaultReminders() != null;
+        boolean employeesLoaded = EmployeeRepository.getInstance().getAllEmployees() != null;
+        boolean eventsLoaded = EventRepository.getInstance().getAllEvents() != null;
+        boolean remindersLoaded = ReminderRepository.getInstance(context).getAllReminders() != null;
+        boolean salariesLoaded = SalaryRepository.getInstance().getAllSalaries() != null;
+        boolean schedulesLoaded = ScheduleRepository.getInstance().getAllSchedules() != null;
+        boolean tasksLoaded = TaskRepository.getInstance().getAllTasks() != null;
+        boolean defaultEmployeesLoaded = DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null;
 
-        return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
-                (EmployeeRepository.getInstance().getAllEmployees() != null) &&
-                (EventRepository.getInstance().getAllEvents() != null) &&
-//                (EventRepository.getInstance().getNumberOfEventsMap() != null) &&
-                (ReminderRepository.getInstance(context).getAllReminders() != null) &&
-                (SalaryRepository.getInstance().getAllSalaries() != null) &&
-                (ScheduleRepository.getInstance().getAllSchedules() != null) &&
-                (TaskRepository.getInstance().getAllTasks() != null)) &&
-                (DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null);
+        System.out.println("defaultRemindersLoaded: " + (DefaultReminderRepository.getInstance().getDefaultReminders() != null) + "\n" +
+                "employeesLoaded: " + (EmployeeRepository.getInstance().getAllEmployees() != null) + "\n" +
+                "eventsLoaded: " + (EventRepository.getInstance().getAllEvents() != null) + "\n" +
+                "remindersLoaded: " + (ReminderRepository.getInstance(context).getAllReminders() != null) + "\n" +
+                "salariesLoaded: " + (SalaryRepository.getInstance().getAllSalaries() != null) + "\n" +
+                "schedulesLoaded: " + (ScheduleRepository.getInstance().getAllSchedules() != null) + "\n" +
+                "tasksLoaded: " + (TaskRepository.getInstance().getAllTasks() != null) + "\n" +
+                "defaultEmployeesLoaded: " + (DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds() != null));
+
+        boolean isAllDataLoaded = defaultRemindersLoaded && employeesLoaded && eventsLoaded && remindersLoaded &&
+                salariesLoaded && schedulesLoaded && tasksLoaded && defaultEmployeesLoaded;
+
+        if ((dataLoadTime == 0) && isAllDataLoaded) {
+            dataLoadTime = System.currentTimeMillis() - createdTime;
+            System.out.println("dataLoadTime in miliseconds = " + dataLoadTime);
+        }
+
+        return isAllDataLoaded;
     }
 
 }

@@ -1,7 +1,5 @@
 package com.nqm.event_manager.models;
 
-import android.util.Log;
-
 import com.nqm.event_manager.utils.StringUtil;
 
 public class Employee implements Comparable<Employee> {

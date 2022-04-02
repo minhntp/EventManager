@@ -5,16 +5,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
@@ -63,7 +63,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
                     .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            EmployeeRepository.getInstance().addListener(ManageEmployeeFragment.thisListener);
+                            EmployeeRepository.getInstance().setListener(ManageEmployeeFragment.thisListener);
                             EmployeeRepository.getInstance().deleteEmployeeByEmployeeId(employee.getId());
                             context.finish();
                         }
@@ -107,7 +107,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     private void init() {
         context = this;
         thisListener = this;
-        EmployeeRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().setListener(this);
 
         toolbar = findViewById(R.id.view_employee_toolbar);
         setSupportActionBar(toolbar);
@@ -187,7 +187,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     @Override
     protected void onResume() {
         super.onResume();
-        EmployeeRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().setListener(this);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
     }

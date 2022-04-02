@@ -14,10 +14,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 
 public class EventListAdapter extends BaseAdapter {
 

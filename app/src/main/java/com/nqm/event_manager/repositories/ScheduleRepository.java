@@ -3,10 +3,7 @@ package com.nqm.event_manager.repositories;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Schedule;
@@ -18,21 +15,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
 
 public class ScheduleRepository {
     static ScheduleRepository instance;
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     private HashMap<String, Schedule> allSchedules;
 
     //------------------------------------------------------------------------------------
 
     private ScheduleRepository() {
-        listeners = new HashSet<>();
         addDatabaseSnapshotListener();
     }
 
@@ -68,14 +60,14 @@ public class ScheduleRepository {
                         }
                     }
                     allSchedules = schedules;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });
     }
 
-    public void addListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     //------------------------------------------------------------------------------------
@@ -84,41 +76,9 @@ public class ScheduleRepository {
         if (instance == null) {
             instance = new ScheduleRepository();
         }
-        instance.addListener(listener);
+        instance.setListener(listener);
         return instance;
     }
-
-    private void addListener(final ScheduleRepository.MyScheduleCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.SCHEDULE_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Schedule collection listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Schedule> scheduleList = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            if (queryDocumentSnapshots.size() > 0) {
-                                Map<String, Object> data = doc.getData();
-                                int order = 0;
-                                if (data.get(Constants.SCHEDULE_ORDER) != null) {
-                                    order = Integer.parseInt((String) data.get(Constants.SCHEDULE_ORDER));
-                                }
-                                Schedule tempSchedule = new Schedule(doc.getId(),
-                                        (String) data.get(Constants.SCHEDULE_EVENT_ID),
-                                        (String) data.get(Constants.SCHEDULE_TIME),
-                                        (String) data.get(Constants.SCHEDULE_CONTENT),
-                                        order);
-                                scheduleList.put(tempSchedule.getScheduleId(), tempSchedule);
-                            }
-                        }
-                        callback.onCallback(scheduleList);
-                    }
-                });
-    }
-
 
     //------------------------------------------------------------------------------------
 

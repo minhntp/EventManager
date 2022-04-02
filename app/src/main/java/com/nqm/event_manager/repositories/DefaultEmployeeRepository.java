@@ -11,21 +11,18 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class DefaultEmployeeRepository {
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     static DefaultEmployeeRepository instance;
     private HashMap<String, String> defaultEmployeeIds;
 
-    public void addDatabaseSnapshotListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     private DefaultEmployeeRepository() {
-        listeners = new HashSet<>();
         addDatabaseSnapshotListener();
     }
 
@@ -53,7 +50,7 @@ public class DefaultEmployeeRepository {
                         }
                     }
                     defaultEmployeeIds = ids;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });

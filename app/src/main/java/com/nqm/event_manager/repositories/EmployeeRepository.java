@@ -14,22 +14,19 @@ import com.nqm.event_manager.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class EmployeeRepository {
 
     static EmployeeRepository instance;
     private HashMap<String, Employee> allEmployees;
     private ArrayList<String> specialities;
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
 
     //------------------------------------------------------------------------------------------
 
     private EmployeeRepository() {
-        listeners = new HashSet<>();
-        addListener();
+        addDatabaseSnapshotListener();
     }
 
     static public EmployeeRepository getInstance() {
@@ -41,7 +38,7 @@ public class EmployeeRepository {
 
     //------------------------------------------------------------------------------------------
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EMPLOYEE_COLLECTION)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -68,15 +65,15 @@ public class EmployeeRepository {
                         }
                         allEmployees = employees;
                         this.specialities = specialities;
-                        for (IOnDataLoadComplete listener : listeners) {
+                        if (listener != null) {
                             listener.notifyOnLoadComplete();
                         }
                     }
                 });
     }
 
-    public void addListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     public ArrayList<String> getSpecialities() {

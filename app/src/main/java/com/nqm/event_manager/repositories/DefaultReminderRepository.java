@@ -12,23 +12,20 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class DefaultReminderRepository {
 
-    private Set<IOnDataLoadComplete> listeners;
+    private IOnDataLoadComplete listener;
     static DefaultReminderRepository instance;
     private HashMap<String, Integer> defaultReminders;
 
-    public void addListener(IOnDataLoadComplete listener) {
-        this.listeners.add(listener);
+    public void setListener(IOnDataLoadComplete listener) {
+        this.listener = listener;
     }
 
     private DefaultReminderRepository() {
-        listeners = new HashSet<>();
-        addListener();
+        addDatabaseSnapshotListener();
     }
 
     static public DefaultReminderRepository getInstance() {
@@ -38,7 +35,7 @@ public class DefaultReminderRepository {
         return instance;
     }
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.DEFAULT_REMINDER_COLLECTION)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -55,7 +52,7 @@ public class DefaultReminderRepository {
                         }
                     }
                     defaultReminders = reminders;
-                    for (IOnDataLoadComplete listener : listeners) {
+                    if (listener != null) {
                         listener.notifyOnLoadComplete();
                     }
                 });
