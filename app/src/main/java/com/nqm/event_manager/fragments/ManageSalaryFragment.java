@@ -407,8 +407,8 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     public void onCalculateSalaryItemClicked(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
-                .setTitle("Chuyển đến Chi tiết sự kiện...")
-                .setMessage("Dữ liệu vừa nhập sẽ không được lưu.\nLưu thông tin đã nhập?")
+                .setTitle("Chuyển đến Chi tiết sự kiện")
+                .setMessage("Lưu thông tin đã thay đổi?")
                 .setPositiveButton("Lưu", (dialog, which) -> {
                     saveChanges(false);
                     Intent intent = new Intent(context, ViewEventActivity.class);

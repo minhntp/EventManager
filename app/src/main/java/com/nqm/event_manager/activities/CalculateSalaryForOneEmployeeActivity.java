@@ -343,7 +343,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     public void onCalculateSalaryItemClicked(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
-                .setTitle("Chuyển đến Chi tiết sự kiện...")
+                .setTitle("Chuyển đến Chi tiết sự kiện")
                 .setMessage("Lưu thông tin đã nhập?")
                 .setPositiveButton("Lưu", (dialogInterface, i) -> {
                     saveChanges(false);
