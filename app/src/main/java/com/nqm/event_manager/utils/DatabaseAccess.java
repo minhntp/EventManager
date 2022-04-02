@@ -1,6 +1,7 @@
 package com.nqm.event_manager.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
@@ -34,6 +35,7 @@ public class DatabaseAccess {
     }
 
     public static void setDatabaseListener(IOnDataLoadComplete listener, Context context) {
+        Log.d("mytag", "setDatabaseListener: ");
         DefaultReminderRepository.getInstance().setListener(listener);
         EmployeeRepository.getInstance().setListener(listener);
         EventRepository.getInstance().setListener(listener);
@@ -45,6 +47,7 @@ public class DatabaseAccess {
     }
 
     public static boolean isAllDataLoaded(Context context) {
+        Log.d("mytag", "isAllDataLoaded: ");
         return ((DefaultReminderRepository.getInstance().getDefaultReminders() != null) &&
                 (EmployeeRepository.getInstance().getAllEmployees() != null) &&
                 (EventRepository.getInstance().getAllEvents() != null) &&

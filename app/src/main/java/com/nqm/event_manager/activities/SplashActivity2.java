@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.nqm.event_manager.R;
@@ -19,6 +20,7 @@ public class SplashActivity2 extends BaseActivity implements IOnDataLoadComplete
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        Log.d("mytag", "Splash 2 onCreate: ");
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         if (DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             Intent viewEventIntent = new Intent(this, ViewEventActivity.class);

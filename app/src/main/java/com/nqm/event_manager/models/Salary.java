@@ -4,27 +4,35 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Salary implements Parcelable {
-    private String salaryId;
-    private String eventId;
-    private String employeeId;
-    private int salary;
-    private boolean paid;
-    private long startMili;
-    private long endMili;
+    String salaryId;
+    String eventId;
+    String employeeId;
+    int salary;
+    boolean paid;
+    long startMili;
+    long endMili;
+    boolean isChecked;
+    int editedSalary;
 
     public Salary() {
+        this.isChecked = false;
     }
 
     public Salary(Salary s) {
-        this(s.salaryId, s.eventId, s.employeeId, s.salary, s.paid, s.startMili, s.endMili);
+        this(s.salaryId, s.eventId, s.employeeId, s.salary, s.paid, s.startMili, s.endMili, s.isChecked, s.editedSalary);
     }
 
     public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid) {
-        this(salaryId, eventId, employeeId, salary, paid, 0, 0);
+        this(salaryId, eventId, employeeId, salary, paid, 0, 0, false, salary);
     }
 
     public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid,
                   long startMili, long endMili) {
+        this(salaryId, eventId, employeeId, salary, paid, startMili, endMili, false, salary);
+    }
+
+    public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid,
+                  long startMili, long endMili, boolean isChecked, int editedSalary) {
         this.salaryId = salaryId;
         this.eventId = eventId;
         this.employeeId = employeeId;
@@ -32,6 +40,8 @@ public class Salary implements Parcelable {
         this.paid = paid;
         this.startMili = startMili;
         this.endMili = endMili;
+        this.isChecked = isChecked;
+        this.editedSalary = editedSalary;
     }
 
     public long getStartMili() {
@@ -90,6 +100,22 @@ public class Salary implements Parcelable {
         this.paid = paid;
     }
 
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
+    public void setEditedSalary(int editedSalary) {
+        this.editedSalary = editedSalary;
+    }
+
+    public int getEditedSalary() {
+        return editedSalary;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -103,6 +129,8 @@ public class Salary implements Parcelable {
         paid = in.readByte() != 0;
         startMili = in.readLong();
         endMili = in.readLong();
+        isChecked = in.readByte() != 0;
+        editedSalary = in.readInt();
     }
 
     @Override
@@ -114,6 +142,8 @@ public class Salary implements Parcelable {
         parcel.writeByte((byte) (paid ? 1 : 0));
         parcel.writeLong(startMili);
         parcel.writeLong(endMili);
+        parcel.writeByte((byte) (paid ? 1: 0));
+        parcel.writeInt(editedSalary);
     }
 
 

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListResourceBundle;
 import java.util.Map;
 
 public class SalaryRepository {
@@ -148,7 +149,7 @@ public class SalaryRepository {
         batch.commit();
     }
 
-    public void updateSalaries(ArrayList<Salary> salaries) {
+    public void updateSalaries(List<Salary> salaries) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 //        Log.d("debug", "salaries size = " + salaries.size());
         for (int i = 0; i < salaries.size(); i++) {
@@ -277,86 +278,56 @@ public class SalaryRepository {
 //        }
 //    }
 
-    public List<Salary> getSalariesListByStartDateEndDate(String startDate, String endDate) {
-//        Log.d("debug", "SalaryReposotory: getSalariesByStartDateEndDate, startDate = " + startDate
-//                + ", endDate = " + endDate);
-//        try {
-//            Calendar calendar = Calendar.getInstance();
-//            long startMili = 0, endMili = 0;
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDate));
-//            startMili = calendar.getTimeInMillis();
-//
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDate));
-//            endMili = calendar.getTimeInMillis();
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-        List<Salary> salaries = new ArrayList<>();
-
-        for (Salary s : allSalaries.values()) {
-            try {
-                String thisSalaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
-                String thisSalaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
-
-                Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(thisSalaryStartDate);
-                Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(thisSalaryEndDate);
-                if ((thisSalaryStart.compareTo(end) <= 0 && thisSalaryEnd.compareTo(start) >= 0)) {
-                    salaries.add(s);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return salaries;
-    }
-
-    public Map<String, Salary> getSalariesMapByStartDateEndDate(String startDate, String endDate) {
+    public Map<String, Salary> getSalariesMapByStartDateEndDate(String startDateString, String endDateString) {
 
         Map<String, Salary> salaries = new HashMap<>();
 
         for (Salary s : allSalaries.values()) {
-            try {
-                String thisSalaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
-                String thisSalaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
-
-                Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(thisSalaryStartDate);
-                Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(thisSalaryEndDate);
-                if ((thisSalaryStart.compareTo(end) <= 0 && thisSalaryEnd.compareTo(start) >= 0)) {
-                    salaries.put(s.getSalaryId(), s);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (isBetween(s, startDateString, endDateString)) {
+                salaries.put(s.getSalaryId(), s);
             }
         }
         return salaries;
     }
 
+    public List<Salary> getSalariesListByStartDateEndDate(String startDateString, String endDateString) {
+
+        List<Salary> salaries = new ArrayList<>();
+
+        for (Salary s : allSalaries.values()) {
+            if (isBetween(s, startDateString, endDateString)) {
+                salaries.add(s);
+            }
+        }
+        return salaries;
+    }
+
+    private boolean isBetween(Salary s, String startDateString, String endDateString) {
+        try {
+            String salaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
+            String salaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
+
+            Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateString);
+            Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateString);
+            Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(salaryStartDate);
+            Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(salaryEndDate);
+            if ((thisSalaryStart.compareTo(endDate) <= 0 && thisSalaryEnd.compareTo(startDate) >= 0)) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     //CALCULATE SALARIES FOR ONE EMPLOYEE
-    public List<Salary> getSalariesListByStartDateAndEndDateAndEmployeeId(String startDate,
-                                                                          String endDate,
+    public List<Salary> getSalariesListByStartDateAndEndDateAndEmployeeId(String startDateString,
+                                                                          String endDateString,
                                                                           String employeeId) {
         List<Salary> salaries = new ArrayList<>();
         for (Salary s : allSalaries.values()) {
-            if (s.getEmployeeId().equals(employeeId)) {
-                try {
-                    Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                    Date currentStart = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance()
-                            .getEventByEventId(s.getEventId()).getNgayBatDau());
-                    Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                    Date currentEnd = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance()
-                            .getEventByEventId(s.getEventId()).getNgayKetThuc());
-                    if ((start.compareTo(currentStart) <= 0 && currentStart.compareTo(end) <= 0) ||
-                            start.compareTo(currentEnd) <= 0 && currentEnd.compareTo(end) <= 0) {
-                        salaries.add(s);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (s.getEmployeeId().equals(employeeId) && isBetween(s, startDateString, endDateString)) {
+                salaries.add(s);
             }
         }
         return salaries;
