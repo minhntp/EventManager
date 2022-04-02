@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,10 +102,10 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         connectViews(view);
         addEvents();
 
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().addListener(this);
+        SalaryRepository.getInstance().addListener(this);
+        ScheduleRepository.getInstance().addListener(this);
 
         employeesIds = new ArrayList<>();
         employeesInfo = new ArrayList<>();
@@ -261,7 +260,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
     }
 
@@ -394,10 +393,10 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
     @Override
     public void onResume() {
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().addListener(this);
+        SalaryRepository.getInstance().addListener(this);
+        ScheduleRepository.getInstance().addListener(this);
         getResultSalaries();
         updateEmployeesSpinner();
         showResult();
@@ -428,12 +427,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     @Override
     public void onCalculateSalaryInputLayoutLongClicked(String salaryId) {
         SalaryRepository.getInstance().revertToNotPaid(salaryId);
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ManageSalaryFragment: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

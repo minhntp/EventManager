@@ -2,10 +2,8 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
@@ -114,7 +115,7 @@ public class EditEmployeeActivity extends BaseActivity {
                         m = calendar.get(Calendar.MONTH);
                         y = calendar.get(Calendar.YEAR);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println( Log.getStackTraceString(e));
                     }
                 }
                 DatePickerDialog datePickerDialog = new DatePickerDialog(context,
@@ -155,7 +156,7 @@ public class EditEmployeeActivity extends BaseActivity {
                 phoneNumberEditText.getText().toString().trim(),
                 emailEditText.getText().toString().trim());
 
-        EmployeeRepository.getInstance().setListener(ViewEmployeeActivity.thisListener);
+        EmployeeRepository.getInstance().addListener(ViewEmployeeActivity.thisListener);
         EmployeeRepository.getInstance().updateEmployee(editedEmployee);
         context.finish();
     }

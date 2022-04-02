@@ -31,7 +31,7 @@ public class SplashActivity extends BaseActivity implements IOnDataLoadComplete 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        Log.d("mytag", "Splash onCreate: ");
+        System.out.println( "Splash onCreate: ");
 
         if (DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             startActivity(new Intent(this, RootActivity.class));
@@ -39,12 +39,6 @@ public class SplashActivity extends BaseActivity implements IOnDataLoadComplete 
         } else {
             DatabaseAccess.setDatabaseListener(this, getApplicationContext());
         }
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "SplashActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -68,7 +68,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                         CalendarUtil.dayOfWeekInVietnamese(event.getNgayBatDau());
                 holder.startDateTextView.setText(toText);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             holder.titleTextView.setText(event.getTen());
             holder.locationTextView.setText(event.getDiaDiem());

@@ -6,12 +6,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -38,10 +38,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
@@ -77,10 +75,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculate_salary_for_single_employee);
 
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().addListener(this);
+        SalaryRepository.getInstance().addListener(this);
+        ScheduleRepository.getInstance().addListener(this);
 
         connectViews();
         init();
@@ -120,7 +118,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        SalaryRepository.getInstance().setListener(this);
+        SalaryRepository.getInstance().addListener(this);
 
         initDatePickerDialog();
 
@@ -241,7 +239,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
     }
 
@@ -326,10 +324,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     @Override
     protected void onResume() {
-        EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
-        SalaryRepository.getInstance().setListener(this);
-        ScheduleRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
+        EmployeeRepository.getInstance().addListener(this);
+        SalaryRepository.getInstance().addListener(this);
+        ScheduleRepository.getInstance().addListener(this);
         getResultSalaries();
         showResult();
         super.onResume();
@@ -368,11 +366,6 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "CalculateSalaryForOneEmployeeActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {

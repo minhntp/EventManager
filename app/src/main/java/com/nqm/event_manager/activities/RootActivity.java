@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.ManageSalaryFragment;
@@ -34,11 +35,10 @@ public class RootActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        FirebaseApp.initializeApp(this);
+        FirebaseApp.initializeApp(this);
         if (!DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             Intent splashIntent = new Intent(this, SplashActivity.class);
             startActivity(splashIntent);
-//            Log.d("debug", "right after start splash at RootActivity");
             finish();
         }
         setContentView(R.layout.activity_root);

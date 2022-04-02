@@ -61,7 +61,7 @@ public class SearchEventActivity extends BaseActivity implements IOnSearchEventI
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        EventRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
 
         resultEventsIds = new ArrayList<>();
         eventAdapter = new SearchEventListAdapter(resultEventsIds);
@@ -100,18 +100,13 @@ public class SearchEventActivity extends BaseActivity implements IOnSearchEventI
 
     @Override
     protected void onResume() {
-        EventRepository.getInstance().setListener(this);
+        EventRepository.getInstance().addListener(this);
         resultEventsIds.clear();
         resultEventsIds.addAll(EventRepository.getInstance().getEventsIdsBySearchString(searchString));
         eventAdapter.notifyDataSetChanged();
         super.onResume();
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "SearchEventActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {

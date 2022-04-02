@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -85,7 +86,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                     dpd.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
                     dpd.show();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println( Log.getStackTraceString(e));
                 }
             });
 
@@ -100,7 +101,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                         hourOfDay = calendarOfTask.get(Calendar.HOUR_OF_DAY);
                         minute = calendarOfTask.get(Calendar.MINUTE);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println( Log.getStackTraceString(e));
                     }
                 }
                 new TimePickerDialog(context, (timePicker, hour, minute1) -> {
@@ -183,7 +184,7 @@ public class EditTaskAdapter extends RecyclerView.Adapter<EditTaskAdapter.ViewHo
                     timeLeftTextView.setTextColor(Color.GREEN);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
         } else {
             timeLeftTextView.setText("");

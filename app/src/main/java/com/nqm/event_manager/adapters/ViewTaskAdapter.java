@@ -3,6 +3,8 @@ package com.nqm.event_manager.adapters;
 import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +79,7 @@ public class ViewTaskAdapter extends RecyclerView.Adapter<ViewTaskAdapter.ViewHo
                     viewHolder.timeLeftTextView.setTextColor(Color.GREEN);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
         } else {
             viewHolder.timeLeftTextView.setText("");

@@ -1,6 +1,5 @@
 package com.nqm.event_manager.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -14,13 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.AddEmployeeActivity;
 import com.nqm.event_manager.activities.ViewEmployeeActivity;
 import com.nqm.event_manager.adapters.ViewEmployeeListAdapter;
-import com.nqm.event_manager.custom_views.CustomListView;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnManageEmployeeItemClicked;
 import com.nqm.event_manager.repositories.EmployeeRepository;
@@ -57,7 +54,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
         super.onViewCreated(view, savedInstanceState);
 
         thisListener = this;
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().addListener(this);
 
         connectViews(view);
 
@@ -114,11 +111,6 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
     private void addEvents() {
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ManageEmployeeFragment: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {
@@ -128,7 +120,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
 
     @Override
     public void onResume() {
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().addListener(this);
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
         employeeAdapter.notifyDataSetChanged(resultEmployeesIds);

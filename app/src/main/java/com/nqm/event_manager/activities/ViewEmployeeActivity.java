@@ -1,7 +1,6 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -56,7 +55,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
         int id = item.getItemId();
 
         if (id == R.id.view_employee_action_delete) {
-//            Log.d("debug", "deleting " + employee.getId());
+//            Log.wtf("debug", "deleting " + employee.getId());
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
@@ -64,7 +63,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
                     .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            EmployeeRepository.getInstance().setListener(ManageEmployeeFragment.thisListener);
+                            EmployeeRepository.getInstance().addListener(ManageEmployeeFragment.thisListener);
                             EmployeeRepository.getInstance().deleteEmployeeByEmployeeId(employee.getId());
                             context.finish();
                         }
@@ -108,7 +107,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     private void init() {
         context = this;
         thisListener = this;
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().addListener(this);
 
         toolbar = findViewById(R.id.view_employee_toolbar);
         setSupportActionBar(toolbar);
@@ -188,15 +187,9 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     @Override
     protected void onResume() {
         super.onResume();
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().addListener(this);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ViewEmployeeActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

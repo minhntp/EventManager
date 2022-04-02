@@ -25,14 +25,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 
 public class ReminderRepository implements IOnDataLoadComplete {
     static ReminderRepository instance;
-    private IOnDataLoadComplete listener;
+    private Set<IOnDataLoadComplete> listeners;
     private HashMap<String, Reminder> allReminders;
     public static AlarmManager alarmManager;
     private static int numberOfSetAlarms;
@@ -40,9 +42,8 @@ public class ReminderRepository implements IOnDataLoadComplete {
     //------------------------------------------------------------------------------------
 
     private ReminderRepository(Context context) {
-//        allReminders = new HashMap<>();
-        EventRepository.getInstance().setListener(this);
-//        alarmManager = (AlarmManager) EventManager.getAppContext().getSystemService(Context.ALARM_SERVICE);
+        listeners = new HashSet<>();
+        EventRepository.getInstance().addListener(this);
         alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         addListener(context);
     }
@@ -57,43 +58,40 @@ public class ReminderRepository implements IOnDataLoadComplete {
     private void addListener(Context context) {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.REMINDER_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Reminder collection listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, Reminder> reminders = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            if (queryDocumentSnapshots.size() > 0) {
-                                Map<String, Object> data = doc.getData();
-                                String eventId = (String) data.get(Constants.REMINDER_EVENT_ID);
-                                String minuteString = (String) data.get(Constants.REMINDER_MINUTE);
-                                int minute = 0;
-                                if (minuteString != null) {
-                                    if (!minuteString.isEmpty()) {
-                                        minute = Integer.parseInt(minuteString);
-                                    }
+                .addSnapshotListener((queryDocumentSnapshots, exception) -> {
+                    if (exception != null) {
+                        Log.w("debug", "Reminder collection listen failed.", exception);
+                        return;
+                    }
+                    HashMap<String, Reminder> reminders = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        if (queryDocumentSnapshots.size() > 0) {
+                            Map<String, Object> data = doc.getData();
+                            String eventId = (String) data.get(Constants.REMINDER_EVENT_ID);
+                            String minuteString = (String) data.get(Constants.REMINDER_MINUTE);
+                            int minute = 0;
+                            if (minuteString != null) {
+                                if (!minuteString.isEmpty()) {
+                                    minute = Integer.parseInt(minuteString);
                                 }
-                                String time = (String) data.get(Constants.REMINDER_TIME);
-                                Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, time);
-                                reminders.put(tempReminder.getId(), tempReminder);
                             }
+                            String time = (String) data.get(Constants.REMINDER_TIME);
+                            Reminder tempReminder = new Reminder(doc.getId(), eventId, minute, time);
+                            reminders.put(tempReminder.getId(), tempReminder);
                         }
-                        allReminders = reminders;
-//                        Log.d("debug", "all reminders size = " + allReminders.size());
-                        if (reminders.size() > 0) {
-                            addAlarmForAllReminders(context);
-                        }
-//                        listener.notifyOnLoadComplete();
+                    }
+                    allReminders = reminders;
+                    if (reminders.size() > 0) {
+                        addAlarmForAllReminders(context);
+                    }
+                    for (IOnDataLoadComplete listener : listeners) {
                         listener.notifyOnLoadComplete();
                     }
                 });
     }
 
-    public void setListener(IOnDataLoadComplete listener) {
-        this.listener = listener;
+    public void addListener(IOnDataLoadComplete listener) {
+        this.listeners.add(listener);
     }
 
     public void addAlarmForAllReminders(Context context) {
@@ -125,7 +123,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
             try {
                 reminderCalendar.setTime(CalendarUtil.sdfDayMonthYearTime.parse(r.getTime()));
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
 
             Calendar currentCalendar = Calendar.getInstance();
@@ -135,7 +133,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
             if (reminderCalendar.compareTo(currentCalendar) >= 0) {
 //                Intent intent = new Intent(EventManager.getAppContext(), ReminderNotificationReceiver.class);
                 Intent intent = new Intent(context, ReminderNotificationReceiver.class);
-//                Log.d("debug", "eventId" + r.getEventId());
+//                Log.wtf("debug", "eventId" + r.getEventId());
                 String content = "Địa điểm: " + "\n" +
                         "\t" + event.getDiaDiem() + "\n" +
                         "Thời gian" + "\n" +
@@ -153,7 +151,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderCalendar.getTimeInMillis(), pendingIntent);
 
-//                Log.d("debug", "set alarm, request code = " + requestCode);
+//                Log.wtf("debug", "set alarm, request code = " + requestCode);
                 requestCode++;
             }
             numberOfSetAlarms = requestCode;
@@ -162,30 +160,11 @@ public class ReminderRepository implements IOnDataLoadComplete {
 
     //------------------------------------------------------------------------------------
 
-    private ReminderRepository(final IOnDataLoadComplete listener, Context context) {
-        this.listener = listener;
-        addListener(new ReminderRepository.MyReminderCallback() {
-            @Override
-            public void onCallback(HashMap<String, Reminder> reminderList) {
-                if (reminderList != null) {
-                    allReminders = reminderList;
-                    if (ReminderRepository.this.listener != null) {
-//                        ReminderRepository.this.listener.notifyOnLoadComplete();
-                        ReminderRepository.this.listener.notifyOnLoadComplete();
-                    }
-                }
-            }
-        });
-
-        if (allReminders == null) {
-            allReminders = new HashMap<>();
-        }
-    }
-
     static public ReminderRepository getInstance(IOnDataLoadComplete listener, Context context) {
         if (instance == null) {
-            instance = new ReminderRepository(listener, context);
+            instance = new ReminderRepository(context);
         }
+        instance.listeners.add(listener);
         return instance;
     }
 
@@ -196,7 +175,7 @@ public class ReminderRepository implements IOnDataLoadComplete {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
-//                            Log.d("debug", "Reminder collection listen failed.", e);
+//                            Log.wtf("debug", "Reminder collection listen failed.", e);
                             return;
                         }
                         HashMap<String, Reminder> reminderList = new HashMap<>();
@@ -302,12 +281,6 @@ public class ReminderRepository implements IOnDataLoadComplete {
             }
         }
         return remindersIds;
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ReminderRepository: with context", Toast.LENGTH_SHORT).show();
-        addAlarmForAllReminders(context);
     }
 
     @Override

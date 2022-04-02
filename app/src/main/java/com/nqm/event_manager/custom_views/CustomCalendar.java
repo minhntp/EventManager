@@ -170,7 +170,7 @@ public class CustomCalendar extends LinearLayout implements IOnCustomCalendarIte
     }
 
     public void updateView() {
-//        Log.d("debug", "custom calendar update data and notify of gridAdapter");
+//        Log.wtf("debug", "custom calendar update data and notify of gridAdapter");
         gridAdapter.updateData();
         gridAdapter.notifyDataSetChanged();
 

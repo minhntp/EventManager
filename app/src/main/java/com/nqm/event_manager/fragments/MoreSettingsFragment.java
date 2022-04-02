@@ -110,7 +110,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editReminderRecyclerView.setLayoutManager(linearLayoutManagerReminder);
         editReminderRecyclerView.setAdapter(editReminderAdapter);
 
-        DefaultReminderRepository.getInstance().setListener(this);
+        DefaultReminderRepository.getInstance().addListener(this);
         ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
                 .getDefaultReminders().values());
         if (defaultReminders != null && defaultReminders.size() > 0) {
@@ -133,7 +133,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editEmployeeRecyclerView.setAdapter(editEmployeeAdapter);
         editEmployeeRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
-        DefaultReminderRepository.getInstance().setListener(this);
+        DefaultReminderRepository.getInstance().addListener(this);
         HashMap<String, String> defaultEmployeesIds = DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds();
         if (defaultEmployeesIds != null && defaultEmployeesIds.size() > 0) {
             for (String id : defaultEmployeesIds.values()) {
@@ -209,7 +209,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         //Add events
         selectEmployeeOkButton.setOnClickListener(view -> {
             editEmployeeAdapter.customNotifyDataSetChanged();
-            Log.d("dbg", "ok button clicked. employees size = " + selectedEmployeesIds.size());
+            System.out.println( "ok button clicked. employees size = " + selectedEmployeesIds.size());
             selectEmployeeDialog.dismiss();
         });
 
@@ -240,13 +240,6 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
                 selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
             }
         }
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "MoreSettingsFragment: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

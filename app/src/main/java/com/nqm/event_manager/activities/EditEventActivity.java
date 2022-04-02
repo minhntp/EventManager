@@ -3,7 +3,6 @@ package com.nqm.event_manager.activities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -53,7 +53,6 @@ import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.repositories.TaskRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
-import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -162,7 +161,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             } else {
                 titleAutoCompleteTextView.setError(null);
                 if (selectedEmployeesIds.size() > 0) {
-//                    Log.d("debug", "here1. conflict size = " + conflictsMap.size());
+//                    Log.wtf("debug", "here1. conflict size = " + conflictsMap.size());
                     checkAndUpdate();
                 } else {
                     updateEventToDatabase();
@@ -210,7 +209,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
 
     private void init() {
         context = this;
-        ReminderRepository.getInstance(context).setListener(this);
+        ReminderRepository.getInstance(context).addListener(this);
 
         eventId = getIntent().getStringExtra(Constants.INTENT_EVENT_ID);
         event = EventRepository.getInstance().getAllEvents().get(eventId);
@@ -269,7 +268,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
             endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
 
         locationAutoCompleteTextView.setText(event.getDiaDiem());
@@ -518,7 +517,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
         };
 
@@ -543,7 +542,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             selectedTimeEditText = startTimeEditText;
             new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
@@ -559,7 +558,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             selectedTimeEditText = endTimeEditText;
             new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
@@ -598,7 +597,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
     }
 
@@ -772,11 +771,6 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     }
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "EditEventActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {
@@ -790,7 +784,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
     private void checkAndUpdate() {
         startTime = startDateEditText.getText().toString() + " - " + startTimeEditText.getText().toString();
         endTime = endDateEditText.getText().toString() + " - " + endTimeEditText.getText().toString();
-//        Log.d(Constants.DEBUG, "entered checkAndUpdate()");
+//        Log.wtf(Constants.DEBUG, "entered checkAndUpdate()");
 
         try {
             calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString()));
@@ -805,11 +799,11 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             calendar.set(Calendar.MINUTE, calendar2.get(Calendar.MINUTE));
             endMili = calendar.getTimeInMillis();
 
-//            Log.d(Constants.DEBUG, "entered checkAndUpdate() try catch");
+//            Log.wtf(Constants.DEBUG, "entered checkAndUpdate() try catch");
 
             EventRepository.getInstance().getConflictEventsIdsEdit(startMili, endMili, selectedEmployeesIds,
                     eventId, conflictMap -> {
-//                        Log.d("debug", "here5 conflictMap size = " + conflictMap.size());
+//                        Log.wtf("debug", "here5 conflictMap size = " + conflictMap.size());
                         conflictsMap.clear();
                         conflictsMap.putAll(conflictMap);
                         editEmployeeAdapter.customNotifyDataSetChanged();
@@ -871,7 +865,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 calendarDateTime.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
                 calendarDateTime.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             calendarDateTime.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendarDateTime.getTime()));

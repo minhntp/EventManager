@@ -21,10 +21,6 @@ public class SetRemindersOnBootReceiver extends BroadcastReceiver implements IOn
         DatabaseAccess.setDatabaseListener(this, context);
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-
-    }
 
     @Override
     public void notifyOnLoadComplete() {

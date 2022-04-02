@@ -15,19 +15,19 @@ import java.util.List;
 public class EmployeeUtil {
 
     public static void sortEmployeesIdsByNameNew(ArrayList<String> employeesIds) {
-//        Log.d("dbg", "sorted employees by name ");
-//        Log.d("dbg", "before:");
+//        System.out.println( "sorted employees by name ");
+//        System.out.println( "before:");
 //        for (String id : employeesIds) {
-//            Log.d("dbg", EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
+//            System.out.println( EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
 //        }
 
         employeesIds.sort((id1, id2) ->
                 EmployeeRepository.getInstance().getAllEmployees().get(id1).compareTo(
                         EmployeeRepository.getInstance().getAllEmployees().get(id2)
                 ));
-//        Log.d("dbg", "after:");
+//        System.out.println( "after:");
 //        for (String id : employeesIds) {
-//            Log.d("dbg", EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
+//            System.out.println( EmployeeRepository.getInstance().getAllEmployees().get(id).getHoTen());
 //        }
 
     }

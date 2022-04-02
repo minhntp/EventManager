@@ -232,7 +232,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
             calendar.set(Calendar.HOUR_OF_DAY, 13);
             endTimeEditText.setText(CalendarUtil.sdfTime.format(calendar.getTime()));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
 
         selectedEmployeesIds = new ArrayList<>();
@@ -503,7 +503,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
         };
 
@@ -529,7 +529,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             selectedTimeEditText = startTimeEditText;
             new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
@@ -545,7 +545,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             selectedTimeEditText = endTimeEditText;
             new TimePickerDialog(AddEventActivity.this, timeSetListener, hourOfDay,
@@ -614,7 +614,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
     }
 
@@ -767,7 +767,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
             salaries.add(tempSalary);
         }
 
-        EventRepository.getInstance().setListener(ManageEventFragment.thisListener);
+        EventRepository.getInstance().addListener(ManageEventFragment.thisListener);
         for (Reminder r : selectedReminders) {
             Calendar calendar = Calendar.getInstance();
             Calendar calendarTime = Calendar.getInstance();
@@ -777,7 +777,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
                 calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
                 calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
@@ -865,12 +865,12 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
     //----------------------------------------------------------------------------------------------
     @Override
     public void onDeleteButtonClicked(String employeeId) {
-        Log.d("dbg", "size before = " + selectedEmployeesIds.size());
+        System.out.println( "size before = " + selectedEmployeesIds.size());
         selectedEmployeesIds.remove(employeeId);
         conflictsMap.remove(employeeId);
 //        selectEmployeeAdapter.setSelectedEmployeesIds(selectedEmployeesIds);
         editEmployeeAdapter.customNotifyDataSetChanged();
-        Log.d("dbg", "remove button clicked.\nsize after = " + selectedEmployeesIds.size());
+        System.out.println( "remove button clicked.\nsize after = " + selectedEmployeesIds.size());
 //        selectEmployeeAdapter.customNotifyDataSetChanged(selectedEmployeesIds);
     }
 
@@ -931,7 +931,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
     @Override
     public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
-//        Log.d("debug", "selected date changed");
+//        Log.wtf("debug", "selected date changed");
     }
 
     //----------------------------------------------------------------------------------------------

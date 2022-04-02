@@ -80,12 +80,12 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
             EditText salaryEditText = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
             CheckBox isPaidCheckBox = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
 
-//            Log.d("debug", "salary = " + salaryEditText.getText().toString());
+//            Log.wtf("debug", "salary = " + salaryEditText.getText().toString());
             if (salaryEditText.getText().toString().equals("")) {
                 salaries.get(i).setSalary(0);
             } else {
                 salaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
-//                Log.d("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
+//                Log.wtf("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
             }
             salaries.get(i).setPaid(isPaidCheckBox.isChecked());
         }

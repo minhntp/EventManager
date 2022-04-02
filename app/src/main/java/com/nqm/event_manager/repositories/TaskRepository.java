@@ -17,17 +17,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class TaskRepository {
 
     static TaskRepository instance;
-    private IOnDataLoadComplete listener;
+    private Set<IOnDataLoadComplete> listeners;
     private HashMap<String, EventTask> allTasks;
 
     private TaskRepository() {
-//        allTasks = new HashMap<>();
-        addListener();
+        listeners = new HashSet<>();
+        addDatabaseSnapshotListener();
     }
 
     static public TaskRepository getInstance() {
@@ -37,42 +39,41 @@ public class TaskRepository {
         return instance;
     }
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.TASK_COLLECTION)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("debug", "Schedule collection listen failed.", e);
-                            return;
-                        }
-                        HashMap<String, EventTask> tasks = new HashMap<>();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            if (queryDocumentSnapshots.size() > 0) {
-                                Map<String, Object> data = doc.getData();
-                                int order = 0;
-                                if (data.get(Constants.TASK_ORDER) != null) {
-                                    order = Integer.parseInt((String) data.get(Constants.TASK_ORDER));
-                                }
-                                EventTask tempEventTask = new EventTask(doc.getId(),
-                                        (String) data.get(Constants.TASK_EVENT_ID),
-                                        (String) data.get(Constants.TASK_DATE),
-                                        (String) data.get(Constants.TASK_TIME),
-                                        (String) data.get(Constants.TASK_CONTENT),
-                                        Boolean.parseBoolean((String) data.get(Constants.TASK_IS_DONE)),
-                                        order);
-                                tasks.put(tempEventTask.getId(), tempEventTask);
+                .addSnapshotListener((queryDocumentSnapshots, exception) -> {
+                    if (exception != null) {
+                        Log.w("debug", "Schedule collection listen failed.", exception);
+                        return;
+                    }
+                    HashMap<String, EventTask> tasks = new HashMap<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        if (queryDocumentSnapshots.size() > 0) {
+                            Map<String, Object> data = doc.getData();
+                            int order = 0;
+                            if (data.get(Constants.TASK_ORDER) != null) {
+                                order = Integer.parseInt((String) data.get(Constants.TASK_ORDER));
                             }
+                            EventTask tempEventTask = new EventTask(doc.getId(),
+                                    (String) data.get(Constants.TASK_EVENT_ID),
+                                    (String) data.get(Constants.TASK_DATE),
+                                    (String) data.get(Constants.TASK_TIME),
+                                    (String) data.get(Constants.TASK_CONTENT),
+                                    Boolean.parseBoolean((String) data.get(Constants.TASK_IS_DONE)),
+                                    order);
+                            tasks.put(tempEventTask.getId(), tempEventTask);
                         }
-                        allTasks = tasks;
+                    }
+                    allTasks = tasks;
+                    for (IOnDataLoadComplete listener : listeners) {
                         listener.notifyOnLoadComplete();
                     }
                 });
     }
 
-    public void setListener(IOnDataLoadComplete listener) {
-        this.listener = listener;
+    public void addListener(IOnDataLoadComplete listener) {
+        listeners.add(listener);
     }
 
     public HashMap<String, EventTask> getAllTasks() {
@@ -140,8 +141,8 @@ public class TaskRepository {
                         }
                     }
                 } catch (Exception e) {
-//                    Log.d("debug", "exception sort task by start date time");
-                    e.printStackTrace();
+//                    Log.wtf("debug", "exception sort task by start date time");
+                    System.out.println( Log.getStackTraceString(e));
                 }
                 return compareResult;
             }

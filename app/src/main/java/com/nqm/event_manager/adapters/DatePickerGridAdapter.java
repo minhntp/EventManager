@@ -48,7 +48,7 @@ public class DatePickerGridAdapter extends BaseAdapter {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
-//        Log.d("debug", "eventId = " + eventId);
+//        Log.wtf("debug", "eventId = " + eventId);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class DatePickerGridAdapter extends BaseAdapter {
             }
             cellDataArrayList.add(new CellData(day, numberOfEvents));
         }
-//        Log.d("debug", "date picker adapter update data");
+//        Log.wtf("debug", "date picker adapter update data");
     }
 
     private boolean isSelectedDay(int day) {
@@ -220,7 +220,7 @@ public class DatePickerGridAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-//        Log.d("debug", "date picker adapter notifyDataSetChanged");
+//        Log.wtf("debug", "date picker adapter notifyDataSetChanged");
     }
 
     //------------------------------------------------------------------

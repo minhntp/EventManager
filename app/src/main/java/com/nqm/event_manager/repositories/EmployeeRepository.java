@@ -14,39 +14,23 @@ import com.nqm.event_manager.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class EmployeeRepository {
 
     static EmployeeRepository instance;
     private HashMap<String, Employee> allEmployees;
     private ArrayList<String> specialities;
-    private IOnDataLoadComplete listener;
+    private Set<IOnDataLoadComplete> listeners;
 
     //------------------------------------------------------------------------------------------
 
     private EmployeeRepository() {
+        listeners = new HashSet<>();
         addListener();
     }
-
-//    private EmployeeRepository(final IOnDataLoadComplete listener) {
-//        this.listener = listener;
-//        allEmployees = new HashMap<>();
-//        addListener(new MyEmployeeCallback() {
-//            @Override
-//            public void onCallback(HashMap<String, Employee> employeeList) {
-//                if (employeeList != null) {
-//                    allEmployees = employeeList;
-//                    if (EmployeeRepository.this.listener != null) {
-//                        EmployeeRepository.this.listener.notifyOnLoadComplete();
-//                    }
-//                }
-//            }
-//        });
-//        if (allEmployees == null) {
-//            allEmployees = new HashMap<>();
-//        }
-//    }
 
     static public EmployeeRepository getInstance() {
         if (instance == null) {
@@ -54,13 +38,6 @@ public class EmployeeRepository {
         }
         return instance;
     }
-
-//    static public EmployeeRepository getInstance(IOnDataLoadComplete listener) {
-//        if (instance == null) {
-//            instance = new EmployeeRepository(listener);
-//        }
-//        return instance;
-//    }
 
     //------------------------------------------------------------------------------------------
 
@@ -91,45 +68,20 @@ public class EmployeeRepository {
                         }
                         allEmployees = employees;
                         this.specialities = specialities;
-                        listener.notifyOnLoadComplete();
+                        for (IOnDataLoadComplete listener : listeners) {
+                            listener.notifyOnLoadComplete();
+                        }
                     }
                 });
     }
 
-    public void setListener(IOnDataLoadComplete listener) {
-        this.listener = listener;
+    public void addListener(IOnDataLoadComplete listener) {
+        this.listeners.add(listener);
     }
 
     public ArrayList<String> getSpecialities() {
         return specialities;
     }
-
-    //    private void addListener(final EmployeeRepository.MyEmployeeCallback callback) {
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.EMPLOYEE_COLLECTION)
-//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                        if (e != null) {
-//                            Log.w("debug", "Employees listen failed.", e);
-//                            return;
-//                        }
-//                        HashMap<String, Employee> employees = new HashMap<>();
-//                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-//                            Map<String, Object> tempHashMap = doc.getData();
-//                            Employee tempEmployee = new Employee(doc.getId(),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_NAME),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_SPECIALITY),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_IDENTITY),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_DAY_OF_BIRTH),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
-//                                    (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
-//                            employees.put(tempEmployee.getId(), tempEmployee);
-//                        }
-//                        callback.onCallback(employees);
-//                    }
-//                });
-//    }
 
     //------------------------------------------------------------------------------------------
 
@@ -248,10 +200,6 @@ public class EmployeeRepository {
         return employees;
     }
 
-    private interface MyEmployeeCallback {
-        void onCallback(HashMap<String, Employee> employeeList);
-    }
-
-    //----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 
 }

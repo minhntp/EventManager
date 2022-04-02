@@ -5,6 +5,8 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -77,7 +79,7 @@ public class AddEmployeeActivity extends BaseActivity {
                     m = calendar.get(Calendar.MONTH);
                     y = calendar.get(Calendar.YEAR);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println( Log.getStackTraceString(e));
                 }
             }
 

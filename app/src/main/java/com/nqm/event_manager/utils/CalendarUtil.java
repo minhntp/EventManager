@@ -1,5 +1,7 @@
 package com.nqm.event_manager.utils;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 
 public class CalendarUtil {
@@ -36,7 +38,7 @@ public class CalendarUtil {
                     return dayOfWeekEng;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
         return "";
     }

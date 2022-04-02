@@ -67,7 +67,7 @@ public class SelectEmployeeAddEventAdapter extends
     public void customNotifyDataSetChanged() {
         EmployeeUtil.sortEmployeesByName(employees);
         notifyDataSetChanged();
-        Log.d("dbg", "data set changed.\nselectedEmployeesIds.size():\n"+selectedEmployeesIds.size());
+        System.out.println( "data set changed.\nselectedEmployeesIds.size():\n"+selectedEmployeesIds.size());
     }
 
     @NonNull

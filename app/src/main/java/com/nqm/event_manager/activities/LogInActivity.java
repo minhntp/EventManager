@@ -130,7 +130,7 @@ public class LogInActivity extends BaseActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Toast.makeText(this, user.getEmail(), Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, SplashActivity.class));
+            startActivity(new Intent(this, RootActivity.class));
             finish();
         }
     }

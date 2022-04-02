@@ -21,7 +21,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private final Thread.UncaughtExceptionHandler handleAppCrash = (thread, exception) -> {
-        Log.d("error", ": " + exception.toString());
+        System.out.println( ": " + exception.toString());
         String[] TO = {"nguyenquangminhntp@gmail.com"};
         String[] CC = {""};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);

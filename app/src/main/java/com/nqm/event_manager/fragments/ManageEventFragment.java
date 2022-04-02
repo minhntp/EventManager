@@ -138,13 +138,6 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
         });
     }
 
-    //Cập nhật danh sách sự kiện của ngày hiện tại khi mở ứng dụng
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ManageEventFragment: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-
-    }
 
     @Override
     public void notifyOnLoadComplete() {
