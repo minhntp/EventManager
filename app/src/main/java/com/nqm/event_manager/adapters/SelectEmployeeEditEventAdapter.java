@@ -3,6 +3,8 @@ package com.nqm.event_manager.adapters;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +35,23 @@ public class SelectEmployeeEditEventAdapter extends
             specialityTextView = itemView.findViewById(R.id.select_employee_speciality_text_view);
             selectCheckBox = itemView.findViewById(R.id.select_employee_select_checkbox);
 
-            selectCheckBox.setOnClickListener(v -> {
-                if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
-                    }
-                }
+            itemView.findViewById(R.id.select_employee_info_layout).setOnClickListener(v -> {
+                selectCheckBox.toggle();
+                onItemClicked();
             });
+
+            selectCheckBox.setOnClickListener(v -> {
+                onItemClicked();
+            });
+        }
+
+        private void onItemClicked() {
+            if (listener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
+                }
+            }
         }
     }
 

@@ -34,14 +34,23 @@ public class SelectEmployeeAddEventAdapter extends
             specialityTextView = itemView.findViewById(R.id.select_employee_speciality_text_view);
             selectCheckBox = itemView.findViewById(R.id.select_employee_select_checkbox);
 
-            selectCheckBox.setOnClickListener(v -> {
-                if (listener != null) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
-                    }
-                }
+            itemView.findViewById(R.id.select_employee_info_layout).setOnClickListener(v -> {
+                selectCheckBox.toggle();
+                onItemClicked();
             });
+
+            selectCheckBox.setOnClickListener(v -> {
+                onItemClicked();
+            });
+        }
+
+        private void onItemClicked() {
+            if (listener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onCheckBoxClicked(employees.get(position).getId(), selectCheckBox.isChecked());
+                }
+            }
         }
     }
 
@@ -99,4 +108,5 @@ public class SelectEmployeeAddEventAdapter extends
     public int getItemCount() {
         return employees.size();
     }
+
 }

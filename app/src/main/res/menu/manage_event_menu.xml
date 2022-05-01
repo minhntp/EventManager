@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_search"
         android:orderInCategory="100"
         android:title="Danh sánh và Tìm kiếm sự kiện"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_today"
         android:orderInCategory="100"

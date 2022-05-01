@@ -114,5 +114,7 @@
 
     <!--    DIALOG DATE PICKER  -->
     <string name="today">Ngày hôm nay</string>
+    <string name="search_employee">Tìm kiếm nhân viên</string>
+    <string name="add_employee">Thêm nhân viên</string>
 
 </resources>
