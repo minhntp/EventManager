@@ -23,8 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/select_reminder_dialog_title_text_view"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <ListView
             android:id="@+id/select_reminder_list_view"
@@ -32,9 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@id/dialog_edit_task_button_layout"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="40dp" />
+            android:layout_marginTop="5dp" />
 
         <LinearLayout
             android:id="@+id/dialog_edit_task_button_layout"
@@ -50,9 +49,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
                 android:text="@string/ok_button"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button"
+                android:textStyle="bold" />
         </LinearLayout>
     </RelativeLayout>
 

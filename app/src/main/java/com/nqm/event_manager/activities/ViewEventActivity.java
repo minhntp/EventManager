@@ -366,6 +366,13 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         selectReminderDialog = new Dialog(this);
         selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
 
+        lWindowParams = new WindowManager.LayoutParams();
+        if (selectReminderDialog.getWindow() != null) {
+            lWindowParams.copyFrom(selectReminderDialog.getWindow().getAttributes());
+        }
+        lWindowParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        lWindowParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
         //Connect views
         selectReminderListView = selectReminderDialog.findViewById(R.id.select_reminder_list_view);
         selectReminderOkButton = selectReminderDialog.findViewById(R.id.select_reminder_ok_button);
@@ -388,6 +395,9 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         if (!isFinishing()) {
             selectReminderAdapter.notifyDataSetChanged();
             selectReminderDialog.show();
+            if (selectReminderDialog.getWindow() != null) {
+                selectReminderDialog.getWindow().setAttributes(lWindowParams);
+            }
         }
     }
 

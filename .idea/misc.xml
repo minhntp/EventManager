@@ -8,22 +8,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../layout/custom_preview.xml" value="0.21302083333333333" />
-        <entry key="app/src/main/res/layout/dialog_custom_date_picker.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_custom_scroll_date_picker.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_edit_schedule.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_edit_task.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_select_employee.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_select_reminder.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_view_schedule.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/dialog_view_task.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/fragment_manage_event.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/fragment_manage_user.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/fragment_more_settings.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/grid_item_custom_calendar.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/grid_item_date_picker.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/view_custom_calendar.xml" value="0.18489583333333334" />
-        <entry key="app/src/main/res/layout/view_custom_scroll_date_picker.xml" value="0.18489583333333334" />
+        <entry key="app/src/main/res/drawable/ic_search.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_add_event.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/activity_calculate_salary_for_single_employee.xml" value="0.2604166666666667" />
+        <entry key="app/src/main/res/layout/dialog_select_employee.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/dialog_select_reminder.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/fragment_manage_employee.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/fragment_manage_salary.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/list_item_calculate_salary.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/list_item_conflict_event.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/list_item_edit_employee.xml" value="0.18333333333333332" />
+        <entry key="app/src/main/res/layout/list_item_edit_salary.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/list_item_select_employee.xml" value="0.18333333333333332" />
+        <entry key="app/src/main/res/layout/list_item_select_reminder.xml" value="0.18333333333333332" />
+        <entry key="app/src/main/res/layout/list_item_view_salary.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/menu/main_drawer_menu.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/menu/manage_employee_menu.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/menu/manage_event_menu.xml" value="0.35833333333333334" />
       </map>
     </option>
   </component>

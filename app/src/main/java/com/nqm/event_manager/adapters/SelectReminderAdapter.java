@@ -61,19 +61,13 @@ public class SelectReminderAdapter extends BaseAdapter {
         final CheckBox selectCheckBox = view.findViewById(R.id.select_reminder_item_select_check_box);
 
         timeTextView.setText(ReminderRepository.defaultRemindersMap.get(getItem(position).getMinute()));
+        selectCheckBox.setChecked(selectedRemindersMinutes.contains(getItem(position).getMinute()));
 
-        if (selectedRemindersMinutes.contains(getItem(position).getMinute())) {
-            selectCheckBox.setChecked(true);
-        } else {
-            selectCheckBox.setChecked(false);
-        }
-
-        selectCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onSelectReminderCheckBoxClicked(getItem(position).getMinute(), selectCheckBox.isChecked());
-            }
+        timeTextView.setOnClickListener(v-> {
+            selectCheckBox.toggle();
+            onReminderClicked(position, selectCheckBox.isChecked());
         });
+        selectCheckBox.setOnClickListener(v -> onReminderClicked(position, selectCheckBox.isChecked()));
 
         return view;
     }
@@ -85,5 +79,9 @@ public class SelectReminderAdapter extends BaseAdapter {
         }
 //        Log.wtf("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
         super.notifyDataSetChanged();
+    }
+
+    private void onReminderClicked(int position, boolean isChecked) {
+        listener.onSelectReminderCheckBoxClicked(getItem(position).getMinute(), isChecked);
     }
 }

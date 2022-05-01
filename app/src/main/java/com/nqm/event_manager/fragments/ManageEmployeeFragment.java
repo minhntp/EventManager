@@ -9,10 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
 import com.nqm.event_manager.R;
@@ -73,7 +73,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
         inflater.inflate(R.menu.manage_employee_menu, menu);
 
         MenuItem searchMenuItem = menu.findItem(R.id.manage_employee_search_action);
-        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        final android.widget.SearchView searchView = (android.widget.SearchView) searchMenuItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -89,6 +89,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
                 return true;
             }
         });
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
