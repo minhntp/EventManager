@@ -1,20 +1,17 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ListView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditSalaryAdapter;
@@ -80,12 +77,12 @@ public class EditSalaryFromViewEventActivity extends BaseActivity {
             EditText salaryEditText = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_salary_edit_text);
             CheckBox isPaidCheckBox = salaryRecyclerView.getChildAt(i).findViewById(R.id.edit_salary_paid_checkbox);
 
-//            Log.d("debug", "salary = " + salaryEditText.getText().toString());
+//            Log.wtf("debug", "salary = " + salaryEditText.getText().toString());
             if (salaryEditText.getText().toString().equals("")) {
                 salaries.get(i).setSalary(0);
             } else {
                 salaries.get(i).setSalary(Integer.parseInt(salaryEditText.getText().toString()));
-//                Log.d("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
+//                Log.wtf("debug", "salary Int = " + Integer.parseInt(salaryEditText.getText().toString()));
             }
             salaries.get(i).setPaid(isPaidCheckBox.isChecked());
         }

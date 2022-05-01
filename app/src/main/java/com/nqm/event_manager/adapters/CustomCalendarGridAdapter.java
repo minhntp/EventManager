@@ -1,13 +1,10 @@
 package com.nqm.event_manager.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nqm.event_manager.R;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class CustomCalendarGridAdapter extends BaseAdapter {
     private final Context context;
@@ -161,7 +157,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
             }
             cellDataArrayList.add(new CellData(day, numberOfEvents));
         }
-//        Log.d("debug", "calendar adapter update data");
+//        Log.wtf("debug", "calendar adapter update data");
     }
 
     private boolean isSelectedDay(int day) {
@@ -205,7 +201,7 @@ public class CustomCalendarGridAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
-//        Log.d("debug", "calendar adapter notifyDataSetChanged");
+//        Log.wtf("debug", "calendar adapter notifyDataSetChanged");
     }
 
     //------------------------------------------------------------------

@@ -2,24 +2,21 @@ package com.nqm.event_manager.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditEmployeeAddEventAdapter;
@@ -209,7 +206,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         //Add events
         selectEmployeeOkButton.setOnClickListener(view -> {
             editEmployeeAdapter.customNotifyDataSetChanged();
-            Log.d("dbg", "ok button clicked. employees size = " + selectedEmployeesIds.size());
+            System.out.println( "ok button clicked. employees size = " + selectedEmployeesIds.size());
             selectEmployeeDialog.dismiss();
         });
 
@@ -240,13 +237,6 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
                 selectEmployeeDialog.getWindow().setAttributes(lWindowParams);
             }
         }
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "MoreSettingsFragment: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

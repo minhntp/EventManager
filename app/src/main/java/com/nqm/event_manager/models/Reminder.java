@@ -1,8 +1,5 @@
 package com.nqm.event_manager.models;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 public class Reminder implements Comparable<Reminder> {
     String id;
     String eventId;

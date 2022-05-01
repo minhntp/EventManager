@@ -1,7 +1,6 @@
 package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +83,7 @@ public class SelectReminderAdapter extends BaseAdapter {
         for (Reminder r : selectedReminders) {
             selectedRemindersMinutes.add(r.getMinute());
         }
-//        Log.d("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
+//        Log.wtf("debug", "selectedRemindersMinute size = " + selectedRemindersMinutes.size());
         super.notifyDataSetChanged();
     }
 }

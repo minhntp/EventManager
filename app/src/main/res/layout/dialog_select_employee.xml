@@ -8,15 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:background="@color/colorPrimary"
+        android:focusableInTouchMode="true"
+        android:gravity="center_horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:focusableInTouchMode="true"
-        android:textAlignment="center"
         android:text="Chọn nhân sự"
-        android:textSize="@dimen/dialog_title"
+        android:textAlignment="center"
         android:textAllCaps="true"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/textPrimaryColor"/>
+        android:textColor="@color/textPrimaryColor"
+        android:textSize="@dimen/dialog_title" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -24,10 +25,8 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_below="@+id/add_schedule_dialog_title_text_view">
-
         <androidx.appcompat.widget.SearchView
             android:id="@+id/select_employee_search_view"
-            style="@style/AppTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layoutDirection="rtl" />
@@ -53,6 +52,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textStyle="bold"
                 android:text="OK"
                 android:textSize="@dimen/sub_text_button"/>
         </LinearLayout>

@@ -1,5 +1,7 @@
 package com.nqm.event_manager.utils;
 
+import android.util.Log;
+
 import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Locale;
@@ -15,7 +17,7 @@ public class StringUtil {
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
             return pattern.matcher(tempS).replaceAll("").toLowerCase().replaceAll("đ", "d");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
         return "";
     }

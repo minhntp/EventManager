@@ -5,16 +5,13 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.nqm.event_manager.BuildConfig;
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.utils.Constants;
 
 import org.acra.ACRA;
 import org.acra.annotation.AcraCore;
 import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
-import org.acra.data.StringFormat;
 
 //@AcraCore(buildConfigClass = BuildConfig.class)
 //@AcraMailSender(mailTo = "nguyenquangminhntp@gmail.com")

@@ -25,8 +25,7 @@ public class DefaultReminderRepository {
     }
 
     private DefaultReminderRepository() {
-//        defaultReminders = new ArrayList<>();
-        addListener();
+        addDatabaseSnapshotListener();
     }
 
     static public DefaultReminderRepository getInstance() {
@@ -36,7 +35,7 @@ public class DefaultReminderRepository {
         return instance;
     }
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.DEFAULT_REMINDER_COLLECTION)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -53,7 +52,9 @@ public class DefaultReminderRepository {
                         }
                     }
                     defaultReminders = reminders;
-                    listener.notifyOnLoadComplete();
+                    if (listener != null) {
+                        listener.notifyOnLoadComplete();
+                    }
                 });
     }
 

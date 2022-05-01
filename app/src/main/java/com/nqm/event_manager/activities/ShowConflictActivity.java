@@ -2,13 +2,13 @@ package com.nqm.event_manager.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.ShowConflictEventAdapter;

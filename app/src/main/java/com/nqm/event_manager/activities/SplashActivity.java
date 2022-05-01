@@ -1,11 +1,7 @@
 package com.nqm.event_manager.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.WriteBatch;
@@ -30,18 +26,14 @@ public class SplashActivity extends BaseActivity implements IOnDataLoadComplete 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        System.out.println( "Splash onCreate: ");
+
         if (DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             startActivity(new Intent(this, RootActivity.class));
             finish();
         } else {
             DatabaseAccess.setDatabaseListener(this, getApplicationContext());
         }
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "SplashActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

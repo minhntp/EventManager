@@ -10,7 +10,7 @@
         android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
         android:focusableInTouchMode="true"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:text="@string/schedule_dialog"
@@ -67,6 +67,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textStyle="bold"
             android:text="@string/ok_button"
             android:textSize="@dimen/sub_text_button"/>
     </LinearLayout>

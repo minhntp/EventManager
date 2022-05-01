@@ -1,6 +1,5 @@
 package com.nqm.event_manager.adapters;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,7 @@ public class EditReminderAdapter extends RecyclerView.Adapter<EditReminderAdapte
     public void customNotifyDataSetChanged() {
         ReminderRepository.sortReminder(selectedReminders);
         notifyDataSetChanged();
-        Log.d("dbg", "data set changed. new size = " + selectedReminders.size());
+        System.out.println( "data set changed. new size = " + selectedReminders.size());
         listener.remindersChanged();
     }
 

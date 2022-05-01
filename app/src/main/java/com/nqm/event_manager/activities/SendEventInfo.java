@@ -4,22 +4,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.SendEventEmployeeAdapter;
 import com.nqm.event_manager.adapters.SendEventSectionAdapter;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Event;
-import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.models.EventTask;
+import com.nqm.event_manager.models.Schedule;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;

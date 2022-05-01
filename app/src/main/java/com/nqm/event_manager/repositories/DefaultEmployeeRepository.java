@@ -23,8 +23,7 @@ public class DefaultEmployeeRepository {
     }
 
     private DefaultEmployeeRepository() {
-//        defaultEmployeesIds = new ArrayList<>();
-        addListener();
+        addDatabaseSnapshotListener();
     }
 
     static public DefaultEmployeeRepository getInstance() {
@@ -34,7 +33,7 @@ public class DefaultEmployeeRepository {
         return instance;
     }
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.DEFAULT_EMPLOYEE_COLLECTION)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -51,7 +50,9 @@ public class DefaultEmployeeRepository {
                         }
                     }
                     defaultEmployeeIds = ids;
-                    listener.notifyOnLoadComplete();
+                    if (listener != null) {
+                        listener.notifyOnLoadComplete();
+                    }
                 });
     }
 

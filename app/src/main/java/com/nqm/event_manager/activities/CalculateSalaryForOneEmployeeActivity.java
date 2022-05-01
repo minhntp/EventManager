@@ -1,16 +1,17 @@
 package com.nqm.event_manager.activities;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -37,9 +38,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         implements IOnCalculateSalaryItemClicked, IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
@@ -62,10 +62,8 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     Calendar calendar = Calendar.getInstance();
 
-    Map<String, Salary> resultSalaries;
-    ArrayList<Salary> editedSalaries;
-    int resultEventsSize;
-
+    List<Salary> queryResultSalaries;
+//    List<String> queryResultEventsIds;
 
     //    String startDate, endDate;
     String selectedEmployeeId = "";
@@ -134,11 +132,10 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
         endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
-        resultSalaries = new HashMap<>();
-        editedSalaries = new ArrayList<>();
+        queryResultSalaries = new ArrayList<>();
+//        queryResultEventsIds = new ArrayList<>();
 
-        resultEventsSize = 0;
-        calculateSalaryAdapter = new CalculateSalaryAdapter(editedSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(queryResultSalaries);
         calculateSalaryAdapter.setListener(this);
         resultRecyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         resultRecyclerView.setAdapter(calculateSalaryAdapter);
@@ -242,31 +239,23 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
     }
 
     private void getResultSalaries() {
-        resultSalaries.clear();
-        resultSalaries.putAll(SalaryRepository.getInstance()
-                .getSalariesMapByStartDateAndEndDateAndEmployeeId(startDateEditText.getText().toString(),
-                        endDateEditText.getText().toString(), selectedEmployeeId));
-
-        ArrayList<String> resultEventIds = new ArrayList<>();
-        for (Salary s : resultSalaries.values()) {
-            if (!resultEventIds.contains(s.getEventId())) {
-                resultEventIds.add(s.getEventId());
-            }
-        }
-        resultEventsSize = resultEventIds.size();
+        queryResultSalaries.clear();
+        queryResultSalaries.addAll(SalaryRepository.getInstance().getSalariesListByStartDateAndEndDateAndEmployeeId(
+                startDateEditText.getText().toString(), endDateEditText.getText().toString(), selectedEmployeeId));
 
 //        SalaryRepository.sortSalariesListByEventStartDate(resultSalaries);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void showResult() {
-        if (resultSalaries.size() > 0) {
-            numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events),
-                    resultSalaries.size(), resultEventsSize));
+        int size = queryResultSalaries.size();
+        if (size > 0) {
+            numberOfEventsTextView.setText(String.format(getResources().getString(R.string.salary_num_of_events), size, size));
         } else {
             numberOfEventsTextView.setText(getResources().getString(R.string.salary_no_salaries));
         }
@@ -274,9 +263,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         boolean isEditedSalariesPaid = true;
         int sum, paid = 0, unpaid = 0;
 
-        editedSalaries.clear();
-        for (Salary s : resultSalaries.values()) {
-            editedSalaries.add(new Salary(s));
+        for (Salary s : queryResultSalaries) {
             if (s.isPaid()) {
                 paid += s.getSalary();
             } else {
@@ -285,7 +272,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             }
         }
 
-        SalaryRepository.getInstance().sortSalariesListByEventStartDate(editedSalaries);
+        SalaryRepository.getInstance().sortSalariesListByEventStartDate(queryResultSalaries);
 
         calculateSalaryAdapter.notifyDataSetChanged();
 
@@ -301,12 +288,12 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     private void confirmBeforeSaving(boolean payAll) {
         int paid = 0, unpaid = 0;
-        for (Salary s : editedSalaries) {
-            if (!resultSalaries.get(s.getSalaryId()).isPaid()) {
-                if (payAll || s.isPaid()) {
-                    paid += s.getSalary();
+        for (Salary s : queryResultSalaries) {
+            if (!s.isPaid()) {
+                if (payAll || s.isChecked()) {
+                    paid += s.getEditedSalary();
                 } else {
-                    unpaid += s.getSalary();
+                    unpaid += s.getEditedSalary();
                 }
             }
         }
@@ -326,15 +313,12 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     private void saveChanges(boolean payAll) {
 
-        if (payAll) {
-            for (Salary s : editedSalaries) {
-                if (!s.isPaid()) {
-                    s.setPaid(true);
-                }
-            }
+        for (Salary s : queryResultSalaries) {
+            s.setSalary(s.getEditedSalary());
+            s.setPaid(payAll || s.isChecked());
         }
 
-        SalaryRepository.getInstance().updateSalaries(editedSalaries);
+        SalaryRepository.getInstance().updateSalaries(queryResultSalaries);
         showResult();
     }
 
@@ -359,7 +343,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     public void onCalculateSalaryItemClicked(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_save)
-                .setTitle("Chuyển đến Chi tiết sự kiện...")
+                .setTitle("Chuyển đến Chi tiết sự kiện")
                 .setMessage("Lưu thông tin đã nhập?")
                 .setPositiveButton("Lưu", (dialogInterface, i) -> {
                     saveChanges(false);
@@ -382,11 +366,6 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
 
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "CalculateSalaryForOneEmployeeActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {

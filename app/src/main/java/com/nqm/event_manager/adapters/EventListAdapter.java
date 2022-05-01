@@ -1,6 +1,7 @@
 package com.nqm.event_manager.adapters;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 
 public class EventListAdapter extends BaseAdapter {
 
@@ -80,7 +78,7 @@ public class EventListAdapter extends BaseAdapter {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( Log.getStackTraceString(e));
         }
         String time = startTime + "\n" + endTime;
         timeTextView.setText(time);

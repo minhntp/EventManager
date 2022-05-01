@@ -2,15 +2,9 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -19,6 +13,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.adapters.EditReminderAdapter;
@@ -222,7 +221,6 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
 
         //Xóa sự kiện
         if (id == R.id.view_event_action_delete_event) {
-//            Log.d("debug", "deleting " + eventId);
             deleteEvent();
             return true;
         }
@@ -256,7 +254,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Xóa sự kiện")
-                .setMessage("Bạn có chắc chắn muốn xóa sự kiện này?")
+                .setMessage("Bạn có chắc chắn muốn xóa sự kiện này và các bản lương?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
                     DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener, context);
                     EventRepository.getInstance().deleteEventFromDatabase(eventId, context);
@@ -444,11 +442,6 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         super.onPause();
     }
 
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ViewEventActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void notifyOnLoadComplete() {
@@ -517,7 +510,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
                 calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
                 calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));

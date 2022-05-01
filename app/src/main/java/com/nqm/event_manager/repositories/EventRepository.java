@@ -10,10 +10,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.models.Event;
+import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.models.Reminder;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.models.Schedule;
-import com.nqm.event_manager.models.EventTask;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
@@ -38,36 +38,10 @@ public class EventRepository {
     private Calendar calendar = Calendar.getInstance();
 
     //-------------------------------------------------------------------------------------------
-//    private EventRepository(final IOnDataLoadComplete listener) {
-//        this.listener = listener;
-//        addListener(eventList -> {
-//            if (eventList != null) {
-//                allEvents = eventList;
-//                if (EventRepository.this.listener != null) {
-//                    isLoaded = true;
-//                    EventRepository.this.listener.notifyOnLoadComplete();
-//                }
-//            }
-//        });
-//    }
-
     private EventRepository() {
-//        allEvents = new HashMap<>();
-        addListener();
+        addDatabaseSnapshotListener();
     }
     //-------------------------------------------------------------------------------------------
-
-//    static public EventRepository getInstance(IOnDataLoadComplete listener) {
-//        if (instance == null) {
-//            instance = new EventRepository(listener);
-//        } else {
-//            instance.listener = listener;
-//            if (instance.isLoaded && listener != null) {
-//                instance.listener.notifyOnLoadComplete();
-//            }
-//        }
-//        return instance;
-//    }
 
     static public EventRepository getInstance() {
         if (instance == null) {
@@ -76,40 +50,13 @@ public class EventRepository {
         return instance;
     }
 
-//    private void addListener(final MyEventCallback callback) {
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.EVENT_COLLECTION)
-//                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-//                    if (e != null) {
-//                        Log.w("debug", "Events listen failed.", e);
-//                        return;
-//                    }
-//                    HashMap<String, Event> events = new HashMap<>();
-//                    if (queryDocumentSnapshots != null) {
-//                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-//                            Map<String, Object> tempHashMap = doc.getData();
-//                            Event tempEvent = new Event(doc.getId(),
-//                                    (String) tempHashMap.get(Constants.EVENT_NAME),
-//                                    (String) tempHashMap.get(Constants.EVENT_START_DATE),
-//                                    (String) tempHashMap.get(Constants.EVENT_END_DATE),
-//                                    (String) tempHashMap.get(Constants.EVENT_START_TIME),
-//                                    (String) tempHashMap.get(Constants.EVENT_END_TIME),
-//                                    (String) tempHashMap.get(Constants.EVENT_LOCATION),
-//                                    (String) tempHashMap.get(Constants.EVENT_NOTE));
-//                            events.put(tempEvent.getId(), tempEvent);
-//                        }
-//                    }
-//                    callback.onCallback(events);
-//                });
-//    }
-
     public void setListener(IOnDataLoadComplete listener) {
         this.listener = listener;
     }
 
     //-------------------------------------------------------------------------------------------
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.EVENT_COLLECTION)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -165,7 +112,9 @@ public class EventRepository {
                     numberOfEventsMap = numberOfEvents;
                     this.titles = titles;
                     this.locations = locations;
-                    listener.notifyOnLoadComplete();
+                    if (listener != null) {
+                        listener.notifyOnLoadComplete();
+                    }
                 });
     }
 
@@ -299,14 +248,6 @@ public class EventRepository {
 
         batch.commit();
     }
-
-//    public int getNumberOfEventsThroughDate(String date, String eventId) {
-//        if (eventId.isEmpty()) {
-//            return getEventsThroughDate(date).size();
-//        } else {
-//            return getEventsThroughDateEdit(date, eventId).size();
-//        }
-//    }
 
     public void updateEventToDatabase(Event changedEvent, ArrayList<String> deleteEmployeesIds,
                                       ArrayList<String> addEmployeesIds, ArrayList<EventTask> eventTasks,
@@ -467,66 +408,9 @@ public class EventRepository {
         return eventsIds;
     }
 
-//    public HashMap<String, Event> getEventsByDate(String date) {
-////        Log.d("debug", "EventRepository: getting event on date: " + date);
-//        HashMap<String, Event> events = new HashMap<>();
-//        if (getAllEvents().size() > 0) {
-//            for (String eventID : allEvents.keySet()) {
-//                Event e = allEvents.get(eventID);
-//                if (e != null && e.getNgayBatDau().equals(date)) {
-//                    events.put(eventID, allEvents.get(eventID));
-//                }
-//            }
-//        }
-//        return events;
-//    }
-
     public Event getEventByEventId(String id) {
         return allEvents.get(id);
     }
-
-//    public HashMap<String, Event> getEventsThroughDate(String date) {
-//        Log.d("debug", "add");
-//        HashMap<String, Event> events = new HashMap<>();
-//        if (getAllEvents().size() > 0) {
-//            for (Event tempE : allEvents.values()) {
-//                try {
-//                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
-//                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
-//                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
-//                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
-//                        events.put(tempE.getId(), tempE);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return events;
-//    }
-
-//    public HashMap<String, Event> getEventsThroughDateEdit(String date, String eventId) {
-//        Log.d("debug", "edit");
-//        HashMap<String, Event> events = new HashMap<>();
-//        if (getAllEvents().size() > 0) {
-//            for (Event tempE : allEvents.values()) {
-//                if (tempE.getId().equals(eventId)) {
-//                    continue;
-//                }
-//                try {
-//                    if (CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayBatDau()).compareTo(
-//                            CalendarUtil.sdfDayMonthYear.parse(date)) <= 0 &&
-//                            CalendarUtil.sdfDayMonthYear.parse(tempE.getNgayKetThuc()).compareTo(
-//                                    CalendarUtil.sdfDayMonthYear.parse(date)) >= 0) {
-//                        events.put(tempE.getId(), tempE);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return events;
-//    }
 
     public ArrayList<Event> getEventsArrayListThroughDate(String date) {
         ArrayList<Event> events = new ArrayList<>();
@@ -540,30 +424,15 @@ public class EventRepository {
                         events.add(tempE);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println( Log.getStackTraceString(e));
                 }
             }
         }
         return events;
     }
 
-//    public Date getEventStartDateTimeByReminder(Reminder r) {
-//        Calendar calendarDate = Calendar.getInstance();
-//        Calendar calendarTime = Calendar.getInstance();
-//        try {
-//            calendarDate.setTime(CalendarUtil.sdfDayMonthYear.parse(allEvents.get(r.getEventId()).getNgayBatDau()));
-//            calendarTime.setTime(CalendarUtil.sdfTime.parse(allEvents.get(r.getEventId()).getGioBatDau()));
-//
-//            calendarDate.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
-//            calendarDate.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return calendarDate.getTime();
-//    }
-
     //----------------------------------------------------------------------------------------------
-    // CONFLICT
+    // HANDLE EVENTS CONFLICT
     //----------------------------------------------------------------------------------------------
 
     public void getConflictEventsIdsEdit(final long startMili, final long endMili,
@@ -579,16 +448,11 @@ public class EventRepository {
                     .get());
         }
 
-//        Log.d("debug", "here2");
-
         com.google.android.gms.tasks.Task<List<QuerySnapshot>> allTasks = Tasks.whenAllSuccess(taskList);
         allTasks.addOnSuccessListener(querySnapshots -> {
             HashMap<String, ArrayList<String>> conflictMap = new HashMap<>();
-//            Log.d("debug", "here3");
-//            Log.d("debug", "snapshots size = " + querySnapshots.size());
             for (QuerySnapshot documentSnapshots : querySnapshots) {
                 for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
-//                    Log.d("debug", "docSnapshots size = " + documentSnapshots.size());
                     long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
                     if (docEndMili >= startMili) {
                         String docEventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
@@ -606,7 +470,6 @@ public class EventRepository {
 
                 }
             }
-//            Log.d("debug", "here4");
 
             callback.onCallback(conflictMap);
         });
@@ -662,7 +525,7 @@ public class EventRepository {
                             CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             return compareResult;
         });
@@ -683,16 +546,12 @@ public class EventRepository {
                                 CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println( Log.getStackTraceString(e));
                 }
             }
             return compareResult;
         });
     }
-
-//    private interface MyEventCallback {
-//        void onCallback(HashMap<String, Event> eventList);
-//    }
 
     public interface MyConflictEventCallback {
         void onCallback(HashMap<String, ArrayList<String>> conflictMap);

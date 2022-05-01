@@ -2,17 +2,16 @@ package com.nqm.event_manager.activities;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.DatePicker;
 import android.widget.EditText;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.models.Employee;
@@ -100,36 +99,30 @@ public class EditEmployeeActivity extends BaseActivity {
     }
 
     private void addEvents() {
-        dateOfBirthEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int d = 1;
-                int m = 1;
-                int y = 1990;
-                calendar = Calendar.getInstance();
-                if (!dateOfBirthEditText.getText().toString().isEmpty()) {
-                    try {
-                        calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(dateOfBirthEditText.getText().toString()));
-                        d = calendar.get(Calendar.DAY_OF_MONTH);
-                        m = calendar.get(Calendar.MONTH);
-                        y = calendar.get(Calendar.YEAR);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        dateOfBirthEditText.setOnClickListener(v -> {
+            int d = 1;
+            int m = 1;
+            int y = 1990;
+            calendar = Calendar.getInstance();
+            if (!dateOfBirthEditText.getText().toString().isEmpty()) {
+                try {
+                    calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(dateOfBirthEditText.getText().toString()));
+                    d = calendar.get(Calendar.DAY_OF_MONTH);
+                    m = calendar.get(Calendar.MONTH);
+                    y = calendar.get(Calendar.YEAR);
+                } catch (Exception e) {
+                    System.out.println( Log.getStackTraceString(e));
                 }
-                DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                calendar.set(Calendar.YEAR, year);
-                                calendar.set(Calendar.MONTH, month);
-                                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                                dateOfBirthEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                            }
-                        }, y, m, d);
-                datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
-                datePickerDialog.show();
             }
+            DatePickerDialog datePickerDialog = new DatePickerDialog(context,
+                    (view, year, month, dayOfMonth) -> {
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        dateOfBirthEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                    }, y, m, d);
+            datePickerDialog.getDatePicker().setFirstDayOfWeek(Calendar.MONDAY);
+            datePickerDialog.show();
         });
     }
 
@@ -162,17 +155,6 @@ public class EditEmployeeActivity extends BaseActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-//        new androidx.appcompat.app.AlertDialog.Builder(this)
-//                .setIcon(R.drawable.ic_error)
-//                .setTitle("Trở về mà không lưu?")
-//                .setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        context.finish();
-//                    }
-//                })
-//                .setNegativeButton("Hủy", null)
-//                .show();
         finish();
         return super.onSupportNavigateUp();
     }

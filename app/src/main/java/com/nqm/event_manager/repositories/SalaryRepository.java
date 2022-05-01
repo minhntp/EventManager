@@ -29,23 +29,7 @@ public class SalaryRepository {
     //------------------------------------------------------------------------------------
 
     private SalaryRepository() {
-//        allSalaries = new HashMap<>();
-        addListener();
-    }
-
-    private SalaryRepository(final IOnDataLoadComplete listener) {
-        this.listener = listener;
-        addListener(salaryList -> {
-            if (salaryList != null) {
-                allSalaries = salaryList;
-                if (SalaryRepository.this.listener != null) {
-                    SalaryRepository.this.listener.notifyOnLoadComplete();
-                }
-            }
-        });
-        if (allSalaries == null) {
-            allSalaries = new HashMap<>();
-        }
+        addDatabaseSnapshotListener();
     }
 
     static public SalaryRepository getInstance() {
@@ -57,19 +41,20 @@ public class SalaryRepository {
 
     static public SalaryRepository getInstance(IOnDataLoadComplete listener) {
         if (instance == null) {
-            instance = new SalaryRepository(listener);
+            instance = new SalaryRepository();
         }
+        instance.setListener(listener);
         return instance;
     }
 
     //------------------------------------------------------------------------------------
 
-    private void addListener() {
+    private void addDatabaseSnapshotListener() {
         DatabaseAccess.getInstance().getDatabase()
                 .collection(Constants.SALARY_COLLECTION)
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.w("debug", "Salary collection listen failed.", e);
+                .addSnapshotListener((queryDocumentSnapshots, exception) -> {
+                    if (exception != null) {
+                        Log.w("debug", "Salary collection listen failed.", exception);
                         return;
                     }
                     HashMap<String, Salary> salaries = new HashMap<>();
@@ -89,40 +74,14 @@ public class SalaryRepository {
                         }
                     }
                     allSalaries = salaries;
-                    listener.notifyOnLoadComplete();
+                    if (listener != null) {
+                        listener.notifyOnLoadComplete();
+                    }
                 });
     }
 
     public void setListener(IOnDataLoadComplete listener) {
         this.listener = listener;
-    }
-
-    private void addListener(final SalaryRepository.MySalaryCallback callback) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.SALARY_COLLECTION)
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.w("debug", "Salary collection listen failed.", e);
-                        return;
-                    }
-                    HashMap<String, Salary> salaryList = new HashMap<>();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.size() > 0) {
-                            Map<String, Object> data = doc.getData();
-                            int salary;
-                            salary = Integer.parseInt((String) data.get(Constants.SALARY_SALARY));
-                            Salary tempSalary = new Salary(doc.getId(),
-                                    (String) data.get(Constants.SALARY_EVENT_ID),
-                                    (String) data.get(Constants.SALARY_EMPLOYEE_ID),
-                                    salary,
-                                    Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
-                                    (long) data.get(Constants.SALARY_START_MILI),
-                                    (long) data.get(Constants.SALARY_END_MILI));
-                            salaryList.put(tempSalary.getSalaryId(), tempSalary);
-                        }
-                    }
-                    callback.onCallback(salaryList);
-                });
     }
 
     //------------------------------------------------------------------------------------
@@ -148,9 +107,9 @@ public class SalaryRepository {
         batch.commit();
     }
 
-    public void updateSalaries(ArrayList<Salary> salaries) {
+    public void updateSalaries(List<Salary> salaries) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
-//        Log.d("debug", "salaries size = " + salaries.size());
+//        Log.wtf("debug", "salaries size = " + salaries.size());
         for (int i = 0; i < salaries.size(); i++) {
             DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION).document(salaries.get(i).getSalaryId());
@@ -158,7 +117,7 @@ public class SalaryRepository {
             Map<String, Object> salaryData = new HashMap<>();
             salaryData.put(Constants.SALARY_SALARY, "" + salaries.get(i).getSalary());
             salaryData.put(Constants.SALARY_PAID, Boolean.toString(salaries.get(i).isPaid()));
-//            Log.d("debug", "amount = " + salaries.get(i).getSalary());
+//            Log.wtf("debug", "amount = " + salaries.get(i).getSalary());
             batch.update(salaryDocRef, salaryData);
         }
 
@@ -204,7 +163,7 @@ public class SalaryRepository {
     public boolean isSalaryPaid(String employeeId, String eventId) {
         boolean isPaid = false;
         for (Salary s : allSalaries.values()) {
-//            Log.d("debug", "looping to find out if salary is paid");
+//            Log.wtf("debug", "looping to find out if salary is paid");
             if (s.getEmployeeId().equals(employeeId) && s.getEventId().equals(eventId)) {
                 isPaid = s.isPaid();
                 break;
@@ -213,150 +172,56 @@ public class SalaryRepository {
         return isPaid;
     }
 
-//    public void isSalaryPaid(String employeeId, String eventId, final MyIsPaidSalaryCallback callback) {
-//        DatabaseAccess.getInstance().getDatabase()
-//                .collection(Constants.SALARY_COLLECTION)
-//                .whereEqualTo(Constants.SALARY_EMPLOYEE_ID, employeeId)
-//                .whereEqualTo(Constants.SALARY_EVENT_ID, eventId)
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        if (task.getResult().size() == 0) {
-//                            callback.onCallback(false);
-//                            return;
-//                        } else {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                Map<String, Object> data = document.getData();
-//                                boolean isPaid = Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID));
-//                                callback.onCallback(isPaid);
-//                            }
-//                        }
-//                    } else {
-//                        Log.d("debug", "is paid salary query task failed");
-//                        callback.onCallback(false);
-//                    }
-//                });
-//    }
-
-//    long startMili = 0, endMili = 0;
-
-    //CALCULATE SALARIES FOR ALL EMPLOYEES
-//    public void getSalariesByStartDateEndDate(String startDate, String endDate,
-//                                              final MySalaryQueryCallback callback) {
-//        try {
-//            final Calendar calendar = Calendar.getInstance();
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDate));
-//            startMili = calendar.getTimeInMillis();
-//
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDate));
-//            endMili = calendar.getTimeInMillis();
-//
-//            DatabaseAccess.getInstance().getDatabase()
-//                    .collection(Constants.SALARY_COLLECTION)
-//                    .whereLessThanOrEqualTo(Constants.SALARY_START_MILI, endMili)
-//                    .orderBy(Constants.SALARY_START_MILI)
-//                    .get()
-//                    .addOnSuccessListener(queryDocumentSnapshots -> {
-//                        ArrayList<String> salariesIds = new ArrayList<>();
-//                        ArrayList<String> eventsIds = new ArrayList<>();
-//                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-//                            long docEndMili = (long) documentSnapshot.get(Constants.SALARY_END_MILI);
-//                            if (docEndMili >= startMili) {
-//                                salariesIds.add(documentSnapshot.getId());
-//                                String eventId = (String) documentSnapshot.get(Constants.SALARY_EVENT_ID);
-//                                if(!eventsIds.contains(eventId)) {
-//                                    eventsIds.add(eventId);
-//                                }
-//                            }
-//
-//                        }
-//                        callback.onCallback(salariesIds, eventsIds);
-//                    });
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-
-    public List<Salary> getSalariesListByStartDateEndDate(String startDate, String endDate) {
-//        Log.d("debug", "SalaryReposotory: getSalariesByStartDateEndDate, startDate = " + startDate
-//                + ", endDate = " + endDate);
-//        try {
-//            Calendar calendar = Calendar.getInstance();
-//            long startMili = 0, endMili = 0;
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(startDate));
-//            startMili = calendar.getTimeInMillis();
-//
-//            calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(endDate));
-//            endMili = calendar.getTimeInMillis();
-//
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-        List<Salary> salaries = new ArrayList<>();
-
-        for (Salary s : allSalaries.values()) {
-            try {
-                String thisSalaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
-                String thisSalaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
-
-                Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(thisSalaryStartDate);
-                Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(thisSalaryEndDate);
-                if ((thisSalaryStart.compareTo(end) <= 0 && thisSalaryEnd.compareTo(start) >= 0)) {
-                    salaries.add(s);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return salaries;
-    }
-
-    public Map<String, Salary> getSalariesMapByStartDateEndDate(String startDate, String endDate) {
+    public Map<String, Salary> getSalariesMapByStartDateEndDate(String startDateString, String endDateString) {
 
         Map<String, Salary> salaries = new HashMap<>();
 
         for (Salary s : allSalaries.values()) {
-            try {
-                String thisSalaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
-                String thisSalaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
-
-                Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(thisSalaryStartDate);
-                Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(thisSalaryEndDate);
-                if ((thisSalaryStart.compareTo(end) <= 0 && thisSalaryEnd.compareTo(start) >= 0)) {
-                    salaries.put(s.getSalaryId(), s);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (isBetween(s, startDateString, endDateString)) {
+                salaries.put(s.getSalaryId(), s);
             }
         }
         return salaries;
     }
 
+    public List<Salary> getSalariesListByStartDateEndDate(String startDateString, String endDateString) {
+
+        List<Salary> salaries = new ArrayList<>();
+
+        for (Salary s : allSalaries.values()) {
+            if (isBetween(s, startDateString, endDateString)) {
+                salaries.add(s);
+            }
+        }
+        return salaries;
+    }
+
+    private boolean isBetween(Salary s, String startDateString, String endDateString) {
+        try {
+            String salaryStartDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayBatDau();
+            String salaryEndDate = EventRepository.getInstance().getAllEvents().get(s.getEventId()).getNgayKetThuc();
+
+            Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateString);
+            Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateString);
+            Date thisSalaryStart = CalendarUtil.sdfDayMonthYear.parse(salaryStartDate);
+            Date thisSalaryEnd = CalendarUtil.sdfDayMonthYear.parse(salaryEndDate);
+            if ((thisSalaryStart.compareTo(endDate) <= 0 && thisSalaryEnd.compareTo(startDate) >= 0)) {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println( Log.getStackTraceString(e));
+        }
+        return false;
+    }
+
     //CALCULATE SALARIES FOR ONE EMPLOYEE
-    public List<Salary> getSalariesListByStartDateAndEndDateAndEmployeeId(String startDate,
-                                                                          String endDate,
+    public List<Salary> getSalariesListByStartDateAndEndDateAndEmployeeId(String startDateString,
+                                                                          String endDateString,
                                                                           String employeeId) {
         List<Salary> salaries = new ArrayList<>();
         for (Salary s : allSalaries.values()) {
-            if (s.getEmployeeId().equals(employeeId)) {
-                try {
-                    Date start = CalendarUtil.sdfDayMonthYear.parse(startDate);
-                    Date currentStart = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance()
-                            .getEventByEventId(s.getEventId()).getNgayBatDau());
-                    Date end = CalendarUtil.sdfDayMonthYear.parse(endDate);
-                    Date currentEnd = CalendarUtil.sdfDayMonthYear.parse(EventRepository.getInstance()
-                            .getEventByEventId(s.getEventId()).getNgayKetThuc());
-                    if ((start.compareTo(currentStart) <= 0 && currentStart.compareTo(end) <= 0) ||
-                            start.compareTo(currentEnd) <= 0 && currentEnd.compareTo(end) <= 0) {
-                        salaries.add(s);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (s.getEmployeeId().equals(employeeId) && isBetween(s, startDateString, endDateString)) {
+                salaries.add(s);
             }
         }
         return salaries;
@@ -380,7 +245,7 @@ public class SalaryRepository {
                         salaries.put(s.getSalaryId(), s);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println( Log.getStackTraceString(e));
                 }
             }
         }
@@ -389,14 +254,6 @@ public class SalaryRepository {
 
     private interface MySalaryCallback {
         void onCallback(HashMap<String, Salary> salaryList);
-    }
-
-    public interface MySalaryQueryCallback {
-        void onCallback(ArrayList<String> salariesIds, ArrayList<String> eventIds);
-    }
-
-    public interface MyIsPaidSalaryCallback {
-        void onCallback(boolean isPaid);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -411,7 +268,7 @@ public class SalaryRepository {
                         .get(s2.getEventId()).getNgayBatDau());
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println( Log.getStackTraceString(e));
             }
             return d1.compareTo(d2);
         });

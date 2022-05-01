@@ -3,7 +3,6 @@ package com.nqm.event_manager.custom_views;
 import android.app.Dialog;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -170,7 +169,7 @@ public class CustomCalendar extends LinearLayout implements IOnCustomCalendarIte
     }
 
     public void updateView() {
-//        Log.d("debug", "custom calendar update data and notify of gridAdapter");
+//        Log.wtf("debug", "custom calendar update data and notify of gridAdapter");
         gridAdapter.updateData();
         gridAdapter.notifyDataSetChanged();
 

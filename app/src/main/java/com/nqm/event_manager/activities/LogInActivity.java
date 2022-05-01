@@ -3,17 +3,13 @@ package com.nqm.event_manager.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.nqm.event_manager.R;
-import com.nqm.event_manager.utils.Constants;
 
 public class LogInActivity extends BaseActivity {
 
@@ -130,7 +126,7 @@ public class LogInActivity extends BaseActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Toast.makeText(this, user.getEmail(), Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, SplashActivity.class));
+            startActivity(new Intent(this, RootActivity.class));
             finish();
         }
     }

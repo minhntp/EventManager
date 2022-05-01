@@ -1,21 +1,20 @@
 package com.nqm.event_manager.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.fragments.ManageEmployeeFragment;
@@ -56,11 +55,11 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
         int id = item.getItemId();
 
         if (id == R.id.view_employee_action_delete) {
-//            Log.d("debug", "deleting " + employee.getId());
+//            Log.wtf("debug", "deleting " + employee.getId());
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
-                    .setMessage("Bạn có chắc chắn muốn xóa nhân viên này?")
+                    .setMessage("Bạn có chắn chắn muốn Xóa nhân viên này và các bản lương?")
                     .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -191,12 +190,6 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
         EmployeeRepository.getInstance().setListener(this);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
-    }
-
-    @Override
-    public void notifyOnLoadCompleteWithContext(Context context) {
-        Toast.makeText(context, "ViewEmployeeActivity: wrong notifyOnLoadComplete()",
-                Toast.LENGTH_SHORT).show();
     }
 
     @Override

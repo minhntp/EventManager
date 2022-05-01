@@ -1,9 +1,10 @@
 package com.nqm.event_manager.custom_views;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 public class CustomRelativeLayout extends LinearLayout {
 
