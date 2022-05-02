@@ -17,6 +17,7 @@ import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SelectEmployeeAddEventAdapter extends
         RecyclerView.Adapter<SelectEmployeeAddEventAdapter.ViewHolder> {
@@ -54,10 +55,10 @@ public class SelectEmployeeAddEventAdapter extends
     }
 
     private ArrayList<String> selectedEmployeesIds;
-    private ArrayList<Employee> employees;
+    private List<Employee> employees;
     private IOnSelectEmployeeItemClicked listener;
 
-    public SelectEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees) {
+    public SelectEmployeeAddEventAdapter(ArrayList<String> selectedEmployeesIds, List<Employee> employees) {
 //        EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
         this.selectedEmployeesIds = selectedEmployeesIds;
         EmployeeUtil.sortEmployeesByName(employees);
@@ -75,7 +76,6 @@ public class SelectEmployeeAddEventAdapter extends
     public void customNotifyDataSetChanged() {
         EmployeeUtil.sortEmployeesByName(employees);
         notifyDataSetChanged();
-        System.out.println( "data set changed.\nselectedEmployeesIds.size():\n"+selectedEmployeesIds.size());
     }
 
     @NonNull

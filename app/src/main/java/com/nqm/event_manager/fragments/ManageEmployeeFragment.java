@@ -55,7 +55,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
         super.onViewCreated(view, savedInstanceState);
 
         thisListener = this;
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
 
         connectViews(view);
 
@@ -122,7 +122,7 @@ public class ManageEmployeeFragment extends Fragment implements IOnDataLoadCompl
 
     @Override
     public void onResume() {
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         searchString = "";
         resultEmployeesIds = EmployeeRepository.getInstance().getEmployeesIdsBySearchString(searchString);
         employeeAdapter.notifyDataSetChanged(resultEmployeesIds);

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/add_schedule_dialog_title_text_view"
+        android:id="@+id/add_employee_dialog_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -22,21 +22,36 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/add_employee_dialog_title_text_view"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_below="@+id/add_schedule_dialog_title_text_view">
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/select_employee_search_view"
+        android:layout_marginRight="5dp">
+
+        <LinearLayout
+            android:id="@+id/employee_dialog_function_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layoutDirection="rtl" />
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/employee_dialog_add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_add"
+                android:contentDescription="@string/add_employee" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/select_employee_search_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layoutDirection="rtl" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/select_employee_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/dialog_edit_task_button_layout"
-            android:layout_below="@id/select_employee_search_view" />
+            android:layout_below="@id/employee_dialog_function_layout" />
 
         <LinearLayout
             android:id="@+id/dialog_edit_task_button_layout"
@@ -47,14 +62,14 @@
             android:weightSum="1">
 
             <Button
-                android:id="@+id/add_schedule_ok_button"
+                android:id="@+id/add_employee_ok_button"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textStyle="bold"
                 android:text="OK"
-                android:textSize="@dimen/sub_text_button"/>
+                android:textSize="@dimen/sub_text_button"
+                android:textStyle="bold" />
         </LinearLayout>
     </RelativeLayout>
 

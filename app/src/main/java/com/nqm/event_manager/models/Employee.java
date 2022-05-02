@@ -12,6 +12,11 @@ public class Employee implements Comparable<Employee> {
     private String email;
 
     public Employee() {
+        this("", "", "", "", "", "", "");
+    }
+
+    public Employee(String hoTen, String chuyenMon) {
+        this("", hoTen, chuyenMon, "", "", "", "");
     }
 
     public Employee(String id, String hoTen, String chuyenMon, String cmnd, String ngaySinh, String sdt, String email) {

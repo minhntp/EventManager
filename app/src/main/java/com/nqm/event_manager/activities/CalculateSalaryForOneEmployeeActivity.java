@@ -76,7 +76,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
         setContentView(R.layout.activity_calculate_salary_for_single_employee);
 
         EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
 
@@ -325,7 +325,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
     @Override
     protected void onResume() {
         EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
         getResultSalaries();

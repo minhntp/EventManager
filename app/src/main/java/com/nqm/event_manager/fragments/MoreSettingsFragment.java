@@ -37,6 +37,7 @@ import com.nqm.event_manager.utils.EmployeeUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderItemClicked,
         IOnSelectReminderItemClicked, IOnEditEmployeeItemClicked, IOnSelectEmployeeItemClicked {
@@ -58,7 +59,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     EditEmployeeAddEventAdapter editEmployeeAdapter;
     RecyclerView editEmployeeRecyclerView;
 
-    ArrayList<Employee> employees;
+    List<Employee> employees;
     Dialog selectEmployeeDialog;
     Button selectEmployeeOkButton;
     SearchView selectEmployeeSearchView;
@@ -175,7 +176,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
         //Connect views
         selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
-        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.add_schedule_ok_button);
+        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.add_employee_ok_button);
 
         employees = EmployeeRepository.getInstance().getEmployeesBySearchString("");
         selectEmployeeAdapter = new SelectEmployeeAddEventAdapter(selectedEmployeesIds,
@@ -195,7 +196,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
+                List<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
                 employees.clear();
                 employees.addAll(resultEmployees);
                 selectEmployeeAdapter.notifyDataSetChanged();

@@ -148,7 +148,7 @@ public class EditEmployeeActivity extends BaseActivity {
                 phoneNumberEditText.getText().toString().trim(),
                 emailEditText.getText().toString().trim());
 
-        EmployeeRepository.getInstance().setListener(ViewEmployeeActivity.thisListener);
+        EmployeeRepository.getInstance().setCommonListener(ViewEmployeeActivity.thisListener);
         EmployeeRepository.getInstance().updateEmployee(editedEmployee);
         context.finish();
     }

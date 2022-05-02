@@ -1,8 +1,6 @@
 package com.nqm.event_manager.adapters;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +8,16 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.utils.EmployeeUtil;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SelectEmployeeEditEventAdapter extends
         RecyclerView.Adapter<SelectEmployeeEditEventAdapter.ViewHolder> {
@@ -25,6 +26,7 @@ public class SelectEmployeeEditEventAdapter extends
         private ImageView profileImageView;
         private TextView nameTextView, specialityTextView;
         private CheckBox selectCheckBox;
+        private View infoLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -32,8 +34,9 @@ public class SelectEmployeeEditEventAdapter extends
             nameTextView = itemView.findViewById(R.id.select_employee_name_text_view);
             specialityTextView = itemView.findViewById(R.id.select_employee_speciality_text_view);
             selectCheckBox = itemView.findViewById(R.id.select_employee_select_checkbox);
+            infoLayout = itemView.findViewById(R.id.select_employee_info_layout);
 
-            itemView.findViewById(R.id.select_employee_info_layout).setOnClickListener(v -> {
+            infoLayout.setOnClickListener(v -> {
                 selectCheckBox.toggle();
                 onItemClicked();
             });
@@ -53,12 +56,12 @@ public class SelectEmployeeEditEventAdapter extends
         }
     }
 
-    private ArrayList<String> selectedEmployeesIds;
-    private ArrayList<Employee> employees;
+    private List<String> selectedEmployeesIds;
+    private List<Employee> employees;
     private IOnSelectEmployeeItemClicked listener;
     private String eventId;
 
-    public SelectEmployeeEditEventAdapter(ArrayList<String> selectedEmployeesIds, ArrayList<Employee> employees,
+    public SelectEmployeeEditEventAdapter(List<String> selectedEmployeesIds, List<Employee> employees,
                                           String eventId) {
         this.selectedEmployeesIds = selectedEmployeesIds;
         EmployeeUtil.sortEmployeesByName(employees);
@@ -85,21 +88,24 @@ public class SelectEmployeeEditEventAdapter extends
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         final Employee employee = employees.get(i);
 
-        TextView nameTextView = viewHolder.nameTextView;
-        TextView specialityTextView = viewHolder.specialityTextView;
-        final CheckBox selectCheckBox = viewHolder.selectCheckBox;
-
-        nameTextView.setText(employee.getHoTen());
-        specialityTextView.setText(employee.getChuyenMon());
+        viewHolder.nameTextView.setText(employee.getHoTen());
+        viewHolder.specialityTextView.setText(employee.getChuyenMon());
+        viewHolder.selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
 
         boolean isPaid = SalaryRepository.getInstance().isSalaryPaid(employee.getId(), eventId);
         if (isPaid) {
-            selectCheckBox.setVisibility(View.INVISIBLE);
+            viewHolder.infoLayout.setEnabled(false);
+            viewHolder.selectCheckBox.setEnabled(false);
         } else {
-            selectCheckBox.setVisibility(View.VISIBLE);
-            selectCheckBox.setChecked(selectedEmployeesIds.contains(employee.getId()));
+            viewHolder.infoLayout.setEnabled(true);
+            viewHolder.selectCheckBox.setEnabled(true);
         }
 
+    }
+
+    public void customNotifyDataSetChanged() {
+        EmployeeUtil.sortEmployeesByName(employees);
+        notifyDataSetChanged();
     }
 
     @Override

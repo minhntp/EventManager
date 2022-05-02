@@ -39,7 +39,7 @@ public class DatabaseAccess {
     public static void setDatabaseListener(IOnDataLoadComplete listener, Context context) {
         System.out.println("DatabaseAccess: addDatabaseListener()");
         DefaultReminderRepository.getInstance().setListener(listener);
-        EmployeeRepository.getInstance().setListener(listener);
+        EmployeeRepository.getInstance().setCommonListener(listener);
         EventRepository.getInstance().setListener(listener);
         ReminderRepository.getInstance(context).setListener(listener);
         SalaryRepository.getInstance().setListener(listener);

@@ -112,17 +112,23 @@ public class AddEmployeeActivity extends BaseActivity {
     }
 
     private void addEmployeeToDatabase() {
+        boolean error = false;
+
         if (nameEditText.getText().toString().isEmpty()) {
             nameEditText.setError("Xin mời nhập");
-            return;
+            error = true;
         } else {
             nameEditText.setError(null);
         }
         if (specialityAutoCompleteTextView.getText().toString().isEmpty()) {
             specialityAutoCompleteTextView.setError("Xin mời nhập");
-            return;
+            error = true;
         } else {
             specialityAutoCompleteTextView.setError(null);
+        }
+
+        if (error) {
+            return;
         }
 
         Employee employee = new Employee("",

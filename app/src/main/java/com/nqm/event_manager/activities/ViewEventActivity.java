@@ -254,7 +254,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.ic_error)
                 .setTitle("Xóa sự kiện")
-                .setMessage("Bạn có chắc chắn muốn xóa sự kiện này và các bản lương?")
+                .setMessage("Bạn có chắc chắn muốn xóa Sự Kiện này cùng các Bản Lương?")
                 .setPositiveButton("Xóa", (dialog, which) -> {
                     DatabaseAccess.setDatabaseListener(ManageEventFragment.thisListener, context);
                     EventRepository.getInstance().deleteEventFromDatabase(eventId, context);

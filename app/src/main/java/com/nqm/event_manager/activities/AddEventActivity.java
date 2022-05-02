@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,11 +35,15 @@ import com.nqm.event_manager.adapters.SelectEmployeeAddEventAdapter;
 import com.nqm.event_manager.adapters.SelectReminderAdapter;
 import com.nqm.event_manager.callbacks.ItemDraggedOrSwipedCallback;
 import com.nqm.event_manager.custom_views.CustomDatePicker;
+import com.nqm.event_manager.dialogs.AddEmployeeQuickDialog;
 import com.nqm.event_manager.fragments.ManageEventFragment;
+import com.nqm.event_manager.interfaces.IAddEmployeeDialogListener;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
+import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
+import com.nqm.event_manager.interfaces.IOnEmployessLoadComplete;
 import com.nqm.event_manager.interfaces.IOnSelectEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnSelectReminderItemClicked;
 import com.nqm.event_manager.models.Employee;
@@ -66,11 +71,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnSelectReminderItemClicked, IOnEditReminderItemClicked,
-        IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked {
+        IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked, IAddEmployeeDialogListener,
+        IOnEmployessLoadComplete {
     Activity context;
 
     Toolbar toolbar;
@@ -88,12 +95,15 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
     EditEmployeeAddEventAdapter editEmployeeAdapter;
     RecyclerView editEmployeeRecyclerView;
 
-    ArrayList<Employee> employees;
+    List<Employee> employees;
     Dialog selectEmployeeDialog;
+    ImageButton selectEmployeeAddButton;
     Button selectEmployeeOkButton;
     SearchView selectEmployeeSearchView;
     RecyclerView selectEmployeeRecyclerView;
     SelectEmployeeAddEventAdapter selectEmployeeAdapter;
+
+    AddEmployeeQuickDialog addEmployeeDialog;
 
     ArrayList<EventTask> eventTasks;
     int count = 0;
@@ -447,9 +457,13 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
         selectEmployeeDialog = new Dialog(this);
         selectEmployeeDialog.setContentView(R.layout.dialog_select_employee);
 
+        addEmployeeDialog = new AddEmployeeQuickDialog(context);
+        addEmployeeDialog.setListener(this);
+
         //Connect views
+        selectEmployeeAddButton = selectEmployeeDialog.findViewById(R.id.employee_dialog_add_button);
         selectEmployeeRecyclerView = selectEmployeeDialog.findViewById(R.id.select_employee_recycler_view);
-        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.add_schedule_ok_button);
+        selectEmployeeOkButton = selectEmployeeDialog.findViewById(R.id.add_employee_ok_button);
 
         employees = EmployeeRepository.getInstance().getEmployeesBySearchString("");
         selectEmployeeAdapter = new SelectEmployeeAddEventAdapter(selectedEmployeesIds,
@@ -469,7 +483,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ArrayList<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
+                List<Employee> resultEmployees = EmployeeRepository.getInstance().getEmployeesBySearchString(newText);
                 employees.clear();
                 employees.addAll(resultEmployees);
                 selectEmployeeAdapter.customNotifyDataSetChanged();
@@ -478,6 +492,8 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
         });
 
         //Add events
+        selectEmployeeAddButton.setOnClickListener(v -> addEmployeeDialog.show());
+
         selectEmployeeOkButton.setOnClickListener(view -> {
 //            editEmployeeAdapter.notifyDataSetChanged();
             selectEmployeeDialog.dismiss();
@@ -942,6 +958,18 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
     public void onCustomDatePickerItemClicked(String selectedDate, String dayOfWeek) {
         datePickerDialogDateTextView.setText(String.format(Locale.US, "%s - %s", dayOfWeek, selectedDate));
 //        Log.wtf("debug", "selected date changed");
+    }
+
+    @Override
+    public void onNewEmployeeSaved() {
+        EmployeeRepository.getInstance().setOwnListener(this);
+    }
+
+    @Override
+    public void notifyOnEmployeesLoadComplete() {
+        employees.clear();
+        employees.addAll(EmployeeRepository.getInstance().getEmployeesBySearchString(""));
+        selectEmployeeAdapter.customNotifyDataSetChanged();
     }
 
     //----------------------------------------------------------------------------------------------

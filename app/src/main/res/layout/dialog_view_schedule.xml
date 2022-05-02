@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/add_schedule_dialog_title_text_view"
+        android:id="@+id/add_employee_dialog_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:focusableInTouchMode="true"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:text="Lịch trình"
         android:textAlignment="center"
         android:textSize="@dimen/dialog_title"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/dialog_edit_task_button_layout"
-        android:layout_below="@id/add_schedule_dialog_title_text_view"/>
+        android:layout_below="@id/add_employee_dialog_title_text_view"/>
     <LinearLayout
         android:id="@+id/dialog_edit_task_button_layout"
         android:layout_width="match_parent"

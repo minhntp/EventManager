@@ -103,7 +103,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         addEvents();
 
         EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
 
@@ -394,7 +394,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     @Override
     public void onResume() {
         EventRepository.getInstance().setListener(this);
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         SalaryRepository.getInstance().setListener(this);
         ScheduleRepository.getInstance().setListener(this);
         getResultSalaries();

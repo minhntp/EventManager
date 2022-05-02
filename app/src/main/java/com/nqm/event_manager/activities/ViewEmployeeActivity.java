@@ -59,11 +59,11 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_error)
                     .setTitle("Xóa nhân viên")
-                    .setMessage("Bạn có chắn chắn muốn Xóa nhân viên này và các bản lương?")
+                    .setMessage("Bạn có chắn chắn muốn xóa Nhân Viên này cùng các Bản Lương?")
                     .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            EmployeeRepository.getInstance().setListener(ManageEmployeeFragment.thisListener);
+                            EmployeeRepository.getInstance().setCommonListener(ManageEmployeeFragment.thisListener);
                             EmployeeRepository.getInstance().deleteEmployeeByEmployeeId(employee.getId());
                             context.finish();
                         }
@@ -107,7 +107,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     private void init() {
         context = this;
         thisListener = this;
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
 
         toolbar = findViewById(R.id.view_employee_toolbar);
         setSupportActionBar(toolbar);
@@ -187,7 +187,7 @@ public class ViewEmployeeActivity extends BaseActivity implements IOnDataLoadCom
     @Override
     protected void onResume() {
         super.onResume();
-        EmployeeRepository.getInstance().setListener(this);
+        EmployeeRepository.getInstance().setCommonListener(this);
         employee = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
         fillInformation();
     }

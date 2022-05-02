@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.interfaces.IOnEmployessLoadComplete;
 import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.Constants;
@@ -14,6 +15,7 @@ import com.nqm.event_manager.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EmployeeRepository {
@@ -21,7 +23,8 @@ public class EmployeeRepository {
     static EmployeeRepository instance;
     private HashMap<String, Employee> allEmployees;
     private ArrayList<String> specialities;
-    private IOnDataLoadComplete listener;
+    private IOnEmployessLoadComplete ownListener;
+    private IOnDataLoadComplete commonListener;
 
     //------------------------------------------------------------------------------------------
 
@@ -65,15 +68,22 @@ public class EmployeeRepository {
                         }
                         allEmployees = employees;
                         this.specialities = specialities;
-                        if (listener != null) {
-                            listener.notifyOnLoadComplete();
+                        if (commonListener != null) {
+                            commonListener.notifyOnLoadComplete();
+                        }
+                        if (ownListener != null) {
+                            ownListener.notifyOnEmployeesLoadComplete();
                         }
                     }
                 });
     }
 
-    public void setListener(IOnDataLoadComplete listener) {
-        this.listener = listener;
+    public void setCommonListener(IOnDataLoadComplete commonListener) {
+        this.commonListener = commonListener;
+    }
+
+    public void setOwnListener(IOnEmployessLoadComplete ownListener) {
+        this.ownListener = ownListener;
     }
 
     public ArrayList<String> getSpecialities() {
@@ -182,12 +192,12 @@ public class EmployeeRepository {
         return employeesIds;
     }
 
-    public ArrayList<Employee> getEmployeesBySearchString(String searchString) {
+    public List<Employee> getEmployeesBySearchString(String searchString) {
         if (searchString.isEmpty()) {
             return (new ArrayList<>(getAllEmployees().values()));
         }
 
-        ArrayList<Employee> employees = new ArrayList<>();
+        List<Employee> employees = new ArrayList<>();
         for (Employee e : allEmployees.values()) {
             if (StringUtil.normalizeString(e.getHoTen()).contains(StringUtil.normalizeString(searchString)) ||
                     StringUtil.normalizeString(e.getChuyenMon()).contains(StringUtil.normalizeString(searchString))) {

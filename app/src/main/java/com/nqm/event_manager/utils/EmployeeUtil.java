@@ -6,6 +6,7 @@ import com.nqm.event_manager.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class EmployeeUtil {
 
@@ -44,7 +45,7 @@ public class EmployeeUtil {
 //        return sortedIds;
 //    }
 
-    public static void sortEmployeesByName(ArrayList<Employee> employees) {
+    public static void sortEmployeesByName(List<Employee> employees) {
         Collections.sort(employees);
     }
 
