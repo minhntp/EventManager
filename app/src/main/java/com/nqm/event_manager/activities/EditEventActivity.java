@@ -55,6 +55,10 @@ import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
 
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -268,7 +272,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateEditText.getText().toString()));
             endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
         } catch (Exception e) {
-            System.out.println( Log.getStackTraceString(e));
+            System.out.println(Log.getStackTraceString(e));
         }
 
         locationAutoCompleteTextView.setText(event.getDiaDiem());
@@ -304,25 +308,28 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
             selectedDateEditText.setText(selectedDate);
             selectedDowTextView.setText(selectedDow);
             try {
-                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-                Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
-                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-                Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
+                LocalDateTime startDateTime = LocalDateTime.of(
+                        LocalDate.parse(startDateEditText.getText().toString(), CalendarUtil.dtfDayMonthYear),
+                        LocalTime.parse(startTimeEditText.getText().toString(), CalendarUtil.dtfTime));
+                LocalDateTime endDateTime = LocalDateTime.of(
+                        LocalDate.parse(endDateEditText.getText().toString(), CalendarUtil.dtfDayMonthYear),
+                        LocalTime.parse(endTimeEditText.getText().toString(), CalendarUtil.dtfTime));
 
-                if (startDate.compareTo(endDate) > 0) {
-                    if (selectedDateEditText == startDateEditText) {
-                        endDateEditText.setText(selectedDate);
-                        endDowTextView.setText(selectedDow);
+                if (endDateTime.isBefore(startDateTime)) {
+                    if ((selectedDateEditText == startDateEditText)) {
+                        endDateTime = endDateTime.withDayOfYear(startDateTime.getDayOfYear());
+                        if (endDateTime.isBefore(startDateTime)) {
+                            endDateTime = endDateTime.plusDays(1);
+                        }
+                        endDateEditText.setText(endDateTime.format(CalendarUtil.dtfDayMonthYear));
+                        endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateTime.format(CalendarUtil.dtfDayMonthYear)));
                     } else {
-                        startDateEditText.setText(selectedDate);
-                        startDowTextView.setText(selectedDow);
-                    }
-                    if (startTime.compareTo(endTime) > 0) {
-                        endTimeEditText.setText(startTimeEditText.getText().toString());
-                    }
-                } else if (startDate.compareTo(endDate) == 0) {
-                    if (startTime.compareTo(endTime) > 0) {
-                        endTimeEditText.setText(startTimeEditText.getText().toString());
+                        startDateTime = startDateTime.withDayOfYear(endDateTime.getDayOfYear());
+                        if (endDateTime.isBefore(startDateTime)) {
+                            startDateTime = startDateTime.minusDays(1);
+                        }
+                        startDateEditText.setText(startDateTime.format(CalendarUtil.dtfDayMonthYear));
+                        startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateTime.format(CalendarUtil.dtfDayMonthYear)));
                     }
                 }
             } catch (Exception ex) {
@@ -499,32 +506,34 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
         scheduleButton.setOnClickListener(view -> showEditScheduleDialog());
 
         timeSetListener = (timePicker, hourOfDay, minute) -> {
-            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendar.set(Calendar.MINUTE, minute);
-            String selectedTime = CalendarUtil.sdfTime.format(calendar.getTime());
-            selectedTimeEditText.setText(selectedTime);
+            LocalDateTime startDateTime = CalendarUtil.getLocalDateTime(
+                    startDateEditText.getText().toString(), startTimeEditText.getText().toString());
+            LocalDateTime endDateTime = CalendarUtil.getLocalDateTime(
+                    endDateEditText.getText().toString(), endTimeEditText.getText().toString());
+            Duration difference = Duration.between(startDateTime, endDateTime);
 
-            //Make sure start date + start time < end date + end time
             try {
-                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-                Date startTime = CalendarUtil.sdfTime.parse(startTimeEditText.getText().toString());
-                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
-                Date endTime = CalendarUtil.sdfTime.parse(endTimeEditText.getText().toString());
+                if (selectedTimeEditText == startTimeEditText) {
+                    startDateTime = startDateTime.withHour(hourOfDay).withMinute(minute);
+                    startTimeEditText.setText(startDateTime.format(CalendarUtil.dtfTime));
 
-                if (startDate.compareTo(endDate) == 0) {
-                    if (startTime.compareTo(endTime) > 0) {
-                        if (selectedTimeEditText == startTimeEditText) {
-                            endTimeEditText.setText(selectedTime);
-                        } else {
-                            calendar.setTime(endDate);
-                            calendar.add(Calendar.DAY_OF_MONTH, 1);
-                            endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-                            endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateEditText.getText().toString()));
-                        }
+                    endDateTime = startDateTime.plus(difference);
+                    endDateEditText.setText(endDateTime.format(CalendarUtil.dtfDayMonthYear));
+                    endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateTime.format(CalendarUtil.dtfDayMonthYear)));
+                    endTimeEditText.setText(endDateTime.format(CalendarUtil.dtfTime));
+                } else {
+                    endDateTime = endDateTime.withHour(hourOfDay).withMinute(minute);
+                    endTimeEditText.setText(endDateTime.format(CalendarUtil.dtfTime));
+
+                    if (endDateTime.isBefore(startDateTime)) {
+                        startDateTime = endDateTime.minus(difference);
+                        startDateEditText.setText(startDateTime.format(CalendarUtil.dtfDayMonthYear));
+                        startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(startDateTime.format(CalendarUtil.dtfDayMonthYear)));
+                        startTimeEditText.setText(startDateTime.format(CalendarUtil.dtfTime));
                     }
                 }
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
         };
 
@@ -549,7 +558,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             selectedTimeEditText = startTimeEditText;
             new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
@@ -565,7 +574,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
                 minute = calendar.get(Calendar.MINUTE);
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             selectedTimeEditText = endTimeEditText;
             new TimePickerDialog(EditEventActivity.this, timeSetListener, hourOfDay,
@@ -604,7 +613,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            System.out.println( Log.getStackTraceString(e));
+            System.out.println(Log.getStackTraceString(e));
         }
     }
 
@@ -859,7 +868,7 @@ public class EditEventActivity extends BaseActivity implements IOnSelectEmployee
                 calendarDateTime.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
                 calendarDateTime.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             calendarDateTime.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendarDateTime.getTime()));

@@ -71,4 +71,8 @@ public class Constants {
 
     public static String EDITED_SALARIES = "editedSalaries";
 
+    // Default Event info
+    public static long defaultEventDuration = 5400000; // 1.5 hour
+    public static int defaultEventStartHour = 19; // 7 PM
+
 }
