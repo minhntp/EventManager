@@ -10,14 +10,16 @@ import java.time.format.DateTimeFormatter;
 
 public class CalendarUtil {
 
-    private static String formatDayMonthYear = "dd/MM/yyyy";
-    private static String formatDayMonthYearTime = "dd/MM/yyyy HH:mm:ss:ss";
-    private static String formatDayOfWeek = "EEE";
-    private static String formatTime = "hh:mm a";
-    private static String formatDayMonth = "dd/MM";
-    private static String formatDay = "d";
+    private static final String formatDayMonthYear = "dd/MM/yyyy";
+    private static final String formatDayMonthYearShort = "dd.MM.yy";
+    private static final String formatDayMonthYearTime = "dd/MM/yyyy HH:mm:ss:ss";
+    private static final String formatDayOfWeek = "EEE";
+    private static final String formatTime = "hh:mm a";
+    private static final String formatDayMonth = "dd/MM";
+    private static final String formatDay = "d";
 
     public static DateTimeFormatter dtfDayMonthYear = DateTimeFormatter.ofPattern(formatDayMonthYear);
+    public static DateTimeFormatter dtfDayMonthYearShort = DateTimeFormatter.ofPattern(formatDayMonthYearShort);
     public static DateTimeFormatter dtfDayMonthYearTime = DateTimeFormatter.ofPattern(formatDayMonthYearTime);
     public static DateTimeFormatter dtfDayOfWeek = DateTimeFormatter.ofPattern(formatDayOfWeek);
     public static DateTimeFormatter dtfTime = DateTimeFormatter.ofPattern(formatTime);
@@ -36,30 +38,25 @@ public class CalendarUtil {
     public static SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
 
     public static String dayOfWeekInVietnamese(String dayMonthYear) {
-        try {
-            String dayOfWeekEng = sdfDayOfWeek.format(sdfDayMonthYear.parse(dayMonthYear));
-            switch (dayOfWeekEng) {
-                case "Mon":
-                    return "T2";
-                case "Tue":
-                    return "T3";
-                case "Wed":
-                    return "T4";
-                case "Thu":
-                    return "T5";
-                case "Fri":
-                    return "T6";
-                case "Sat":
-                    return "T7";
-                case "Sun":
-                    return "CN";
-                default:
-                    return dayOfWeekEng;
-            }
-        } catch (Exception e) {
-            System.out.println(Log.getStackTraceString(e));
+        String dayOfWeekEN = LocalDate.parse(dayMonthYear, dtfDayMonthYear).format(dtfDayOfWeek);
+        switch (dayOfWeekEN) {
+            case "Mon":
+                return "T2";
+            case "Tue":
+                return "T3";
+            case "Wed":
+                return "T4";
+            case "Thu":
+                return "T5";
+            case "Fri":
+                return "T6";
+            case "Sat":
+                return "T7";
+            case "Sun":
+                return "CN";
+            default:
+                return dayOfWeekEN;
         }
-        return "";
     }
 
     public static LocalDateTime getLocalDateTime(String date, String time) {

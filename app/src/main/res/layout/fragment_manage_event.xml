@@ -10,19 +10,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <com.nqm.event_manager.custom_views.CustomCalendar
+            android:id="@+id/event_fragment_calendar_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.nqm.event_manager.custom_views.CustomCalendar
-                android:id="@+id/event_fragment_calendar_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp" />
-
-        </LinearLayout>
+            android:layout_height="@dimen/divider_height"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +36,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="2dp"
                 android:background="@drawable/custom_calendar_grid_item_background"
                 android:gravity="center"
                 android:paddingTop="2dp"
@@ -46,28 +46,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
+                android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:background="@color/divider" />
 
-            <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="@dimen/divider_height"-->
-            <!--android:layout_marginTop="2dp"-->
-            <!--android:layout_marginBottom="2dp"-->
-            <!--android:background="@color/divider" />-->
-
-<!--            <androidx.core.widget.NestedScrollView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent">-->
-
-                <ListView
-                    android:id="@+id/events_list_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginBottom="2dp"/>
-<!--            </androidx.core.widget.NestedScrollView>-->
+            <ListView
+                android:id="@+id/events_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="2dp" />
+            <!--            </androidx.core.widget.NestedScrollView>-->
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

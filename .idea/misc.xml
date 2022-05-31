@@ -20,9 +20,11 @@
         <entry key="app/src/main/res/layout/dialog_edit_task.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/layout/dialog_select_employee.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_select_reminder.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/dialog_view_schedule.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/layout/fragment_manage_employee.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/fragment_manage_event.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/layout/fragment_manage_salary.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/fragment_manage_user.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/list_item_calculate_salary.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/list_item_conflict_event.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/list_item_edit_employee.xml" value="0.18333333333333332" />

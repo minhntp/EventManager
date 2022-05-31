@@ -3,7 +3,6 @@ package com.nqm.event_manager.adapters;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalaryAdapter.ViewHolder> {
@@ -58,14 +57,10 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
         Salary salary = salaries.get(position);
         Event event = EventRepository.getInstance().getAllEvents().get(salary.getEventId());
         if (event != null) {
-            try {
-                Date startDate = CalendarUtil.sdfDayMonthYear.parse(event.getNgayBatDau());
-                String toText = CalendarUtil.sdfDayMonth.format(startDate) + "\n" +
-                        CalendarUtil.dayOfWeekInVietnamese(event.getNgayBatDau());
-                holder.startDateTextView.setText(toText);
-            } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
-            }
+            holder.dowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(event.getNgayBatDau()));
+            String shortDate = LocalDate.parse(event.getNgayBatDau(), CalendarUtil.dtfDayMonthYear)
+                    .format(CalendarUtil.dtfDayMonthYearShort);
+            holder.startDateTextView.setText(shortDate);
             holder.titleTextView.setText(event.getTen());
             holder.locationTextView.setText(event.getDiaDiem());
 
@@ -89,6 +84,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView dowTextView;
         TextView startDateTextView;
         TextView titleTextView;
         TextView locationTextView;
@@ -98,6 +94,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            dowTextView = itemView.findViewById(R.id.calculate_salaries_list_item_dow_text_view);
             startDateTextView = itemView.findViewById(R.id.calculate_salaries_list_item_date_text_view);
             titleTextView = itemView.findViewById(R.id.calculate_salaries_list_item_event_title_text_view);
             locationTextView = itemView.findViewById(R.id.calculate_salaries_list_item_event_location_text_view);
@@ -105,20 +102,21 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
             paidCheckBox = itemView.findViewById(R.id.calculate_salaries_list_item_paid_checkbox);
 
             //Add events
-            View.OnClickListener onClickListener = v -> {
-                listener.onCalculateSalaryItemClicked(salaries.get(getLayoutPosition()).getEventId());
-            };
+            View.OnClickListener onClickListener = v -> listener.onCalculateSalaryItemClicked(salaries.get(getLayoutPosition()).getEventId());
 
+            dowTextView.setOnClickListener(onClickListener);
             startDateTextView.setOnClickListener(onClickListener);
             titleTextView.setOnClickListener(onClickListener);
             locationTextView.setOnClickListener(onClickListener);
 
             salaryEditText.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
                 @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
                 @Override
                 public void afterTextChanged(Editable s) {
@@ -142,6 +140,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                 return false;
             };
 
+            dowTextView.setOnLongClickListener(onLongClickListener);
             startDateTextView.setOnLongClickListener(onLongClickListener);
             titleTextView.setOnLongClickListener(onLongClickListener);
             locationTextView.setOnLongClickListener(onLongClickListener);
