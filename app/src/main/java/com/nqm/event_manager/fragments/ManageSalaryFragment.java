@@ -38,6 +38,7 @@ import com.nqm.event_manager.repositories.EventRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
+import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.StringUtil;
 
 import java.text.ParseException;
@@ -46,6 +47,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ManageSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked,
         IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
@@ -170,9 +172,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
         datePicker.setListener(this);
 
-        datePickerTodayButton.setOnClickListener(v -> {
-            datePicker.setViewDate(Calendar.getInstance().getTime());
-        });
+        datePickerTodayButton.setOnClickListener(v -> datePicker.setViewDate(Calendar.getInstance().getTime()));
 
         datePickerDialogCancelButton.setOnClickListener(v -> datePickerDialog.dismiss());
 
@@ -185,7 +185,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
                 if (clickedEditText.equals(StringUtil.startDateEditText)) {
                     // startDate clicked
-                    if (!selectedDate.before(endDate)) {
+                    if (!Objects.requireNonNull(selectedDate).before(endDate)) {
                         // Set startDate = selectedDate, endDate = last day_of_month of startDate
                         calendar.setTime(selectedDate);
                         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
@@ -194,7 +194,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                     startDateEditText.setText(selectedDateText);
                 } else {
                     // endDate clicked
-                    if (!selectedDate.after(startDate)) {
+                    if (!Objects.requireNonNull(selectedDate).after(startDate)) {
                         // Set endDate = selectedDate, startDate = first day_of_month of endDate
                         calendar.setTime(selectedDate);
                         calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -251,7 +251,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             Date dateFromEditText = CalendarUtil.sdfDayMonthYear.parse(selectedDateText);
             datePicker.setSelectedDate(dateFromEditText);
             datePicker.setViewDate(dateFromEditText);
-            String txt = CalendarUtil.sdfDayOfWeek.format(dateFromEditText) +
+            String txt = CalendarUtil.sdfDayOfWeek.format(Objects.requireNonNull(dateFromEditText)) +
                     " - " + CalendarUtil.sdfDayMonthYear.format(dateFromEditText);
             datePickerDialogDateTextView.setText(txt);
             datePickerDialog.show();
@@ -280,6 +280,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     }
 
     private void updateEmployeesSpinner() {
+        int defaultEmployeeIndex = 0;
         if (queryResultSalaries.size() > 0) {
             employeesIds.clear();
             for (Salary s : queryResultSalaries) {
@@ -289,21 +290,24 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 }
             }
             employeesInfo.clear();
-            for (String employeeId : employeesIds) {
-                Employee e = EmployeeRepository.getInstance().getAllEmployees().get(employeeId);
+            for (int i = 0; i < employeesIds.size(); i++) {
+                Employee e = EmployeeRepository.getInstance().getAllEmployees().get(employeesIds.get(i));
                 if (e != null) {
                     employeesInfo.add(e.getHoTen() + " - " + e.getChuyenMon());
+                    if (e.getHoTen().equals(Constants.DEFAULT_SALARY_EMPLOYEE_VALUE)) {
+                        defaultEmployeeIndex = i;
+                    }
                 }
             }
             employeesSpinnerAdapter.notifyDataSetChanged();
 
             if (selectedEmployeeId.isEmpty()) {
-                selectEmployeeSpinner.setSelection(0);
+                selectEmployeeSpinner.setSelection(defaultEmployeeIndex);
                 selectedEmployeeId = employeesIds.get(selectEmployeeSpinner.getSelectedItemPosition());
             } else {
                 int position = employeesIds.indexOf(selectedEmployeeId);
                 if (position == -1) {
-                    selectEmployeeSpinner.setSelection(0);
+                    selectEmployeeSpinner.setSelection(defaultEmployeeIndex);
                     selectedEmployeeId = employeesIds.get(selectEmployeeSpinner.getSelectedItemPosition());
                 } else {
                     selectEmployeeSpinner.setSelection(position);
@@ -375,9 +379,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                 .setMessage(message)
                 .setIcon(R.drawable.ic_error)
                 .setPositiveButton(positiveButton, (dialog, whichButton) -> saveChanges(payAll))
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                    sumTextView.requestFocus();
-                }).show();
+                .setNegativeButton("Hủy", (dialog, which) -> sumTextView.requestFocus()).show();
     }
 
     private void saveChanges(boolean payAll) {
