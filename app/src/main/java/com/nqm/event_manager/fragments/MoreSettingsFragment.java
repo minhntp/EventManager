@@ -1,5 +1,6 @@
 package com.nqm.event_manager.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressLint("NotifyDataSetChanged")
 public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplete, IOnEditReminderItemClicked,
         IOnSelectReminderItemClicked, IOnEditEmployeeItemClicked, IOnSelectEmployeeItemClicked {
 
@@ -65,6 +67,17 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     SearchView selectEmployeeSearchView;
     RecyclerView selectEmployeeRecyclerView;
     SelectEmployeeAddEventAdapter selectEmployeeAdapter;
+
+//    Button selectSalaryEmployeeButton;
+//    ShowEmployeeAdapter showEmployeeAdapter;
+//    RecyclerView showEmployeeRecyclerView;
+//
+//    Dialog selectSalaryEmployeeDialog;
+//    SearchView selectSalaryEmployeeSearchView;
+//    RecyclerView selectSalaryEmployeeRecyclerView;
+//    SelectEmployeeAdapter selectSalaryEmployeeAdapter;
+
+//    Employee defaultSalaryEmployee;
 
     boolean isRemindersChanged, isEmployeesChanged;
 
@@ -109,9 +122,9 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         editReminderRecyclerView.setAdapter(editReminderAdapter);
 
         DefaultReminderRepository.getInstance().setListener(this);
-        ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
+        ArrayList<Integer> defaultReminders = new ArrayList<>(DefaultReminderRepository.getInstance()
                 .getDefaultReminders().values());
-        if (defaultReminders != null && defaultReminders.size() > 0) {
+        if (defaultReminders.size() > 0) {
             for (int minute : defaultReminders) {
                 selectedReminders.add(new Reminder("", "", minute, ""));
             }
@@ -134,9 +147,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         DefaultReminderRepository.getInstance().setListener(this);
         HashMap<String, String> defaultEmployeesIds = DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds();
         if (defaultEmployeesIds != null && defaultEmployeesIds.size() > 0) {
-            for (String id : defaultEmployeesIds.values()) {
-                selectedEmployeesIds.add(id);
-            }
+            selectedEmployeesIds.addAll(defaultEmployeesIds.values());
             EmployeeUtil.sortEmployeesIdsByNameNew(selectedEmployeesIds);
             editEmployeeAdapter.customNotifyDataSetChanged();
         }
@@ -145,7 +156,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
     }
 
     private void initSelectReminderDialog() {
-        selectReminderDialog= new Dialog(context);
+        selectReminderDialog = new Dialog(context);
         selectReminderDialog.setContentView(R.layout.dialog_select_reminder);
 
         lWindowParams = new WindowManager.LayoutParams();
@@ -163,9 +174,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         selectReminderListView.setAdapter(selectReminderAdapter);
 
         //Add events
-        selectReminderOkButton.setOnClickListener(view -> {
-            selectReminderDialog.dismiss();
-        });
+        selectReminderOkButton.setOnClickListener(view -> selectReminderDialog.dismiss());
 
         selectReminderDialog.setOnDismissListener(dialog -> editReminderAdapter.customNotifyDataSetChanged());
     }
@@ -207,7 +216,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
         //Add events
         selectEmployeeOkButton.setOnClickListener(view -> {
             editEmployeeAdapter.customNotifyDataSetChanged();
-            System.out.println( "ok button clicked. employees size = " + selectedEmployeesIds.size());
+            System.out.println("ok button clicked. employees size = " + selectedEmployeesIds.size());
             selectEmployeeDialog.dismiss();
         });
 
@@ -225,9 +234,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
             }
         });
 
-        selectEmployeeButton.setOnClickListener(v -> {
-            showSelectEmployeeDialog();
-        });
+        selectEmployeeButton.setOnClickListener(v -> showSelectEmployeeDialog());
     }
 
     private void showSelectEmployeeDialog() {
@@ -242,7 +249,7 @@ public class MoreSettingsFragment extends Fragment implements IOnDataLoadComplet
 
     @Override
     public void notifyOnLoadComplete() {
-        ArrayList<Integer> defaultReminders = new ArrayList<Integer>(DefaultReminderRepository.getInstance()
+        ArrayList<Integer> defaultReminders = new ArrayList<>(DefaultReminderRepository.getInstance()
                 .getDefaultReminders().values());
         if (defaultReminders.size() > 0) {
             selectedReminders.clear();

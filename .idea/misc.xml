@@ -9,6 +9,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.21197916666666666" />
+        <entry key="app/src/main/res/drawable/ic_people.xml" value="0.1575" />
+        <entry key="app/src/main/res/drawable/ic_person.xml" value="0.1575" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_add_employee.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/layout/activity_add_event.xml" value="0.35833333333333334" />
@@ -25,6 +27,7 @@
         <entry key="app/src/main/res/layout/fragment_manage_event.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/layout/fragment_manage_salary.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/fragment_manage_user.xml" value="0.35833333333333334" />
+        <entry key="app/src/main/res/layout/fragment_more_settings.xml" value="0.14791666666666667" />
         <entry key="app/src/main/res/layout/list_item_calculate_salary.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/list_item_conflict_event.xml" value="0.35833333333333334" />
         <entry key="app/src/main/res/layout/list_item_edit_employee.xml" value="0.18333333333333332" />

@@ -68,8 +68,10 @@
     <string name="add_reminder_button">Thêm nhắc nhở</string>
     <string name="event_title">Tên sự kiện</string>
     <string name="select_default_employees">Chọn nhân sự mặc định</string>
+    <string name="select_default_salary_employee">Chọn nhân sự tính lương mặc định</string>
     <string name="default_reminders">Nhắc nhở mặc định</string>
     <string name="default_employees">Nhân sự mặc định</string>
+    <string name="default_salary_employee">Nhân sự tính lương mặc định</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

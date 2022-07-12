@@ -71,6 +71,8 @@ public class Constants {
 
     public static String EDITED_SALARIES = "editedSalaries";
 
+    public static String DEFAULT_SALARY_EMPLOYEE_VALUE = "Nguyễn Quang Minh";
+
     // Default Event info
     public static long defaultEventDuration = 5400000; // 1.5 hour
     public static int defaultEventStartHour = 19; // 7 PM
