@@ -260,7 +260,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                         WindowManager.LayoutParams.WRAP_CONTENT);
             }
         } catch (Exception e) {
-            System.out.println( Log.getStackTraceString(e));
+            System.out.println(Log.getStackTraceString(e));
         }
     }
 
@@ -383,8 +383,10 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     private void saveChanges(boolean payAll) {
 
         for (Salary s : selectedEmployeeSalaries) {
-            s.setSalary(s.getEditedSalary());
-            s.setPaid(payAll || s.isChecked());
+            if (!s.isPaid()) {
+                s.setSalary(s.getEditedSalary());
+                s.setPaid(payAll || s.isChecked());
+            }
         }
 
         SalaryRepository.getInstance().updateSalaries(selectedEmployeeSalaries);
