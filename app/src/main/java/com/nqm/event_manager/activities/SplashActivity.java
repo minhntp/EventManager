@@ -26,7 +26,7 @@ public class SplashActivity extends BaseActivity implements IOnDataLoadComplete 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        System.out.println( "Splash onCreate: ");
+        System.out.println("Splash onCreate: ");
 
         if (DatabaseAccess.isAllDataLoaded(getApplicationContext())) {
             startActivity(new Intent(this, RootActivity.class));
@@ -86,7 +86,7 @@ public class SplashActivity extends BaseActivity implements IOnDataLoadComplete 
             Event e = EventRepository.getInstance().getEventByEventId(s.getEventId());
             DocumentReference docRef = DatabaseAccess.getInstance().getDatabase()
                     .collection(Constants.SALARY_COLLECTION)
-                    .document(s.getSalaryId());
+                    .document(s.getId());
             Map<String, Object> data = new HashMap<>();
             try {
                 calendar.setTime(CalendarUtil.sdfDayMonthYear.parse(e.getNgayBatDau()));

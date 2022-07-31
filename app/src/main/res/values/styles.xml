@@ -34,4 +34,8 @@
         <item name="android:textSize">19sp</item>
     </style>
 
+    <style name="SalaryHistory" parent="AppTheme">
+        <item name="android:textSize">10sp</item>
+    </style>
+
 </resources>

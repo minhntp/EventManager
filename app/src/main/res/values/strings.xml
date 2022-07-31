@@ -104,6 +104,7 @@
     <string name="unpaid">Còn lại</string>
     <string name="pay_all">Thanh toán tất cả</string>
     <string name="save_changes">Lưu thay đổi</string>
+    <string name="salary_history">Lịch sử lương</string>
 
     <!--    Thông tin nhân viên  -->
     <string name="sur_middle_name">Họ và tên đệm</string>
@@ -119,4 +120,6 @@
     <string name="search_employee">Tìm kiếm nhân viên</string>
     <string name="add_employee">Thêm nhân viên</string>
 
+    <!-- SALARY HISTORY -->
+    <string name="salary_history_empty_text">"Không có lịch sử"</string>
 </resources>

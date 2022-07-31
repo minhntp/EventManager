@@ -30,6 +30,16 @@ public class Constants {
     public static String SALARY_START_MILI = "milibatdau";
     public static String SALARY_END_MILI = "miliketthuc";
 
+    public static String HISTORY_COLLECTION = "history";
+    public static String HISTORY_EDITED_TIME = "edited_in_millis";
+    public static String HISTORY_DATETIME = "date_time_in_millis";
+    public static String HISTORY_EVENT_NAME = "event_name";
+    public static String HISTORY_EVENT_LOCATION = "event_location";
+    public static String HISTORY_EMPLOYEE_NAME = "employee_name";
+    public static String HISTORY_EMPLOYEE_SPECIALITY = "employee_speciality";
+    public static String HISTORY_OLD_SALARY = "old_salary";
+    public static String HISTORY_NEW_SALARY = "new_salary";
+
     public static String SCHEDULE_COLLECTION = "lichtrinh";
     public static String SCHEDULE_EVENT_ID = "sukienid";
     public static String SCHEDULE_TIME = "gio";
@@ -76,5 +86,17 @@ public class Constants {
     // Default Event info
     public static long defaultEventDuration = 5400000; // 1.5 hour
     public static int defaultEventStartHour = 19; // 7 PM
+
+    // SALARY HISTORY
+//    public static String IS_PAID = "Đã trả";
+    public static String IS_PAID = "\u2611";
+//    public static String IS_NOT_PAID = "Chưa trả";
+    public static String IS_NOT_PAID = "\u2610";
+    public static String RIGHT_ARROW = " \u2192 ";
+
+    // COLORS
+    public static String SALARY_HISTORY_TEXT_COLOR = "#2eb82e";
+    public static String SALARY_HISTORY_IS_PAID_TEXT_COLOR = "#ff6a00";
+    public static String DEFAULT_TEXT_COLOR = "#040404";
 
 }

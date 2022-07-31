@@ -230,7 +230,7 @@ public class EventRepository {
 
         for (Salary salary : SalaryRepository.getInstance().getSalariesByEventId(eventId)) {
             DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
-                    .collection(Constants.SALARY_COLLECTION).document(salary.getSalaryId());
+                    .collection(Constants.SALARY_COLLECTION).document(salary.getId());
             batch.delete(salaryDocRef);
         }
 
@@ -273,7 +273,7 @@ public class EventRepository {
         for (Salary s : SalaryRepository.getInstance().getAllSalaries().values()) {
             if (s.getEventId().equals(changedEvent.getId())) {
                 DocumentReference docRef = DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.SALARY_COLLECTION).document(s.getSalaryId());
+                        .collection(Constants.SALARY_COLLECTION).document(s.getId());
                 Map<String, Object> data = new HashMap<>();
                 try {
                     c1.setTime(CalendarUtil.sdfDayMonthYear.parse(changedEvent.getNgayBatDau()));
@@ -424,7 +424,7 @@ public class EventRepository {
                         events.add(tempE);
                     }
                 } catch (Exception e) {
-                    System.out.println( Log.getStackTraceString(e));
+                    System.out.println(Log.getStackTraceString(e));
                 }
             }
         }
@@ -525,7 +525,7 @@ public class EventRepository {
                             CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                 }
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             return compareResult;
         });
@@ -546,7 +546,7 @@ public class EventRepository {
                                 CalendarUtil.sdfTime.parse(e2.getGioBatDau()));
                     }
                 } catch (Exception e) {
-                    System.out.println( Log.getStackTraceString(e));
+                    System.out.println(Log.getStackTraceString(e));
                 }
             }
             return compareResult;

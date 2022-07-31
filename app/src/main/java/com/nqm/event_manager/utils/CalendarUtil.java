@@ -1,12 +1,11 @@
 package com.nqm.event_manager.utils;
 
-import android.util.Log;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class CalendarUtil {
 
@@ -57,6 +56,32 @@ public class CalendarUtil {
             default:
                 return dayOfWeekEN;
         }
+    }
+
+    public static String getDayOfWeekInVN(long millis) {
+        String dayOfWeekEN = sdfDayOfWeek.format(new Date(millis));
+        switch (dayOfWeekEN) {
+            case "Mon":
+                return "T2";
+            case "Tue":
+                return "T3";
+            case "Wed":
+                return "T4";
+            case "Thu":
+                return "T5";
+            case "Fri":
+                return "T6";
+            case "Sat":
+                return "T7";
+            case "Sun":
+                return "CN";
+            default:
+                return dayOfWeekEN;
+        }
+    }
+
+    public static String getFormattedDate(long millis) {
+        return sdfDayMonthYear.format(millis);
     }
 
     public static LocalDateTime getLocalDateTime(String date, String time) {

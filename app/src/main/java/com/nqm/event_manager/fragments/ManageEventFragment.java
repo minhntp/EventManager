@@ -75,7 +75,7 @@ public class ManageEventFragment extends Fragment implements IOnDataLoadComplete
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.manage_event_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }

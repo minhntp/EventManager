@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -21,12 +24,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nqm.event_manager.R;
 import com.nqm.event_manager.activities.ViewEventActivity;
 import com.nqm.event_manager.adapters.CalculateSalaryAdapter;
+import com.nqm.event_manager.adapters.ViewSalaryHistoryAdapter;
 import com.nqm.event_manager.custom_views.CustomDatePicker;
 import com.nqm.event_manager.interfaces.IOnCalculateSalaryItemClicked;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
@@ -35,6 +40,7 @@ import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
+import com.nqm.event_manager.repositories.HistoryRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -67,6 +73,11 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     String clickedEditText;
     String selectedDateText;
 
+    Dialog salaryHistoryDialog;
+    RecyclerView salaryHistoryRecyclerView;
+    TextView salaryHistoryEmptyTextView;
+    ViewSalaryHistoryAdapter salaryHistoryAdapter;
+
     List<String> employeesIds;
     List<String> employeesInfo;
     List<Salary> queryResultSalaries;
@@ -88,6 +99,13 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.manage_salaries_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -128,6 +146,18 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
         initDatePickerDialog();
+        initSalaryHistoryDialog();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.manage_salaries_history_action) {
+            showSalaryHistory();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void connectViews(View view) {
@@ -207,6 +237,17 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             }
             datePickerDialog.dismiss();
         });
+    }
+
+    private void initSalaryHistoryDialog() {
+        salaryHistoryDialog = new Dialog(context);
+        salaryHistoryDialog.setContentView(R.layout.dialog_salary_history);
+        salaryHistoryRecyclerView = salaryHistoryDialog.findViewById(R.id.salary_history_recycler_view);
+        salaryHistoryEmptyTextView = salaryHistoryDialog.findViewById(R.id.salary_history_empty_text_view);
+        salaryHistoryAdapter = new ViewSalaryHistoryAdapter();
+        salaryHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
+        salaryHistoryRecyclerView.setAdapter(salaryHistoryAdapter);
+        salaryHistoryRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
     }
 
     private void addEvents() {
@@ -393,6 +434,22 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
         SalaryRepository.getInstance().updateSalaries(selectedEmployeeSalaries);
         showResult();
+    }
+
+    private void showSalaryHistory() {
+        if (salaryHistoryAdapter.isHistoryEmpty()) {
+            salaryHistoryEmptyTextView.setVisibility(View.VISIBLE);
+            salaryHistoryRecyclerView.setVisibility(View.GONE);
+        } else {
+            salaryHistoryEmptyTextView.setVisibility(View.GONE);
+            salaryHistoryRecyclerView.setVisibility(View.VISIBLE);
+        }
+
+        salaryHistoryDialog.show();
+        if (salaryHistoryDialog.getWindow() != null) {
+            salaryHistoryDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT);
+        }
     }
 
     @Override

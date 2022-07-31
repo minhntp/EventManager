@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Salary implements Parcelable {
-    String salaryId;
+    String id;
     String eventId;
     String employeeId;
     int salary;
@@ -19,21 +19,21 @@ public class Salary implements Parcelable {
     }
 
     public Salary(Salary s) {
-        this(s.salaryId, s.eventId, s.employeeId, s.salary, s.paid, s.startMili, s.endMili, s.isChecked, s.editedSalary);
+        this(s.id, s.eventId, s.employeeId, s.salary, s.paid, s.startMili, s.endMili, s.isChecked, s.editedSalary);
     }
 
-    public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid) {
-        this(salaryId, eventId, employeeId, salary, paid, 0, 0, false, salary);
+    public Salary(String id, String eventId, String employeeId, int salary, boolean paid) {
+        this(id, eventId, employeeId, salary, paid, 0, 0, false, salary);
     }
 
-    public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid,
+    public Salary(String id, String eventId, String employeeId, int salary, boolean paid,
                   long startMili, long endMili) {
-        this(salaryId, eventId, employeeId, salary, paid, startMili, endMili, false, salary);
+        this(id, eventId, employeeId, salary, paid, startMili, endMili, false, salary);
     }
 
-    public Salary(String salaryId, String eventId, String employeeId, int salary, boolean paid,
+    public Salary(String id, String eventId, String employeeId, int salary, boolean paid,
                   long startMili, long endMili, boolean isChecked, int editedSalary) {
-        this.salaryId = salaryId;
+        this.id = id;
         this.eventId = eventId;
         this.employeeId = employeeId;
         this.salary = salary;
@@ -60,12 +60,12 @@ public class Salary implements Parcelable {
         this.endMili = endMili;
     }
 
-    public String getSalaryId() {
-        return salaryId;
+    public String getId() {
+        return id;
     }
 
-    public void setSalaryId(String salaryId) {
-        this.salaryId = salaryId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getEventId() {
@@ -122,7 +122,7 @@ public class Salary implements Parcelable {
     }
 
     protected Salary(Parcel in) {
-        salaryId = in.readString();
+        id = in.readString();
         eventId = in.readString();
         employeeId = in.readString();
         salary = in.readInt();
@@ -135,14 +135,14 @@ public class Salary implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(salaryId);
+        parcel.writeString(id);
         parcel.writeString(eventId);
         parcel.writeString(employeeId);
         parcel.writeInt(salary);
         parcel.writeByte((byte) (paid ? 1 : 0));
         parcel.writeLong(startMili);
         parcel.writeLong(endMili);
-        parcel.writeByte((byte) (paid ? 1: 0));
+        parcel.writeByte((byte) (paid ? 1 : 0));
         parcel.writeInt(editedSalary);
     }
 

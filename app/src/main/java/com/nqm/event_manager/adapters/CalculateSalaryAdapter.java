@@ -134,7 +134,7 @@ public class CalculateSalaryAdapter extends RecyclerView.Adapter<CalculateSalary
                             .setIcon(R.drawable.ic_error)
                             .setPositiveButton("Sửa", (dialog, whichButton) ->
                                     listener.onCalculateSalaryInputLayoutLongClicked(
-                                            salaries.get(getLayoutPosition()).getSalaryId()))
+                                            salaries.get(getLayoutPosition()).getId()))
                             .setNegativeButton("Hủy", null).show();
                 }
                 return false;

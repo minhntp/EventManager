@@ -13,4 +13,6 @@
     <color name="conflictBackground">#9FFF0000</color>
     <color name="normalBackground">#00FFFFFF</color>
     <color name="divider">#bbb</color>
+    <color name="salary_history_text">#2eb82e</color>
+    <color name="salary_history_is_paid_text">#ff6a00</color>
 </resources>

@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
+import com.nqm.event_manager.models.History;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.utils.CalendarUtil;
 import com.nqm.event_manager.utils.Constants;
@@ -70,7 +71,7 @@ public class SalaryRepository {
                                     Boolean.parseBoolean((String) data.get(Constants.SALARY_PAID)),
                                     (long) data.get(Constants.SALARY_START_MILI),
                                     (long) data.get(Constants.SALARY_END_MILI));
-                            salaries.put(tempSalary.getSalaryId(), tempSalary);
+                            salaries.put(tempSalary.getId(), tempSalary);
                         }
                     }
                     allSalaries = salaries;
@@ -84,11 +85,7 @@ public class SalaryRepository {
         this.listener = listener;
     }
 
-    //------------------------------------------------------------------------------------
-
-    public HashMap<String, Salary> getAllSalaries() {
-        return allSalaries;
-    }
+    // -------------------- WRITE ---------------------
 
     public void addSalariesToDatabase(final ArrayList<Salary> salaries) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
@@ -110,18 +107,22 @@ public class SalaryRepository {
     public void updateSalaries(List<Salary> salaries) {
         WriteBatch batch = DatabaseAccess.getInstance().getDatabase().batch();
 //        Log.wtf("debug", "salaries size = " + salaries.size());
-        for (int i = 0; i < salaries.size(); i++) {
+        List<History> histories = new ArrayList<>();
+        for (Salary salary : salaries) {
             DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
-                    .collection(Constants.SALARY_COLLECTION).document(salaries.get(i).getSalaryId());
+                    .collection(Constants.SALARY_COLLECTION).document(salary.getId());
 
             Map<String, Object> salaryData = new HashMap<>();
-            salaryData.put(Constants.SALARY_SALARY, "" + salaries.get(i).getSalary());
-            salaryData.put(Constants.SALARY_PAID, Boolean.toString(salaries.get(i).isPaid()));
+            salaryData.put(Constants.SALARY_SALARY, "" + salary.getSalary());
+            salaryData.put(Constants.SALARY_PAID, Boolean.toString(salary.isPaid()));
 //            Log.wtf("debug", "amount = " + salaries.get(i).getSalary());
             batch.update(salaryDocRef, salaryData);
+
+            histories.add(History.newHistory(salary.getId(), salary.getSalary(), salary.isPaid()));
         }
 
         batch.commit();
+        HistoryRepository.getInstance().addHistoriesToDatabase(histories);
     }
 
     public void revertToNotPaid(String salaryId) {
@@ -129,13 +130,33 @@ public class SalaryRepository {
                 .collection(Constants.SALARY_COLLECTION)
                 .document(salaryId)
                 .update(Constants.SALARY_PAID, "false");
+
+        HistoryRepository.getInstance().addHistoriesToDatabase(Collections.singletonList(History.newHistory(salaryId, false)));
+    }
+
+    public void deleteSalary(String salaryId, final Context context) {
+        DatabaseAccess.getInstance().getDatabase()
+                .collection(Constants.SALARY_COLLECTION)
+                .document(salaryId)
+                .delete()
+                .addOnSuccessListener(aVoid -> Toast.makeText(context, "Đã xóa bản ghi lương", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(context, "Xóa bản ghi lương thất bại", Toast.LENGTH_SHORT).show());
+    }
+
+    // ------------------------------------- READ ----------------------------------------------
+    public HashMap<String, Salary> getAllSalaries() {
+        return allSalaries;
+    }
+
+    public Salary getById(String salaryId) {
+        return allSalaries.get(salaryId);
     }
 
     public String getSalaryIdByEventIdAndEmployeeId(String eventId, String employeeId) {
         for (Salary s : allSalaries.values()) {
             if (s.getEventId().equals(eventId) &&
                     s.getEmployeeId().equals(employeeId)) {
-                return s.getSalaryId();
+                return s.getId();
             }
         }
         return "";
@@ -149,15 +170,6 @@ public class SalaryRepository {
             }
         }
         return salaries;
-    }
-
-    public void deleteSalary(String salaryId, final Context context) {
-        DatabaseAccess.getInstance().getDatabase()
-                .collection(Constants.SALARY_COLLECTION)
-                .document(salaryId)
-                .delete()
-                .addOnSuccessListener(aVoid -> Toast.makeText(context, "Đã xóa bản ghi lương", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(context, "Xóa bản ghi lương thất bại", Toast.LENGTH_SHORT).show());
     }
 
     public boolean isSalaryPaid(String employeeId, String eventId) {
@@ -178,7 +190,7 @@ public class SalaryRepository {
 
         for (Salary s : allSalaries.values()) {
             if (isBetween(s, startDateString, endDateString)) {
-                salaries.put(s.getSalaryId(), s);
+                salaries.put(s.getId(), s);
             }
         }
         return salaries;
@@ -209,12 +221,12 @@ public class SalaryRepository {
                 return true;
             }
         } catch (Exception e) {
-            System.out.println( Log.getStackTraceString(e));
+            System.out.println(Log.getStackTraceString(e));
         }
         return false;
     }
 
-    //CALCULATE SALARIES FOR ONE EMPLOYEE
+    // CALCULATE SALARIES FOR ONE EMPLOYEE
     public List<Salary> getSalariesListByStartDateAndEndDateAndEmployeeId(String startDateString,
                                                                           String endDateString,
                                                                           String employeeId) {
@@ -242,10 +254,10 @@ public class SalaryRepository {
                             .getEventByEventId(s.getEventId()).getNgayKetThuc());
                     if ((start.compareTo(currentStart) <= 0 && currentStart.compareTo(end) <= 0) ||
                             start.compareTo(currentEnd) <= 0 && currentEnd.compareTo(end) <= 0) {
-                        salaries.put(s.getSalaryId(), s);
+                        salaries.put(s.getId(), s);
                     }
                 } catch (Exception e) {
-                    System.out.println( Log.getStackTraceString(e));
+                    System.out.println(Log.getStackTraceString(e));
                 }
             }
         }
@@ -268,7 +280,7 @@ public class SalaryRepository {
                         .get(s2.getEventId()).getNgayBatDau());
 
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             return d1.compareTo(d2);
         });

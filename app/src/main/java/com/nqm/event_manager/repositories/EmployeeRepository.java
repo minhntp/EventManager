@@ -62,7 +62,7 @@ public class EmployeeRepository {
                                     (String) tempHashMap.get(Constants.EMPLOYEE_PHONE_NUMBER),
                                     (String) tempHashMap.get(Constants.EMPLOYEE_EMAIL));
                             employees.put(tempEmployee.getId(), tempEmployee);
-                            if(!specialities.contains(tempEmployee.getChuyenMon())) {
+                            if (!specialities.contains(tempEmployee.getChuyenMon())) {
                                 specialities.add(tempEmployee.getChuyenMon());
                             }
                         }
@@ -124,7 +124,7 @@ public class EmployeeRepository {
         for (Salary salary : SalaryRepository.getInstance(null).getAllSalaries().values()) {
             if (salary.getEmployeeId().equals(employeeId)) {
                 DocumentReference salaryDocRef = DatabaseAccess.getInstance().getDatabase()
-                        .collection(Constants.SALARY_COLLECTION).document(salary.getSalaryId());
+                        .collection(Constants.SALARY_COLLECTION).document(salary.getId());
                 batch.delete(salaryDocRef);
             }
         }
@@ -156,6 +156,10 @@ public class EmployeeRepository {
             allEmployeesIds.add(e.getId());
         }
         return allEmployeesIds;
+    }
+
+    public Employee getEmployeeById(String employeeId) {
+        return allEmployees.get(employeeId);
     }
 
     public ArrayList<String> getEmployeesIdsByEventId(String eventId) {
