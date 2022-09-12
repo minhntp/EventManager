@@ -298,7 +298,7 @@ public class CalculateSalaryForOneEmployeeActivity extends BaseActivity
             }
         }
         String title = payAll ? "Bạn có chắc chắn muốn thanh toán tất cả?" : "Bạn có chắc chắn muốn lưu thay đổi?";
-        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid) + ": " + unpaid;
+        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid_left) + ": " + unpaid;
         String positiveButton = payAll ? "Thanh toán tất cả" : "Lưu";
 
         new AlertDialog.Builder(context)

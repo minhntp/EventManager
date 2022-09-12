@@ -10,6 +10,8 @@ import com.nqm.event_manager.models.History;
 import com.nqm.event_manager.utils.Constants;
 import com.nqm.event_manager.utils.DatabaseAccess;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +125,10 @@ public class HistoryRepository {
     public List<History> getAllHistoriesSortedByDateTime() {
         // Compare by minute
         List<History> sortedHistories = new ArrayList<>(allHistories.values());
-        sortedHistories.sort((h1, h2) -> (int) (h2.getEditedDateTimeInMillis() - h1.getEditedDateTimeInMillis()));
+        sortedHistories.sort(
+                (h1, h2) ->
+                        (Instant.ofEpochMilli(h2.getEditedDateTimeInMillis()).compareTo(
+                                Instant.ofEpochMilli(h1.getEditedDateTimeInMillis()))));
         return sortedHistories;
     }
 

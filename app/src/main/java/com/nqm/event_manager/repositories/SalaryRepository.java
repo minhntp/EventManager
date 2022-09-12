@@ -270,7 +270,7 @@ public class SalaryRepository {
 
     //----------------------------------------------------------------------------------------------
     public void sortSalariesListByEventStartDate(List<Salary> salaries) {
-        Collections.sort(salaries, (s1, s2) -> {
+        salaries.sort((s1, s2) -> {
             Date d1 = Calendar.getInstance().getTime();
             Date d2 = Calendar.getInstance().getTime();
             try {

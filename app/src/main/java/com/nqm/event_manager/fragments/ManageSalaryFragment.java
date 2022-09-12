@@ -17,7 +17,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -40,7 +40,6 @@ import com.nqm.event_manager.models.Employee;
 import com.nqm.event_manager.models.Salary;
 import com.nqm.event_manager.repositories.EmployeeRepository;
 import com.nqm.event_manager.repositories.EventRepository;
-import com.nqm.event_manager.repositories.HistoryRepository;
 import com.nqm.event_manager.repositories.SalaryRepository;
 import com.nqm.event_manager.repositories.ScheduleRepository;
 import com.nqm.event_manager.utils.CalendarUtil;
@@ -55,14 +54,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+@SuppressLint("NotifyDataSetChanged")
 public class ManageSalaryFragment extends Fragment implements IOnCalculateSalaryItemClicked,
         IOnDataLoadComplete, IOnCustomDatePickerItemClicked {
 
     Button calculateButton, payAllButton, saveButton;
     RecyclerView resultRecyclerView;
-    EditText startDateEditText, endDateEditText, sumEditText, paidEditText, unpaidEditText;
     Spinner selectEmployeeSpinner;
-    TextView numberOfEventsTextView, sumTextView, employeeNumOfEventsTextView;
+    CheckBox paidOnlyCheckBox, zeroOnlyCheckBox;
+    TextView startDateTextView, endDateTextView, sumTextView, paidTextView, unpaidTextView,
+            numberOfEventsTextView, employeeNumOfEventsTextView;
 
     Calendar calendar = Calendar.getInstance();
 
@@ -83,6 +84,9 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     List<Salary> queryResultSalaries;
     List<String> queryResultEventsIds;
     List<Salary> selectedEmployeeSalaries;
+    List<Salary> showedEmployeeSalaries;
+    List<Salary> unPaidSalaries;
+    List<Salary> zeroSalaries;
 
     ArrayAdapter<String> employeesSpinnerAdapter;
     CalculateSalaryAdapter calculateSalaryAdapter;
@@ -132,18 +136,21 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         queryResultSalaries = new ArrayList<>();
         queryResultEventsIds = new ArrayList<>();
         selectedEmployeeSalaries = new ArrayList<>();
+        showedEmployeeSalaries = new ArrayList<>();
+        unPaidSalaries = new ArrayList<>();
+        zeroSalaries = new ArrayList<>();
 
         employeesSpinnerAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, employeesInfo);
         employeesSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
         selectEmployeeSpinner.setAdapter(employeesSpinnerAdapter);
 
-        calculateSalaryAdapter = new CalculateSalaryAdapter(selectedEmployeeSalaries);
+        calculateSalaryAdapter = new CalculateSalaryAdapter(showedEmployeeSalaries);
         calculateSalaryAdapter.setListener(this);
         resultRecyclerView.setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
         resultRecyclerView.setAdapter(calculateSalaryAdapter);
 
-        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
-        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+        startDateTextView.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+        endDateTextView.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
 
         initDatePickerDialog();
         initSalaryHistoryDialog();
@@ -169,14 +176,16 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
 
         selectEmployeeSpinner = view.findViewById(R.id.fragment_manage_salary_employee_spinner);
 
-        sumEditText = view.findViewById(R.id.fragment_manage_salary_sum_edit_text);
-        paidEditText = view.findViewById(R.id.fragment_manage_salary_paid_edit_text);
-        unpaidEditText = view.findViewById(R.id.fragment_manage_salary_unpaid_edit_text);
-        startDateEditText = view.findViewById(R.id.fragment_manage_salary_start_date_edit_text);
-        endDateEditText = view.findViewById(R.id.fragment_manage_salary_end_date_edit_text);
+        sumTextView = view.findViewById(R.id.fragment_manage_salary_sum_edit_text);
+        paidTextView = view.findViewById(R.id.fragment_manage_salary_paid_edit_text);
+        unpaidTextView = view.findViewById(R.id.fragment_manage_salary_unpaid_edit_text);
+        startDateTextView = view.findViewById(R.id.fragment_manage_salary_start_date_edit_text);
+        endDateTextView = view.findViewById(R.id.fragment_manage_salary_end_date_edit_text);
+
+        paidOnlyCheckBox = view.findViewById(R.id.fragment_manage_salary_paid_checkbox);
+        zeroOnlyCheckBox = view.findViewById(R.id.fragment_manage_salary_zero_checkbox);
 
         numberOfEventsTextView = view.findViewById(R.id.fragment_manage_salary_number_of_events_text_view);
-        sumTextView = view.findViewById(R.id.fragment_manage_salary_sum_text_view);
         employeeNumOfEventsTextView = view.findViewById((R.id.fragment_manage_salary_employee_number_of_events_text_view));
     }
 
@@ -210,8 +219,8 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             selectedDateText = datePicker.getSelectedDateString();
             try {
                 Date selectedDate = CalendarUtil.sdfDayMonthYear.parse(selectedDateText);
-                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateEditText.getText().toString());
-                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateEditText.getText().toString());
+                Date startDate = CalendarUtil.sdfDayMonthYear.parse(startDateTextView.getText().toString());
+                Date endDate = CalendarUtil.sdfDayMonthYear.parse(endDateTextView.getText().toString());
 
                 if (clickedEditText.equals(StringUtil.startDateEditText)) {
                     // startDate clicked
@@ -219,18 +228,18 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
                         // Set startDate = selectedDate, endDate = last day_of_month of startDate
                         calendar.setTime(selectedDate);
                         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-                        endDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                        endDateTextView.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     }
-                    startDateEditText.setText(selectedDateText);
+                    startDateTextView.setText(selectedDateText);
                 } else {
                     // endDate clicked
                     if (!Objects.requireNonNull(selectedDate).after(startDate)) {
                         // Set endDate = selectedDate, startDate = first day_of_month of endDate
                         calendar.setTime(selectedDate);
                         calendar.set(Calendar.DAY_OF_MONTH, 1);
-                        startDateEditText.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
+                        startDateTextView.setText(CalendarUtil.sdfDayMonthYear.format(calendar.getTime()));
                     }
-                    endDateEditText.setText(selectedDateText);
+                    endDateTextView.setText(selectedDateText);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -251,15 +260,15 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     }
 
     private void addEvents() {
-        startDateEditText.setOnClickListener(v -> {
+        startDateTextView.setOnClickListener(v -> {
             clickedEditText = StringUtil.startDateEditText;
-            selectedDateText = startDateEditText.getText().toString();
+            selectedDateText = startDateTextView.getText().toString();
             showDatePickerDialog();
         });
 
-        endDateEditText.setOnClickListener(v -> {
+        endDateTextView.setOnClickListener(v -> {
             clickedEditText = StringUtil.endDateEditText;
-            selectedDateText = endDateEditText.getText().toString();
+            selectedDateText = endDateTextView.getText().toString();
             showDatePickerDialog();
         });
 
@@ -268,6 +277,9 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             updateEmployeesSpinner();
             showResult();
         });
+
+        paidOnlyCheckBox.setOnClickListener(v -> updateSalaryList());
+        zeroOnlyCheckBox.setOnClickListener(v -> updateSalaryList());
 
         selectEmployeeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -308,7 +320,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
     private void getResultSalaries() {
         queryResultSalaries.clear();
         queryResultSalaries.addAll(SalaryRepository.getInstance().getSalariesListByStartDateEndDate(
-                startDateEditText.getText().toString(), endDateEditText.getText().toString()));
+                startDateTextView.getText().toString(), endDateTextView.getText().toString()));
 
         queryResultEventsIds.clear();
         for (Salary s : queryResultSalaries) {
@@ -357,7 +369,6 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     public void showResult() {
 
         if (queryResultSalaries.size() > 0) {
@@ -373,7 +384,8 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
         selectedEmployeeSalaries.clear();
         for (Salary s : queryResultSalaries) {
             if (s.getEmployeeId().equals(selectedEmployeeId)) {
-                selectedEmployeeSalaries.add(new Salary(s));
+                Salary clonedSalary = new Salary(s);
+                selectedEmployeeSalaries.add(clonedSalary);
                 if (s.isPaid()) {
                     paid += s.getSalary();
                 } else {
@@ -383,21 +395,36 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             }
         }
 
-        SalaryRepository.getInstance().sortSalariesListByEventStartDate(selectedEmployeeSalaries);
-
-        calculateSalaryAdapter.notifyDataSetChanged();
+        updateSalaryList();
 
         employeeNumOfEventsTextView.setText(String.format(getResources().getString(R.string.num_of_events),
                 selectedEmployeeSalaries.size()));
-
         sum = paid + unpaid;
-
-        sumEditText.setText(String.valueOf(sum));
-        paidEditText.setText(String.valueOf(paid));
-        unpaidEditText.setText(String.valueOf(unpaid));
-
+        sumTextView.setText(String.valueOf(sum));
+        paidTextView.setText(String.valueOf(paid));
+        unpaidTextView.setText(String.valueOf(unpaid));
         saveButton.setEnabled(!isEditedSalariesPaid);
         payAllButton.setEnabled(!isEditedSalariesPaid);
+    }
+
+    private void updateSalaryList() {
+        showedEmployeeSalaries.clear();
+
+        boolean showUnPaidChecked = paidOnlyCheckBox.isChecked();
+        boolean showZeroChecked = zeroOnlyCheckBox.isChecked();
+
+        for (Salary s : selectedEmployeeSalaries) {
+            boolean satisfied = (!showUnPaidChecked && !showZeroChecked) || // show all
+                    ((showUnPaidChecked && !s.isPaid()) && !showZeroChecked) || // show only unPaid
+                    ((showZeroChecked && (s.getSalary() == 0)) && !showUnPaidChecked) || // show only zero
+                    ((showUnPaidChecked && !s.isPaid()) && (showZeroChecked && (s.getSalary() == 0))); // show only unpaid and zero;
+            if (satisfied) {
+                showedEmployeeSalaries.add(s);
+            }
+        }
+
+        SalaryRepository.getInstance().sortSalariesListByEventStartDate(showedEmployeeSalaries);
+        calculateSalaryAdapter.notifyDataSetChanged();
     }
 
     private void confirmBeforeSaving(boolean payAll) {
@@ -412,7 +439,7 @@ public class ManageSalaryFragment extends Fragment implements IOnCalculateSalary
             }
         }
         String title = payAll ? "Bạn có chắc chắn muốn thanh toán tất cả?" : "Bạn có chắc chắn muốn lưu thay đổi?";
-        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid) + ": " + unpaid;
+        String message = "Sẽ trả: " + paid + "\n" + getResources().getString(R.string.unpaid_left) + ": " + unpaid;
         String positiveButton = payAll ? "Thanh toán tất cả" : "Lưu";
 
         new AlertDialog.Builder(getContext())

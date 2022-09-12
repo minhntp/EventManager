@@ -15,4 +15,5 @@
     <color name="divider">#bbb</color>
     <color name="salary_history_text">#2eb82e</color>
     <color name="salary_history_is_paid_text">#ff6a00</color>
+    <color name="orange_text">#ff7b11</color>
 </resources>

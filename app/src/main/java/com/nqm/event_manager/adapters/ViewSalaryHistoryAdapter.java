@@ -26,12 +26,12 @@ public class ViewSalaryHistoryAdapter extends
         implements IOnDataLoadComplete {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView dayOfWeekTextView, dateTextView, eventNameTextView, eventLocationTextView,
+        TextView editedDateTextView, dateTextView, eventNameTextView, eventLocationTextView,
                 employeeNameTextView, employeeSpecialityTextView, amountTextView, isPaidTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            dayOfWeekTextView = itemView.findViewById(R.id.salary_history_list_item_edit_date_text_view);
+            editedDateTextView = itemView.findViewById(R.id.salary_history_list_item_edited_date_text_view);
             dateTextView = itemView.findViewById(R.id.salary_history_list_item_date_text_view);
             eventNameTextView = itemView.findViewById(R.id.salary_history_event_name_text_view);
             eventLocationTextView = itemView.findViewById(R.id.salary_history_event_location_text_view);
@@ -67,7 +67,7 @@ public class ViewSalaryHistoryAdapter extends
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         History history = histories.get(i);
-        viewHolder.dayOfWeekTextView.setText(CalendarUtil.getFormattedDate(history.getEditedDateTimeInMillis()));
+        viewHolder.editedDateTextView.setText(CalendarUtil.getFormattedDate(history.getEditedDateTimeInMillis()));
         viewHolder.dateTextView.setText(CalendarUtil.getFormattedDate(history.getDateTimeInMillis()));
         viewHolder.eventNameTextView.setText(history.getEventName());
         viewHolder.eventLocationTextView.setText(history.getEventLocation());

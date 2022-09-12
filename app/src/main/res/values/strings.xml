@@ -101,7 +101,9 @@
     <string name="employee">Nhân viên</string>
     <string name="sum">Tổng cộng</string>
     <string name="paid">Đã trả</string>
-    <string name="unpaid">Còn lại</string>
+    <string name="unpaid">Chưa trả</string>
+    <string name="zero">0</string>
+    <string name="unpaid_left">Còn lại</string>
     <string name="pay_all">Thanh toán tất cả</string>
     <string name="save_changes">Lưu thay đổi</string>
     <string name="salary_history">Lịch sử lương</string>

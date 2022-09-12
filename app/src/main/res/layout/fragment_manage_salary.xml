@@ -9,122 +9,124 @@
     tools:context=".activities.RootActivity">
 
     <LinearLayout
-        android:layout_alignParentTop="true"
-        android:id="@+id/fragment_manage_salary_date_layout"
+        android:id="@+id/fragment_manage_salary_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <LinearLayout
-            android:id="@+id/fragment_manage_salary_function"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:baselineAligned="false">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:labelFor="@id/fragment_manage_salary_start_date_edit_text"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:labelFor="@id/fragment_manage_salary_start_date_edit_text"
-                    android:weightSum="10">
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/start_date"
+                    android:src="@drawable/ic_calendar" />
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_calendar"
-                        android:contentDescription="@string/start_date" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="9"
-                        android:text="@string/start_date"
-                        android:textSize="@dimen/section_title"
-                        android:textStyle="italic" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/fragment_manage_salary_start_date_edit_text"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:textSize="@dimen/date_edit_text"
-                    android:importantForAutofill="no"
-                    android:inputType="date" />
+                    android:layout_weight="9"
+                    android:text="@string/start_date"
+                    android:textSize="@dimen/section_title"
+                    android:textStyle="italic" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/fragment_manage_salary_start_date_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:textColor="@color/orange_text"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:gravity="center"
+                android:textSize="@dimen/large_text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:labelFor="@id/fragment_manage_salary_end_date_edit_text"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:labelFor="@id/fragment_manage_salary_end_date_edit_text"
-                    android:weightSum="10">
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/end_date"
+                    android:src="@drawable/ic_calendar" />
 
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_calendar"
-                        android:contentDescription="@string/end_date" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="9"
-                        android:text="@string/end_date"
-                        android:textSize="@dimen/section_title"
-                        android:textStyle="italic" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/fragment_manage_salary_end_date_edit_text"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:textSize="@dimen/date_edit_text"
-                    android:importantForAutofill="no"
-                    android:inputType="date" />
+                    android:layout_weight="9"
+                    android:text="@string/end_date"
+                    android:textSize="@dimen/section_title"
+                    android:textStyle="italic" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/fragment_manage_salary_end_date_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:textColor="@color/orange_text"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:gravity="center"
+                android:textSize="@dimen/large_text" />
         </LinearLayout>
 
         <Button
             android:id="@+id/fragment_manage_salary_calculate_button"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:text="@string/calculate"
             android:textSize="@dimen/sub_text_button"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/fragment_manage_salary_result_layout"
-        android:layout_width="match_parent"
+        android:layout_width="386dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragment_manage_salary_date_layout"
         android:layout_above="@id/fragment_manage_salary_sum_layout"
+        android:layout_below="@id/fragment_manage_salary_input_layout"
+        android:layout_marginTop="1dp"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:layout_marginVertical="5dp"
+            android:background="@color/divider" />
 
         <TextView
             android:id="@+id/fragment_manage_salary_number_of_events_text_view"
@@ -132,7 +134,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="5dp"
             android:background="@drawable/custom_calendar_grid_item_background"
             android:gravity="center"
             android:paddingBottom="2dp"
@@ -142,31 +143,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="10">
-
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_employee"
-                android:contentDescription="@string/employee" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="9"
-                android:text="@string/employee"
-                android:textSize="@dimen/section_title"
-                android:textStyle="italic" />
-        </LinearLayout>
-
+            android:layout_height="@dimen/divider_height"
+            android:layout_marginVertical="5dp"
+            android:background="@color/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="7">
 
@@ -186,25 +170,45 @@
                 android:textColor="@color/textPrimaryColor"
                 android:textSize="@dimen/section_title"
                 android:textStyle="italic" />
-        </LinearLayout>
 
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_height"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="2dp"
+            android:layout_marginVertical="5dp"
             android:background="@color/divider" />
 
-<!--        <androidx.core.widget.NestedScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/fragment_manage_salary_result_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-<!--        </androidx.core.widget.NestedScrollView>-->
+            <CheckBox
+                android:id="@+id/fragment_manage_salary_paid_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/unpaid" />
+
+            <CheckBox
+                android:id="@+id/fragment_manage_salary_zero_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/fragment_manage_salary_paid_checkbox"
+                android:text="@string/zero" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:layout_marginVertical="5dp"
+            android:background="@color/divider" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/fragment_manage_salary_result_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -225,10 +229,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="10">
+            android:weightSum="10"
+            android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/fragment_manage_salary_sum_text_view"
                 android:labelFor="@id/fragment_manage_salary_sum_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -239,17 +243,17 @@
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
-            <EditText
+            <TextView
                 android:id="@+id/fragment_manage_salary_sum_edit_text"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="5"
                 android:enabled="false"
-                android:textColor="#0037FF"
                 android:gravity="center"
-                android:textSize="@dimen/salary_amount_edit_text"
                 android:importantForAutofill="no"
-                android:inputType="number" />
+                android:inputType="number"
+                android:textColor="#0037FF"
+                android:textSize="@dimen/large_text" />
 
 <!--            <Button-->
 <!--                android:id="@+id/fragment_manage_salary_selected_amount_button"-->
@@ -278,7 +282,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="10">
+            android:weightSum="10"
+            android:gravity="center_vertical">
 
             <TextView
                 android:layout_width="0dp"
@@ -290,14 +295,14 @@
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
-            <EditText
+            <TextView
                 android:id="@+id/fragment_manage_salary_paid_edit_text"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#AE00FF19"
-                android:textSize="@dimen/salary_amount_edit_text"
+                android:textSize="@dimen/large_text"
                 android:importantForAutofill="no"
                 android:gravity="center"
                 android:inputType="number" />
@@ -308,22 +313,24 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
-                android:text="@string/unpaid"
+                android:text="@string/unpaid_left"
                 android:textSize="15sp"
                 android:textStyle="italic" />
 
-            <EditText
+            <TextView
                 android:id="@+id/fragment_manage_salary_unpaid_edit_text"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:enabled="false"
                 android:textColor="#FF0000"
-                android:textSize="@dimen/salary_amount_edit_text"
+                android:textSize="@dimen/large_text"
                 android:importantForAutofill="no"
                 android:gravity="center"
                 android:inputType="number" />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
