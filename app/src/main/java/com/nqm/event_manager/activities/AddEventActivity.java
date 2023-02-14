@@ -1,5 +1,6 @@
 package com.nqm.event_manager.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -39,7 +40,6 @@ import com.nqm.event_manager.dialogs.AddEmployeeQuickDialog;
 import com.nqm.event_manager.fragments.ManageEventFragment;
 import com.nqm.event_manager.interfaces.IAddEmployeeDialogListener;
 import com.nqm.event_manager.interfaces.IOnCustomDatePickerItemClicked;
-import com.nqm.event_manager.interfaces.IOnDataLoadComplete;
 import com.nqm.event_manager.interfaces.IOnEditEmployeeItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditReminderItemClicked;
 import com.nqm.event_manager.interfaces.IOnEditTaskItemClicked;
@@ -74,6 +74,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressLint("NotifyDataSetChanged")
 public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeItemClicked,
         IOnEditEmployeeItemClicked, IOnSelectReminderItemClicked, IOnEditReminderItemClicked,
         IOnEditTaskItemClicked, IOnCustomDatePickerItemClicked, IAddEmployeeDialogListener,
@@ -233,10 +234,10 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
         initDatePickerDialog();
 
         //Set start date, end date edit texts from selected date
-        String selectedDate = getIntent().getStringExtra(Constants.INTENT_SELECTED_DATE);
-        startDateEditText.setText(selectedDate);
-        endDateEditText.setText(selectedDate);
         try {
+            String selectedDate = getIntent().getStringExtra(Constants.INTENT_SELECTED_DATE);
+            startDateEditText.setText(selectedDate);
+            endDateEditText.setText(selectedDate);
             startDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(selectedDate));
             endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(selectedDate));
             calendar.set(Calendar.HOUR_OF_DAY, Constants.defaultEventStartHour);
@@ -249,9 +250,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
         }
 
         selectedEmployeesIds = new ArrayList<>();
-        for (String id : DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds().values()) {
-            selectedEmployeesIds.add(id);
-        }
+        selectedEmployeesIds.addAll(DefaultEmployeeRepository.getInstance().getDefaultEmployeeIds().values());
         conflictsMap = new HashMap<>();
         editEmployeeAdapter = new EditEmployeeAddEventAdapter(selectedEmployeesIds, conflictsMap);
         editEmployeeAdapter.setListener(this);
@@ -316,14 +315,14 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
 
                 if (endDateTime.isBefore(startDateTime)) {
                     if ((selectedDateEditText == startDateEditText)) {
-                        endDateTime = endDateTime.withDayOfYear(startDateTime.getDayOfYear());
+                        endDateTime = startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute());
                         if (endDateTime.isBefore(startDateTime)) {
                             endDateTime = endDateTime.plusDays(1);
                         }
                         endDateEditText.setText(endDateTime.format(CalendarUtil.dtfDayMonthYear));
                         endDowTextView.setText(CalendarUtil.dayOfWeekInVietnamese(endDateTime.format(CalendarUtil.dtfDayMonthYear)));
                     } else {
-                        startDateTime = startDateTime.withDayOfYear(endDateTime.getDayOfYear());
+                        startDateTime = endDateTime.withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute());
                         if (endDateTime.isBefore(startDateTime)) {
                             startDateTime = startDateTime.minusDays(1);
                         }
@@ -503,9 +502,7 @@ public class AddEventActivity extends BaseActivity implements IOnSelectEmployeeI
     }
 
     private void addEvents() {
-        selectEmployeeButton.setOnClickListener(view -> {
-            showSelectEmployeeDialog();
-        });
+        selectEmployeeButton.setOnClickListener(view -> showSelectEmployeeDialog());
 
         timeSetListener = (timePicker, hourOfDay, minute) -> {
             LocalDateTime startDateTime = CalendarUtil.getLocalDateTime(

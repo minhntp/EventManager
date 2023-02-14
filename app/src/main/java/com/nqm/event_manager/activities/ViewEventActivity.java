@@ -1,5 +1,6 @@
 package com.nqm.event_manager.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -47,6 +48,7 @@ import com.nqm.event_manager.utils.DatabaseAccess;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+@SuppressLint("NotifyDataSetChanged")
 public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItemClicked,
         IOnDataLoadComplete, IOnEditReminderItemClicked, IOnSelectReminderItemClicked {
     Activity context;
@@ -243,6 +245,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
             return true;
         }
 
+        // Copy event
         if (id == R.id.view_event_action_copy) {
             copyEvent();
         }
@@ -520,7 +523,7 @@ public class ViewEventActivity extends BaseActivity implements IOnViewSalaryItem
                 calendar.set(Calendar.HOUR_OF_DAY, calendarTime.get(Calendar.HOUR_OF_DAY));
                 calendar.set(Calendar.MINUTE, calendarTime.get(Calendar.MINUTE));
             } catch (Exception e) {
-                System.out.println( Log.getStackTraceString(e));
+                System.out.println(Log.getStackTraceString(e));
             }
             calendar.add(Calendar.MINUTE, r.getMinute() * (-1));
             r.setTime(CalendarUtil.sdfDayMonthYearTime.format(calendar.getTime()));
